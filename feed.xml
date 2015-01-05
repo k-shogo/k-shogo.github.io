@@ -4,29 +4,20 @@
   <id>http://k-shogo.github.io/</id>
   <link href="http://k-shogo.github.io/"/>
   <link href="http://k-shogo.github.io/feed.xml" rel="self"/>
-  <updated>2014-12-16T00:00:00+09:00</updated>
+  <updated>2014-12-16T16:22:00+09:00</updated>
   <author>
     <name>k-shogo</name>
   </author>
   <entry>
-    <title/>
+    <title>早く知っておけば良かったrailsの技</title>
     <link rel="alternate" href="/article/2014/12/16/rails-tips/"/>
     <id>/article/2014/12/16/rails-tips/</id>
-    <published>2014-12-16T00:00:00+09:00</published>
-    <updated>2014-12-16T00:00:00+09:00</updated>
+    <published>2014-12-16T16:22:00+09:00</published>
+    <updated>2014-12-16T16:22:00+09:00</updated>
     <author>
       <name>Article Author</name>
     </author>
-    <content type="html">&lt;hr&gt;
-
-&lt;p&gt;title: 早く知っておけば良かったrailsの技
-date: 2014-12-16 16:22 JST
-tags: rails
-keywords: rails, tips&lt;/p&gt;
-
-&lt;h2&gt;description: 初心者に教えたいrailsの技&lt;/h2&gt;
-
-&lt;h3&gt;はじめに&lt;/h3&gt;
+    <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
 
 &lt;p&gt;自分が rails をさわり始めたときはバージョン1からバージョン2に変わるあたりだったのですが、バージョン2が出た年を振り返るとなんと2007年でした。&lt;br&gt;
 月日の流れが速い事に驚く中、早く知ってたら良かったのになぁって事をつらつらとまとめてみました。&lt;br&gt;
