@@ -1,0 +1,1 @@
+jQuery(function(n){n.getJSON("/data/mplus-2m-regular.json",function(a){n("h1,h2,h3,h4,p").kerning({data:a})})});

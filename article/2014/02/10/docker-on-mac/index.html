@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>Macに正式対応したdocker ver 0.8 のセットアップ | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='docker, 仮想化, mac' name='keywords'>
+<meta content='docerがver 0.8からmacを正式にサポートしたので、macにセットアップしてみます。' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>Macに正式対応したdocker ver 0.8 のセットアップ</h2>
+<span class='byline'>
+<a href="/article/tags/docker/">docker</a>
+</span>
+</header>
+<section><header><h3>背景</h3></header>
+
+<p>&ldquo;<a href="/article/2013/10/11/docker">DockerでImmutable Infrastractureに触れる</a>&quot;で基本的な使い方を紹介していた docker がversion 0.8でMac OSを正式にサポートしました。参考：<a href="http://blog.docker.io/2014/02/docker-0-8-quality-new-builder-features-btrfs-storage-osx-support/">DOCKER 0.8: QUALITY, NEW BUILDER FEATURES, BTRFS, OSX SUPPORT</a></p>
+
+<p>今回はそのdocker 0.8 をMac OSにインストールしてみます。</p>
+
+</section><section><header><h3>インストール</h3></header>
+
+<p>基本的には<a href="http://docs.docker.io/en/latest/installation/mac/">公式の手順</a>に従うだけですが、
+brew を用いるとさらに簡単にセットアップすることができます。</p>
+
+<h4>virtualbox</h4>
+
+<p>dockerがmacを正式にサポートしたとは言っても、
+virtualboxを用いています。<br>
+&rdquo;<a href="/article/2013/09/25/vagrant">vagrantで仮想環境を手軽に構築する</a>&ldquo;で行ったようにvirtualboxをインストールしておきます。</p>
+
+<h5>brew-caskのインストール</h5>
+<pre class="highlight plaintext"><code>brew tap phinze/homebrew-cask
+brew install brew-cask
+</code></pre>
+
+<h5>virtualboxのインストール</h5>
+<pre class="highlight plaintext"><code>brew cask install virtualbox
+</code></pre>
+
+<h4>boot2docker</h4>
+
+<p><a href="https://github.com/steeve/boot2docker">docker2boot</a>は
+Tiny Core Linuxをベースに作られた超軽量Linuxディストリビューションを
+virtualbox上で扱うためのインターフェースを提供してくれます。</p>
+<pre class="highlight plaintext"><code>brew install boot2docker
+</code></pre>
+
+<h4>docker client</h4>
+
+<p>dockerクライアントによって、直接dockerコマンド群を操作できるようになります。</p>
+<pre class="highlight plaintext"><code>brew install docker
+</code></pre>
+
+<h4>環境変数</h4>
+
+<p>dockerクライアント用に環境変数<code>DOCKER_HOST</code>を設定しておきます。</p>
+<pre class="highlight plaintext"><code>export DOCKER_HOST=tcp://
+</code></pre>
+
+<p>これだけで準備は完了です。</p>
+
+</section><section><header><h3>セットアップ</h3></header>
+
+<p>あとはboot2dockerコマンドでセットアップを行います。</p>
+
+<p>initでdocker用VMを用意して、upで立ち上げるだけのお手軽セットアップです。</p>
+<pre class="highlight plaintext"><code>boot2docker init
+boot2docker up
+</code></pre>
+
+</section><section><header><h3>確認</h3></header>
+
+<p>これでもうdockerコマンドを扱うことが出来るようになっています。</p>
+<pre class="highlight plaintext"><code>$ docker version
+Client version: 0.8.0
+Go version (client): go1.2
+Git commit (client): cc3a8c8d8ec57e15b7b7316797132d770408ab1a
+
+Server version: 0.8.0
+Git commit (server): cc3a8c8
+Go version (server): go1.2
+Last stable version: 0.8.0
+</code></pre>
+
+<p>boot2dockerのサブコマンドでdocker用のVMに入ることも出来ます。<br>
+パスワードは<code>tcuser</code>です。</p>
+<pre class="highlight plaintext"><code>boot2docker ssh
+</code></pre>
+<pre class="highlight plaintext"><code>$ boot2docker ssh
+
+Warning: Permanently added '[localhost]:2022' (RSA) to the list of known hosts.
+docker@localhost's password:
+                        ##        .
+                  ## ## ##       ==
+               ## ## ## ##      ===
+           /""""""""""""""""\___/ ===
+      ~~~ {~~ ~~~~ ~~~ ~~~~ ~~ ~ /  ===- ~~~
+           \______ o          __/
+             \    \        __/
+              \____\______/
+ _                 _   ____     _            _
+| |__   ___   ___ | |_|___ \ __| | ___   ___| | _____ _ __
+| '_ \ / _ \ / _ \| __| __) / _` |/ _ \ / __| |/ / _ \ '__|
+| |_) | (_) | (_) | |_ / __/ (_| | (_) | (__|   &lt;  __/ |
+|_.__/ \___/ \___/ \__|_____\__,_|\___/ \___|_|\_\___|_|
+boot2docker: 0.5.4
+docker@boot2docker:~$ uname -a
+Linux boot2docker 3.12.1-tinycore64 #1 SMP Fri Jan 10 13:04:04 UTC 2014 x86_64 GNU/Linux
+docker@boot2docker:~$
+</code></pre>
+
+</section><section><header><h3>まとめ</h3></header>
+
+<p>Mac OSに正式対応とはいっても、
+virtualbox上にCoreOSをインストールした場合と構成は変わりません。<br>
+とはいえ直接dockerコマンドを操作できますし、boot2dockerのVMが軽量なので、
+dockerの扱いがさらに楽になったのは間違いありません。  </p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/02/13/boot2docker-portforward/">boot2docker上のコンテナにポートフォワーディングでアクセスする</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/01/08/elasticsearch-bool-query/">elasticsearchで複雑なクエリーを組み立てる</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>lightline.vimでVimのステータスラインをカスタマイズ | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='vim, lightline.vim' name='keywords'>
+<meta content='vimのステータスラインをlightline.vimを使ってカスタマイズする方法' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>lightline.vimでVimのステータスラインをカスタマイズ</h2>
+<span class='byline'>
+<a href="/article/tags/vim/">vim</a>
+</span>
+</header>
+<section><header><h3>lightline.vimとは</h3></header>
+
+<p><a href="https://github.com/itchyny/lightline.vim">lightline.vim</a>はVimのステータスラインをカスタマイズする物です。<br>
+以前は<a href="https://github.com/Lokaltog/vim-powerline">vim-powerline</a>を使っていましたがlightline.vimに乗り換えました。</p>
+
+<p>そもそもvim-powerlineは既にdeprecatedとなっており、
+後継プロジェクトとして同じ作者が
+<a href="https://github.com/Lokaltog/powerline">powerline</a>を開発しています。<br>
+しかしPython周りの環境のせいなのか、
+powerlineが上手くインストール出来ず、
+結果として古いvim-powerlineを使い続けていました。</p>
+
+<p>そこでlightline.vimを発見し、
+使い勝手が良かったので乗り換えました。</p>
+
+</section><section><header><h3>インストール</h3></header>
+
+<p>lightline.vimのインストールは
+<a href="https://github.com/Shougo/neobundle.vim">neobundle.vim</a>
+がインストールされているなら
+<code>.vimrc</code>に</p>
+<pre class="highlight plaintext"><code>NeoBundle 'itchyny/lightline.vim'
+</code></pre>
+
+<p>を追加するだけです。</p>
+
+<p><img alt="normal" width="716" height="31" src="/images/2013-08-27-lightline-vim/normal.png" /></p>
+
+<p>lightline.vimを適応しただけでも、
+デフォルトのVimステータスラインに比べて格段に利便性が上がります。</p>
+
+<p><a href="https://github.com/itchyny/lightline.vim">lightline.vimのgithubプロジェクトページ</a>
+では設定がチュートリアル形式で丁寧に解説されているので、
+それに沿って設定すれば好みのステータスラインを構築できます。</p>
+
+<p><img alt="normal" width="716" height="34" src="/images/2013-08-27-lightline-vim/custom.png" /></p>
+
+</section><section><header><h3>付録</h3></header>
+
+<p>フォントはRictyを使用しています。<br>
+Brewを使用できる環境ならば簡単。</p>
+<pre class="highlight shell"><code>brew tap sanemat/font
+brew install ricty
+cp -f /PATH/TO/RICTY/fonts/Ricty<span class="k">*</span>.ttf ~/Library/Fonts/
+<span class="nb">fc</span>-cache -vf
+</code></pre>
+
+<p>追加してlightline.vimの区切り文字を変更するため、
+Rictyにパッチを当てた物を使用します。<br>
+パッチはvim-powerlineプロジェクトの中にある
+<a href="https://github.com/Lokaltog/vim-powerline/tree/develop/fontpatcher">fontpatcher</a>を使用します。</p>
+
+</section><section><header><h3>参考</h3></header>
+
+<p><a href="http://d.hatena.ne.jp/itchyny/20130824/1377351527">lightline.vim作りました/プログラムモグモグ</a></p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/08/30/ruby-diff/">rubyでdiffを求める</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/08/26/s3-hosting/">Amazon S3でホスティングする</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

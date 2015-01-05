@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>railsにCSV形式でのダウンロード機能を追加する | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='rails, csv, ダウンロード' name='keywords'>
+<meta content='railsにCSV形式でのダウンロード機能を追加する方法を説明します。' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>railsにCSV形式でのダウンロード機能を追加する</h2>
+<span class='byline'>
+<a href="/article/tags/rails/">rails</a>
+</span>
+</header>
+<section><header><h3>背景</h3></header>
+
+<p>webアプリケーションの作成時に、
+「一覧データをExcelで開きたい」という要望をよく伺います。</p>
+
+<p>そこで本記事ではrailsアプリにデータの一覧をcsv形式でダウンロード出来る機能を
+追加する方法について解説します。</p>
+
+</section><section><header><h3>モデルの変更</h3></header>
+
+<p>まずはモデルにCSV形式のデータを返却するメソッドを定義します。<br>
+今回は例として商品(Item)モデルを扱い、
+商品モデルは商品名と価格のカラムを持つということにします。</p>
+
+<p>CSVファイルを扱うには、
+標準のCSVパッケージを使うのが簡単です。<br>
+ファイルサイズが巨大（例えば 100Mバイト以上）で無ければ性能的にも問題ないでしょう。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'csv'</span>
+<span class="k">class</span> <span class="nc">Item</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">to_csv</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="sx">%w(ID 商品名 価格 作成日時 更新日時)</span>
+    <span class="n">csv_data</span> <span class="o">=</span> <span class="no">CSV</span><span class="p">.</span><span class="nf">generate</span><span class="p">(</span><span class="ss">headers: </span><span class="n">headers</span><span class="p">,</span> <span class="ss">write_headers: </span><span class="kp">true</span><span class="p">,</span> <span class="ss">force_quotes: </span><span class="kp">true</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">csv</span><span class="o">|</span>
+      <span class="n">all</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
+        <span class="n">csv</span> <span class="o">&lt;&lt;</span> <span class="n">row</span><span class="p">.</span><span class="nf">attributes</span><span class="p">.</span><span class="nf">values_at</span><span class="p">(</span><span class="o">*</span><span class="nb">self</span><span class="p">.</span><span class="nf">column_names</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">csv_data</span><span class="p">.</span><span class="nf">encode</span><span class="p">(</span><span class="no">Encoding</span><span class="o">::</span><span class="no">SJIS</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>CSV生成時のオプションとして、
+<code>headers</code>および<code>write_headers</code>でヘッダー行書き込みを、
+<code>force_quotes</code>で全てのフィールドの作成時にクオートを追加することを指定しています。</p>
+
+<p>また、Excelで開くことを想定して<code>#encode</code>メソッドでShift JISの文字コードを指定しています。</p>
+
+</section><section><header><h3>コントローラーにformat指定を追加</h3></header>
+
+<p>次にコントローラーにCSV形式での返却指定を追加します</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">ItemsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@items</span> <span class="o">=</span> <span class="no">Item</span><span class="p">.</span><span class="nf">all</span>
+    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+      <span class="nb">format</span><span class="p">.</span><span class="nf">html</span>
+      <span class="nb">format</span><span class="p">.</span><span class="nf">csv</span> <span class="p">{</span> <span class="n">send_data</span> <span class="no">Item</span><span class="p">.</span><span class="nf">to_csv</span><span class="p">,</span> <span class="ss">type: </span><span class="s1">'text/csv; charset=shift_jis'</span><span class="p">,</span> <span class="ss">filename: </span><span class="s2">"items.csv"</span> <span class="p">}</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+</code></pre>
+
+<p><code>respond_to</code>ブロック内部に
+<code>format.csv</code>を追加することで、アドレス末尾に<code>.csv</code>を指定されたとき（例えば<code>localhost:3000/items.csv</code>）の動作を規定します。</p>
+
+<p>CSV形式を指定した場合は直接ダウンロードさせたいので、
+<code>send_data</code>を用いています。</p>
+
+</section><section><header><h3>ビューにダウンロードのリンクを張る</h3></header>
+
+<p>最後にダウンロード用のリンクを用意します。</p>
+<pre class="highlight haml"><code><span class="p">=</span> <span class="n">link_to</span> <span class="s1">'CSV形式でダウンロード'</span><span class="p">,</span> <span class="n">items_path</span><span class="p">(</span><span class="ss">format: </span><span class="s1">'csv'</span><span class="p">)</span>
+</code></pre>
+
+<p>コントローラーの<code>index</code>メソッドにcsvでの返却を追加したので
+<code>items_path</code>を指定し、
+そこに<code>format: &#39;csv&#39;</code>を渡すことでアドレス末尾に<code>.csv</code>を指定する場合と同じ動作をさせています。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/11/06/rails-letter-opener/">開発中にrailsから送信したメールを確認する</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/10/19/skeljs/">skel.jsでレスポンシブWebデザイン対応のWebサイトを構築する</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

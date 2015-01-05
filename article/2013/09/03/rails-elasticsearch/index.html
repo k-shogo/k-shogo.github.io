@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>railsから全文検索エンジンelasticsearchを利用する | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='rails, elasticsearch, kuromoji' name='keywords'>
+<meta content='全文検索エンジンであるElasticSearchを日本語形態素エンジンのkuromojiと組み合わせて、railsから利用するまでの手順を説明します。' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>railsから全文検索エンジンelasticsearchを利用する</h2>
+<span class='byline'>
+<a href="/article/tags/rails/">rails</a>
+<a href="/article/tags/elasticsearch/">elasticsearch</a>
+</span>
+</header>
+<section><header><h3>ElasticSearchとは</h3></header>
+
+<p><a href="http://www.elasticsearch.org/">ElasticSearch</a>は
+Solrと同じApache Lucene上で稼働するオープンソースの全文検索システムです。<br>
+ElasticSearchの特徴としては、
+REST APIが整備されていて、
+JSONですべてやり取りできるところです。</p>
+
+</section><section><header><h3>準備</h3></header>
+
+<p>ElasticSearchはJavaで動作するので事前にJavaのインストールが必要です。</p>
+
+<p>ElasticSearchのインストールはMacならbrewがあるので簡単です。</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>brew install elasticsearch
+</code></pre>
+
+<p>Windowsでも<a href="https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.3.zip">Zipをダウンロード</a>して、
+batファイル叩くだけだったので楽です。</p>
+
+<p>ElasticSearchには
+<a href="http://www.elasticsearch.org/guide/reference/modules/plugins/">様々なプラグイン</a>
+が用意されており、その中に日本語対応の物も用意されています。<br>
+kuromojiを用いた
+<a href="https://github.com/elasticsearch/elasticsearch-analysis-kuromoji">elasticsearch-analysis-kuromoji</a>
+を使います。</p>
+
+<p>プラグインのインストールも簡単で用意されている<code>plugin</code>コマンドにgitの短縮アドレスを渡して叩くだけです。
+（バージョン指定は適宜最新のものを参照してください）</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>plugin --install elasticsearch/elasticsearch-analysis-kuromoji/1.5.0
+</code></pre>
+
+<p>これでkuromojiをプラグインとして利用可能となりました。<br>
+日本語対応させる際に、後述するrailsのmodelでフィールド毎にAnalyzerとしてkuromojiを指定することも出来ますし、
+デフォルトのAnalyzerとして利用したければ設定ファイル
+（macなら<code>/usr/local/opt/elasticsearch/config/elasticsearch.yml</code>）に
+以下を追記して指定することも可能です。</p>
+<pre class="highlight plaintext"><code>index.analysis.analyzer.default.type: custom
+index.analysis.analyzer.default.tokenizer: kuromoji_tokenizer
+</code></pre>
+
+<p>ブラウザからElasticSearchの状態を確認できるプラグインも複数用意されています。<br>
+今回は基本的な
+<a href="https://github.com/mobz/elasticsearch-head">elasticsearch-head</a>
+を導入してみます。</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>plugin --install mobz/elasticsearch-head
+</code></pre>
+
+<p>elasticsearch-headプラグイン導入後は
+<code>http://localhost:9200/_plugin/head/</code>
+にアクセスすることでブラウザから様々な確認が出来るようになります。</p>
+
+</section><section><header><h3>サンプルRailsアプリ</h3></header>
+
+<p>ElasticSearchを扱うためのサンプルアプリを作成します。<br>
+<code>bundle init</code>して<code>Gemfile</code>に<code>rails</code>追加して<code>&#39;bundle exec rails new</code>します。</p>
+
+<p>全文検索を試したいので、ニュースの記事を扱うようにしてみます。<br>
+記事のモデル名をarticleにして、タイトルと本文を持つようにしてみました。</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>bundle <span class="nb">exec </span>rake db:create                                                                                                               
+<span class="gp">$ </span>bundle <span class="nb">exec </span>rails g scaffold article title:string body:text                                                                              
+<span class="gp">$ </span>bundle <span class="nb">exec </span>rake db:migrate
+</code></pre>
+
+</section><section><header><h3>連携</h3></header>
+
+<p>RailsとElasticSearchとの連携には
+<a href="https://github.com/karmi/tire">tire</a>を使います。<br>
+<code>Gemfile</code>に
+<code>gem &#39;tire&#39;</code>を追加して<code>bundle intall</code>します。</p>
+
+<p>次にmodelにElasticSearchとの連携を記述します。</p>
+
+<h4><code>app/models/article.rb</code></h4>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Article</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">Tire</span><span class="o">::</span><span class="no">Model</span><span class="o">::</span><span class="no">Search</span>
+  <span class="kp">include</span> <span class="no">Tire</span><span class="o">::</span><span class="no">Model</span><span class="o">::</span><span class="no">Callbacks</span>
+
+  <span class="n">mapping</span> <span class="k">do</span>
+    <span class="n">indexes</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">analyzer: :kuromoji</span>
+    <span class="n">indexes</span> <span class="ss">:body</span><span class="p">,</span> <span class="ss">analyzer: :kuromoji</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">search</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">tire</span><span class="p">.</span><span class="nf">search</span><span class="p">(</span><span class="ss">load: </span><span class="kp">true</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">query</span> <span class="p">{</span>
+        <span class="n">string</span> <span class="s2">"body:</span><span class="si">#{</span><span class="n">params</span><span class="p">[</span><span class="ss">:search</span><span class="p">]</span><span class="si">}</span><span class="s2"> title:</span><span class="si">#{</span><span class="n">params</span><span class="p">[</span><span class="ss">:search</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+      <span class="p">}</span> <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="ss">:search</span><span class="p">].</span><span class="nf">present?</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>Controllerは<code>Article.all</code>の呼び出しをElasticSearchからの検索に変更します。</p>
+
+<h4><code>app/controllers/articles_controller.rb#index</code></h4>
+<pre class="highlight ruby"><code><span class="k">def</span> <span class="nf">index</span>
+    <span class="vi">@articles</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">search</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="c1"># @articles = Article.all</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>Viewに検索のボックスを追加します。</p>
+
+<h4><code>app/views/articles/index.html.erb</code></h4>
+<pre class="highlight erb"><code><span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">articles_path</span><span class="p">,</span> <span class="ss">:method</span> <span class="o">=&gt;</span> <span class="ss">:get</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">text_field_tag</span> <span class="ss">:search</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="ss">:search</span><span class="p">]</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">submit_tag</span> <span class="s2">"Search"</span><span class="p">,</span> <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="kp">nil</span> <span class="cp">%&gt;</span>
+<span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">'clear'</span><span class="p">,</span> <span class="n">articles_path</span> <span class="cp">%&gt;</span>
+</code></pre>
+
+<p>これで
+<code>http://localhost:3000/articles</code>にアクセスして
+適当にニュース記事のデータを突っ込んで、
+検索窓にワードを打ち込めば検索可能になっています。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/04/ruby-mecab/">rubyから形態素解析ライブラリmecabを利用する</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/03/ruby-kuromoji/">rubyから形態素解析ライブラリkuromojiを使う</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

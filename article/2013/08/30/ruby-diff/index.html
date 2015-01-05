@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>rubyでdiffを求める | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='ruby, diff, forgery' name='keywords'>
+<meta content='rubyでdiffを求めてみます。' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>rubyでdiffを求める</h2>
+<span class='byline'>
+<a href="/article/tags/ruby/">ruby</a>
+</span>
+</header>
+<section><header><h3>ダミーデータ</h3></header>
+
+<p>diffを求めるのに先立ち、
+ダミーのデータを用意してみましょう。</p>
+
+<p>rubyでのテストデータの生成には
+<a href="https://github.com/stympy/faker">faker</a>や
+<a href="https://github.com/sevenwire/forgery">forgery</a>が知られています。<br>
+今回はforgeryの日本語拡張である
+<a href="https://github.com/namakesugi/forgery_ja">forgery_ja</a>を使用しています。</p>
+
+<p>ダミーデータはCSVで用意する物とし、
+一行にはid, 名前, 住所を格納してみましょう。<br>
+最終的には差分を算出したいので、
+削除、変更、追加された異なる2つのデータを生成します。</p>
+<pre class="highlight ruby"><code><span class="c1"># ダミー生成スクリプト</span>
+
+<span class="nb">require</span> <span class="s1">'csv'</span>
+<span class="nb">require</span> <span class="s1">'forgery_ja'</span>
+
+<span class="n">column_size</span> <span class="o">=</span> <span class="mi">100000</span> <span class="c1"># データ件数</span>
+<span class="n">delete_size</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># 削除する件数</span>
+<span class="n">edit_size</span> <span class="o">=</span> <span class="mi">300</span> <span class="c1"># 変更する件数</span>
+<span class="n">add_size</span> <span class="o">=</span> <span class="mi">30</span> <span class="c1"># 追加する件数</span>
+
+<span class="n">dummy</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">column_size</span><span class="p">.</span><span class="nf">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+  <span class="n">dummy</span> <span class="o">&lt;&lt;</span> <span class="p">[</span>
+    <span class="n">i</span><span class="p">,</span>
+    <span class="no">ForgeryJa</span><span class="p">(</span><span class="ss">:name</span><span class="p">).</span><span class="nf">full_name</span><span class="p">,</span>
+    <span class="no">ForgeryJa</span><span class="p">(</span><span class="ss">:address</span><span class="p">).</span><span class="nf">full_address</span>
+  <span class="p">]</span>
+<span class="k">end</span>
+
+<span class="no">CSV</span><span class="p">.</span><span class="nf">open</span> <span class="s1">'dummy1.csv'</span><span class="p">,</span> <span class="s1">'w'</span> <span class="k">do</span> <span class="o">|</span><span class="n">writer</span><span class="o">|</span>
+  <span class="n">dummy</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="n">writer</span> <span class="o">&lt;&lt;</span> <span class="n">line</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># 削除</span>
+<span class="n">delete_size</span><span class="p">.</span><span class="nf">times</span> <span class="k">do</span>
+  <span class="n">dummy</span><span class="p">.</span><span class="nf">delete_at</span><span class="p">(</span><span class="nb">rand</span> <span class="n">dummy</span><span class="p">.</span><span class="nf">size</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># 変更</span>
+<span class="n">edit_size</span><span class="p">.</span><span class="nf">times</span> <span class="k">do</span>
+  <span class="c1"># 住所を変更する</span>
+  <span class="n">dummy</span><span class="p">[</span><span class="nb">rand</span> <span class="n">dummy</span><span class="p">.</span><span class="nf">size</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="no">ForgeryJa</span><span class="p">(</span><span class="ss">:address</span><span class="p">).</span><span class="nf">full_address</span>
+<span class="k">end</span>
+
+<span class="c1"># 追加</span>
+<span class="n">add_size</span><span class="p">.</span><span class="nf">times</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+  <span class="n">dummy</span> <span class="o">&lt;&lt;</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">column_size</span><span class="p">,</span> <span class="no">ForgeryJa</span><span class="p">(</span><span class="ss">:name</span><span class="p">).</span><span class="nf">full_name</span><span class="p">,</span> <span class="no">ForgeryJa</span><span class="p">(</span><span class="ss">:address</span><span class="p">).</span><span class="nf">full_address</span><span class="p">]</span>
+<span class="k">end</span>
+
+<span class="no">CSV</span><span class="p">.</span><span class="nf">open</span> <span class="s1">'dummy2.csv'</span><span class="p">,</span> <span class="s1">'w'</span> <span class="k">do</span> <span class="o">|</span><span class="n">writer</span><span class="o">|</span>
+  <span class="n">dummy</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="n">writer</span> <span class="o">&lt;&lt;</span> <span class="n">line</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<h4>出力結果</h4>
+<pre class="highlight plaintext"><code>0,佐々木 健太,佐賀県沼田市西境町5547-4
+1,相澤 翼,栃木県静岡市葵区矢場町9-5-9
+2,山崎 楓花,秋田県矢板市高倉町4585-6
+3,小林 美希,青森県島田市熊野町3-1-0
+4,渡辺 仁,沖縄県多野郡上野村東境町3151-6
+5,古閑 美帆,富山県下都賀郡岩舟町三田町1204-4
+</code></pre>
+
+</section><section><header><h3>diffの取得</h3></header>
+
+<p>差分の取得には
+<a href="https://github.com/halostatue/diff-lcs">diff-lcs</a>を使用してみます。<br>
+使い方は簡単で、
+2つの配列を渡すだけです。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'diff/lcs'</span>
+
+<span class="n">seq1</span> <span class="o">=</span> <span class="sx">%w(a b c e h j l m n p)</span>
+<span class="n">seq2</span> <span class="o">=</span> <span class="sx">%w(b c d e f j k l m r s t)</span>
+
+<span class="n">lcs</span> <span class="o">=</span> <span class="no">Diff</span><span class="o">::</span><span class="no">LCS</span><span class="o">.</span><span class="no">LCS</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
+<span class="n">diffs</span> <span class="o">=</span> <span class="no">Diff</span><span class="o">::</span><span class="no">LCS</span><span class="p">.</span><span class="nf">diff</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
+<span class="n">sdiff</span> <span class="o">=</span> <span class="no">Diff</span><span class="o">::</span><span class="no">LCS</span><span class="p">.</span><span class="nf">sdiff</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
+</code></pre>
+
+<p>ちなみに、
+LCSはLongest Common Subsequenceなので、
+2つの要素列の最長共通部分列という意味です。</p>
+
+<p><code>Diff::LCS.diff</code>と<code>Diff::LCS.sdiff</code>の違いは、
+差分一つ一つが<a href="http://diff-lcs.rubyforge.org/Diff/LCS/Change.html">Diff::LCS::Change</a>で返るか、
+<a href="http://diff-lcs.rubyforge.org/Diff/LCS/ContextChange.html">Diff::LCS::ContextChange</a>で返るかの違いです。</p>
+
+<p><code>Diff::LCS.sdiff</code>で比較できる一行の単位は文字列ですが、
+<code>Diff::LCS.diff</code>は一行の単位が<code>Array</code>でも大丈夫です。<br>
+今回は<code>CSV.read</code>の読み出しをそのまま突っ込むので<code>Diff::LCS.diff</code>を使用します。</p>
+
+</section><section><header><h3>diff算出サンプル &amp; ベンチマーク</h3></header>
+
+<p>作成したダミーデータのdiffを求めるとともに、
+ベンチマークを取ってみます。<br>
+rubyで簡易なベンチマークの実行は
+標準で用意されている<code>benchmark</code>を利用するのが簡単です。</p>
+
+<p>実行したマシンはMac Book Airで
+プロセッサは Intel Core i5 1.7GHz。<br>
+ダミーのCSVの中身は100000件、
+ファイルサイズは5.4MBです。</p>
+<pre class="highlight ruby"><code><span class="c1"># diff算出サンプル</span>
+<span class="nb">require</span> <span class="s1">'csv'</span>
+<span class="nb">require</span> <span class="s1">'diff/lcs'</span>
+<span class="nb">require</span> <span class="s1">'benchmark'</span>
+
+<span class="no">Benchmark</span><span class="p">.</span><span class="nf">bm</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s2">"total:"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+  <span class="n">r</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="nf">report</span><span class="p">(</span><span class="s2">"read:"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="vi">@data1</span> <span class="o">=</span> <span class="no">CSV</span><span class="p">.</span><span class="nf">read</span> <span class="s1">'dummy1.csv'</span>
+    <span class="vi">@data2</span> <span class="o">=</span> <span class="no">CSV</span><span class="p">.</span><span class="nf">read</span> <span class="s1">'dummy2.csv'</span>
+  <span class="p">}</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="nf">report</span><span class="p">(</span><span class="s2">"diff:"</span><span class="p">)</span> <span class="p">{</span> <span class="vi">@diffs</span> <span class="o">=</span> <span class="no">Diff</span><span class="o">::</span><span class="no">LCS</span><span class="p">.</span><span class="nf">diff</span><span class="p">(</span><span class="vi">@data1</span><span class="p">,</span> <span class="vi">@data2</span><span class="p">)</span> <span class="p">}</span>
+
+  <span class="n">total</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="n">d</span>
+
+  <span class="p">[</span><span class="n">total</span><span class="p">]</span>
+<span class="k">end</span>
+
+<span class="vi">@diffs</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">diff</span><span class="o">|</span>
+  <span class="nb">puts</span> <span class="s1">'-----'</span>
+  <span class="n">diff</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="nb">p</span> <span class="n">line</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<h4>実行結果</h4>
+<pre class="highlight plaintext"><code>              user     system      total        real
+read:     2.740000   0.060000   2.800000 (  2.806428)
+diff:     1.140000   0.010000   1.150000 (  1.148815)
+total:    3.880000   0.070000   3.950000 (  3.955243)
+-----
+["-", 84, ["84", "宮里 大輝", "山形県磐田市松栄町0094-9"]]
+-----
+["-", 355, ["355", "藍田 大地", "福井県富士市山池町7184-1"]]
+-----
+["-", 437, ["437", "加藤 友香", "三重県ひたちなか市丸田町3999-3"]]
+-----
+["-", 484, ["484", "木村 華子", "佐賀県下都賀郡岩舟町高倉町8-0-2"]]
+["+", 481, ["484", "木村 華子", "高知県新潟市北区寿町2600-2"]]
+-----
+~~ 以下略 ~~
+</code></pre>
+
+</section><section><header><h3>参考</h3></header>
+
+<ul>
+<li><a href="http://namakesugi.blog42.fc2.com/blog-entry-104.html">RailsのプラグインForgeryとは</a></li>
+<li><a href="http://namakesugi.blog42.fc2.com/blog-entry-107.html">BundlerでGemの基盤を生成してrubygems.orgにpushする方法</a></li>
+<li><a href="http://gihyo.jp/dev/column/01/prog/2011/diff_sd200906">diffの動作原理を知る～どのようにして差分を導き出すのか</a></li>
+<li><a href="http://a-newcomer.com/29">RubyでのBenchmarkの取り方をば。</a></li>
+</ul>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/02/mac-java/">Macにjava 1.7.0をインストール</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/08/27/lightline-vim/">lightline.vimでVimのステータスラインをカスタマイズ</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

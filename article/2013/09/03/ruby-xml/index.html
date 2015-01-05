@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>rubyでxmlを読み込む | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='ruby, xml' name='keywords'>
+<meta content='rubyでxmlを読み込む方法' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>rubyでxmlを読み込む</h2>
+<span class='byline'>
+<a href="/article/tags/ruby/">ruby</a>
+<a href="/article/tags/xml/">xml</a>
+</span>
+</header>
+<section><header><h3>用意する物</h3></header>
+
+<p>rubyでXMLファイルを読み込む場合、
+特別なGemは必要なく、デフォルトで用意されている<code>rexml</code>物だけで事足りるので便利です。<br>
+<code>require &quot;rexml/document&quot;</code>すれば利用可能です。</p>
+
+</section><section><header><h3>使い方</h3></header>
+
+<h4>読み込み</h4>
+<pre class="highlight ruby"><code><span class="n">doc</span> <span class="o">=</span> <span class="no">REXML</span><span class="o">::</span><span class="no">Document</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">File</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">"openCampus.xml"</span><span class="p">))</span>
+</code></pre>
+
+<h4>子要素の取得</h4>
+<pre class="highlight ruby"><code><span class="n">doc</span><span class="p">.</span><span class="nf">elements</span>
+</code></pre>
+
+<h4>値の取得</h4>
+<pre class="highlight ruby"><code><span class="n">doc</span><span class="p">.</span><span class="nf">elements</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">text</span>
+</code></pre>
+
+<h4>属性の取得</h4>
+<pre class="highlight ruby"><code><span class="n">doc</span><span class="p">.</span><span class="nf">elements</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">attributes</span>
+</code></pre>
+
+<h4>要素を辿る</h4>
+<pre class="highlight ruby"><code><span class="n">doc</span><span class="p">.</span><span class="nf">elements</span><span class="p">[</span><span class="s2">"RESULTS/RETURN_CODE"</span><span class="p">]</span>
+</code></pre>
+
+</section><section><header><h3>サンプルコード</h3></header>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s2">"rexml/document"</span>
+
+<span class="c1"># XMLファイル読み込み</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="no">REXML</span><span class="o">::</span><span class="no">Document</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">File</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">"test.xml"</span><span class="p">))</span>
+
+<span class="c1"># インデント出力</span>
+<span class="k">def</span> <span class="nf">space</span> <span class="n">x</span>
+  <span class="n">result</span> <span class="o">=</span> <span class="s1">''</span>
+  <span class="n">x</span><span class="p">.</span><span class="nf">times</span> <span class="p">{</span> <span class="n">result</span> <span class="o">+=</span> <span class="s1">'  '</span> <span class="p">}</span>
+  <span class="n">result</span>
+<span class="k">end</span>
+
+<span class="c1"># 再帰的に子要素を出力</span>
+<span class="k">def</span> <span class="nf">show_children</span> <span class="n">parent</span><span class="p">,</span> <span class="n">level</span>
+  <span class="n">parent</span><span class="p">.</span><span class="nf">elements</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">child</span><span class="o">|</span>
+    <span class="nb">puts</span> <span class="n">space</span><span class="p">(</span><span class="n">level</span><span class="p">)</span> <span class="o">+</span> <span class="n">child</span><span class="p">.</span><span class="nf">name</span> <span class="o">+</span> <span class="p">(</span><span class="n">child</span><span class="p">.</span><span class="nf">text</span> <span class="p">?</span> <span class="s1">' =&gt; '</span> <span class="o">+</span> <span class="n">child</span><span class="p">.</span><span class="nf">text</span> <span class="p">:</span> <span class="s1">''</span><span class="p">)</span>
+    <span class="n">show_children</span> <span class="n">child</span><span class="p">,</span> <span class="n">level</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># 表示</span>
+<span class="n">show_children</span> <span class="n">doc</span><span class="p">,</span> <span class="mi">0</span>
+</code></pre>
+
+</section><section><header><h3>Hashに変換</h3></header>
+
+<p>Hashに変換するには<code>ActiveSupport</code>の<code>core_ext</code>を使う方法があります。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s2">"rexml/document"</span>
+<span class="nb">require</span> <span class="s1">'active_support/core_ext'</span>
+
+<span class="c1"># XMLファイル読み込み</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="no">REXML</span><span class="o">::</span><span class="no">Document</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">File</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">"test.xml"</span><span class="p">))</span>
+
+<span class="c1">#Hashに変換</span>
+<span class="nb">hash</span> <span class="o">=</span> <span class="no">Hash</span><span class="p">.</span><span class="nf">from_xml</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="nf">to_s</span><span class="p">)</span>
+</code></pre>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/03/appjs/">スマートフォン向けのWebアプリケーションフレームワークApp.jsを使ってみる</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/02/mac-java/">Macにjava 1.7.0をインストール</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

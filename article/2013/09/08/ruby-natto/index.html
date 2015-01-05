@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>rubyのmecabバインディングnattoを使う | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='ruby, mecab' name='keywords'>
+<meta content='rubyからnatto gemを用いてmecabを利用する方法を説明します' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>rubyのmecabバインディングnattoを使う</h2>
+<span class='byline'>
+<a href="/article/tags/ruby/">ruby</a>
+<a href="/article/tags/mecab/">mecab</a>
+</span>
+</header>
+<section><header><h3>背景</h3></header>
+
+<p>&ldquo;<a href="/article/2013/09/04/ruby-mecab/">rubyから形態素解析ライブラリmecabを利用する</a>&quot;では、
+mecabの基本的な言語バインディングを用いました。<br>
+このバインディングはSWIGを用いてMeCabと密に結合しているため、
+mecab gemのバージョンとMeCabのバージョンを合わせる必要がありました。<br>
+今回はmecab gem以外の選択肢を使ってみます。</p>
+
+</section><section><header><h3>納豆</h3></header>
+
+<p>今回はrubyからmecabを利用するために
+<a href="https://bitbucket.org/buruzaemon/natto/overview">natto</a>というgemを使用します。</p>
+
+<p>nattoは、FFI（foreign function interface：外部関数インタフェース）を使用して、
+RubyとMeCabを繋ぐgemです。<br>
+nattoはC言語拡張ではないためコンパイルは必要ありません。<br>
+そのためCRuby（MRI / YARV）でもJRuby（JVM）でも実行できる利点があります。<br>
+（<code>jruby 1.7.4 (1.9.3p392) 2013-05-16 2390d3b on Java HotSpot(TM) 64-Bit Server VM 1.7.0_25-b15 [darwin-x86_64]</code>で動作確認）</p>
+
+</section><section><header><h3>mecabを最新に</h3></header>
+
+<p>mecab gemをbundlerから管理するために、
+mecab本体のバージョンを0.98にしていました。<br>
+nattoを利用するに当たって最新のバージョンに戻します。</p>
+
+<p>既に古いバージョンがインストールされている場合、
+いったんアンインストールします。</p>
+<pre class="highlight plaintext"><code>brew uninstall mecab mecab-ipadic
+</code></pre>
+
+<p>次に、最新のバージョンを確かめます。</p>
+<pre class="highlight plaintext"><code>brew versions mecab
+</code></pre>
+
+<p>最新バージョンを確認したら、
+<code>/usr/local</code>に移動してformulaをチェックアウトします。<br>
+このとき最新バージョンは<code>0.996</code>でした。</p>
+<pre class="highlight plaintext"><code>git checkout ee21df2 /usr/local/Library/Formula/mecab.rb
+</code></pre>
+
+<p>改めてmecabをインストールします。</p>
+<pre class="highlight plaintext"><code>brew install mecab mecab-ipadic
+</code></pre>
+
+<p><code>mecab -v</code>してバージョンが0.996になっていれば大丈夫。</p>
+
+</section><section><header><h3>natto gemを使う</h3></header>
+
+<p><code>Gemfile</code>に<code>gem &#39;natto&#39;</code>を追加して<code>bundle install</code>でインストールします。</p>
+
+<p>使い方は<code>Natto::MeCab.new</code>して、
+<code>parse</code>メソッドに渡すだけです。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'natto'</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="o">&lt;&lt;</span><span class="no">"EOS"</span><span class="sh">
+悪質な業者によるトラブルが全国で急増している。
+</span><span class="no">EOS</span>
+
+<span class="n">nm</span> <span class="o">=</span> <span class="no">Natto</span><span class="o">::</span><span class="no">MeCab</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">nm</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span>
+  <span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">n</span><span class="p">.</span><span class="nf">surface</span><span class="si">}</span><span class="se">\t</span><span class="si">#{</span><span class="n">n</span><span class="p">.</span><span class="nf">feature</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+</code></pre>
+<pre class="highlight plaintext"><code>悪質　　　名詞,形容動詞語幹,*,*,*,*,悪質,アクシツ,アクシツ
+な　　　　助動詞,*,*,*,特殊・ダ,体言接続,だ,ナ,ナ
+業者　　　名詞,一般,*,*,*,*,業者,ギョウシャ,ギョーシャ
+による　　助詞,格助詞,連語,*,*,*,による,ニヨル,ニヨル
+トラブル　名詞,一般,*,*,*,*,トラブル,トラブル,トラブル
+が　　　　助詞,格助詞,一般,*,*,*,が,ガ,ガ
+全国　　　名詞,一般,*,*,*,*,全国,ゼンコク,ゼンコク
+で　　　　助詞,格助詞,一般,*,*,*,で,デ,デ
+急増　　　名詞,サ変接続,*,*,*,*,急増,キュウゾウ,キューゾー
+し　　　　動詞,自立,*,*,サ変・スル,連用形,する,シ,シ
+て　　　　助詞,接続助詞,*,*,*,*,て,テ,テ
+いる　　　動詞,非自立,*,*,一段,基本形,いる,イル,イル
+。　　　　記号,句点,*,*,*,*,。,。,。
+　　　　　BOS/EOS,*,*,*,*,*,*,*,*
+</code></pre>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/09/elasticsearch-geo/">ElasticSearchで地理情報も扱う</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/04/ruby-neo4j/">rubyからグラフデータベースneo4jを利用する</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

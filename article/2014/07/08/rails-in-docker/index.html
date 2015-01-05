@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>dockerでrailsを動かすときの構成はどうするべきか | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='docker, rails, 仮想化, mac' name='keywords'>
+<meta content='railsをdockerで動作させる場合の方法を説明します' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>dockerでrailsを動かすときの構成はどうするべきか</h2>
+<span class='byline'>
+<a href="/article/tags/docker/">docker</a>
+<a href="/article/tags/rails/">rails</a>
+</span>
+</header>
+<section><header><h3>はじめに</h3></header>
+
+<p>dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、
+構成も落ち着いてきたのでまとめます。</p>
+
+</section><section><header><h3>お試しバージョン</h3></header>
+
+<p>一番最初はとりあえずってことで、railsリポジトリ + railsを動作させるコンテナの組み合わせで試してみました。</p>
+
+<h4>Dockerfileの内容</h4>
+<pre class="highlight shell"><code>FROM base
+
+<span class="c"># rubyインストールに必要なパッケージを用意</span>
+RUN apt-get update
+RUN apt-get install -y --force-yes build-essential curl git zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev
+
+<span class="c"># rbenv, ruby-buildをインストール</span>
+RUN git clone https://github.com/sstephenson/rbenv.git /root/.rbenv
+RUN git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build
+RUN ./root/.rbenv/plugins/ruby-build/install.sh
+ENV PATH /root/.rbenv/bin:<span class="nv">$PATH</span>
+RUN <span class="nb">echo</span> <span class="s1">'eval "$(rbenv init -)"'</span> &gt;&gt; /etc/profile.d/rbenv.sh <span class="c"># or /etc/profile</span>
+RUN <span class="nb">echo</span> <span class="s1">'eval "$(rbenv init -)"'</span> &gt;&gt; .bashrc
+
+<span class="c"># rubyインストール（バージョン指定は ruby-versions.txt に）</span>
+ENV CONFIGURE_OPTS --disable-install-doc
+ADD ./ruby-versions.txt /root/ruby-versions.txt
+RUN xargs -L 1 rbenv install &lt; /root/ruby-versions.txt
+
+<span class="c"># bundlerを各rubyに用意</span>
+RUN <span class="nb">echo</span> <span class="s1">'gem: --no-rdoc --no-ri'</span> &gt;&gt; /.gemrc
+RUN bash -l -c <span class="s1">'for v in $(cat /root/ruby-versions.txt); do rbenv global $v; gem install bundler; done'</span>
+
+<span class="c"># sqlite3をインストール</span>
+RUN apt-get install -y sqlite3 libsqlite3-dev
+
+<span class="c"># Node.jsインストール</span>
+RUN apt-get install -y software-properties-common
+RUN apt-get update
+RUN add-apt-repository -y ppa:chris-lea/node.js
+RUN <span class="nb">echo</span> <span class="s2">"deb http://archive.ubuntu.com/ubuntu precise universe"</span> &gt;&gt; /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get install -y nodejs
+
+<span class="c"># ssh準備</span>
+RUN mkdir /root/.ssh/
+
+<span class="c"># private keyをコピー</span>
+ADD id_rsa /root/.ssh/id_rsa
+
+<span class="c"># known_hosts設定</span>
+RUN touch /root/.ssh/known_hosts
+<span class="c"># Add bitbuckets key</span>
+RUN ssh-keyscan bitbucket.org &gt;&gt; /root/.ssh/known_hosts
+
+<span class="c"># railsアプリケーションをclone</span>
+RUN mkdir -p /var/www
+RUN git clone git@github.com:k-shogo/rails4-ajax-sample.git /var/www/rails
+WORKDIR /var/www/rails
+
+<span class="c"># railsのセットアップ</span>
+RUN bash -l -c <span class="s1">'bundle install'</span>
+RUN bash -l -c <span class="s1">'bundle exec rake db:create; bundle exec rake db:migrate'</span>
+RUN bash -l -c <span class="s1">'bundle exec rake master:import'</span>
+ADD ./secrets.yml /var/www/rails/config/secrets.yml
+
+EXPOSE 3000
+CMD bash -l -c <span class="s1">'bundle exec rails s'</span>
+</code></pre>
+
+<h4>イケてないポイント</h4>
+
+<p>動作はしますが、<code>docker build</code>するたびにrubyからビルドし直すのは当然イケてないので早々に止めました</p>
+
+</section><section><header><h3>試行錯誤バージョン</h3></header>
+
+<p>毎回rubyをビルドし直すのが時間がかかるので、rubyが入ったコンテナのリポジトリを分離し、<br>
+ruby, node等を用意したコンテナ + railsリポジトリ + railsが動作するコンテナ の3リポジトリ構成にしてみました。<br>
+つまり先ほどのDockerfileを半分に分割する感じです。<br>
+さらにrailsのセットアップ部分で<code>bash -l -c</code>とかつけるのもイケてないと感じたので、
+セットアップのスクリプトを分離しても見ました。</p>
+
+<h4>railsを動作させるコンテナのDockerfile</h4>
+<pre class="highlight shell"><code>FROM kshogo/docker-rails-base
+
+<span class="c"># Make ssh dir</span>
+RUN mkdir /root/.ssh/
+
+<span class="c"># Copy over private key, and set permissions</span>
+ADD id_rsa /root/.ssh/id_rsa
+
+<span class="c"># Create known_hosts &amp; Add bitbuckets key</span>
+RUN <span class="se">\</span>
+  touch /root/.ssh/known_hosts <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  ssh-keyscan bitbucket.org &gt;&gt; /root/.ssh/known_hosts
+
+<span class="c"># install rails application</span>
+ADD ./setup.sh /root/setup.sh
+RUN chmod +x /root/setup.sh
+RUN /root/setup.sh
+
+<span class="c"># Add configuration files in repository to filesystem</span>
+ADD ./rails/config/secrets.yml         /var/www/rails/config/secrets.yml
+ADD ./start-server.sh                  /usr/bin/start-server
+RUN chmod +x /usr/bin/start-server
+
+WORKDIR /var/www/rails
+EXPOSE 3000
+<span class="c"># ENTRYPOINT ["/usr/bin/start-server"]</span>
+CMD <span class="o">[</span><span class="s2">"/usr/bin/start-server"</span><span class="o">]</span>
+</code></pre>
+
+<h4>セットアップのスクリプト</h4>
+<pre class="highlight shell"><code><span class="c">#!/bin/bash</span>
+<span class="nb">source</span> /etc/profile.d/rbenv.sh
+mkdir -p /var/www
+git clone git@github.com:k-shogo/rails4-ajax-sample.git /var/www/rails
+<span class="nb">cd</span> /var/www/rails
+bundle install --without <span class="nb">test </span>development --path vendor/bundle
+bundle <span class="nb">exec </span>rake db:create <span class="nv">RAILS_ENV</span><span class="o">=</span>production
+bundle <span class="nb">exec </span>rake db:migrate <span class="nv">RAILS_ENV</span><span class="o">=</span>production
+bundle <span class="nb">exec </span>rake master:import <span class="nv">RAILS_ENV</span><span class="o">=</span>production
+bundle <span class="nb">exec </span>rake assets:precompile <span class="nv">RAILS_ENV</span><span class="o">=</span>production
+</code></pre>
+
+<p><code>source /etc/profile.d/rbenv.sh</code>しておけばいいじゃんってことです。</p>
+
+<h4>この構成でも不満</h4>
+
+<p>たしかに毎回rubyビルドする部分は解消されたのですが、気になるポイントも出てきました。</p>
+
+<ul>
+<li>＊毎回<code>git clone</code>する、つまりrailsリポジトリ変更したらpushしてからコンテナビルドし直さなきゃいけない</li>
+<li>＊ブランチ切り替えて試したいときにわざわざDockerfile編集？</li>
+<li>＊セットアップのロジックをrailsリポジトリじゃなくて動作させる側のコンテナに持たせるのが不自然</li>
+</ul>
+
+</section><section><header><h3>現在の構成</h3></header>
+
+<p>そもそもDockerでrbenvいらないじゃん + railsリポジトリの中にDockerfileがあった方がいいねってことで、<br>
+ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。  </p>
+
+<h4>ベースとなるコンテナのDockerfile</h4>
+<pre class="highlight shell"><code>FROM dockerfile/ubuntu
+
+RUN apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive apt-get upgrade -y <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive apt-get -y install <span class="se">\</span>
+    build-essential <span class="se">\</span>
+    curl <span class="se">\</span>
+    git-core <span class="se">\</span>
+    libcurl4-openssl-dev <span class="se">\</span>
+    libreadline-dev <span class="se">\</span>
+    libssl-dev <span class="se">\</span>
+    libxml2-dev <span class="se">\</span>
+    libxslt1-dev <span class="se">\</span>
+    libyaml-dev <span class="se">\</span>
+    zlib1g-dev <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    curl -O http://ftp.ruby-lang.org/pub/ruby/2.1/ruby-2.1.2.tar.gz <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    tar -zxvf ruby-2.1.2.tar.gz <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">cd </span>ruby-2.1.2 <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    ./configure --disable-install-doc <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    make <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    make install <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">cd</span> .. <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    rm -r ruby-2.1.2 ruby-2.1.2.tar.gz <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> <span class="s1">'gem: --no-document'</span> &gt; /usr/local/etc/gemrc
+
+<span class="c"># Install Bundler for each version of ruby</span>
+RUN <span class="se">\</span>
+  <span class="nb">echo</span> <span class="s1">'gem: --no-rdoc --no-ri'</span> &gt;&gt; /.gemrc <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  gem install bundler
+
+<span class="c"># install sqlite3</span>
+RUN apt-get install -y sqlite3 libsqlite3-dev
+
+<span class="c"># Install Node.js and npm</span>
+RUN <span class="se">\</span>
+  apt-get install -y software-properties-common <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  add-apt-repository -y ppa:chris-lea/node.js <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nb">echo</span> <span class="s2">"deb http://archive.ubuntu.com/ubuntu precise universe"</span> &gt;&gt; /etc/apt/sources.list <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  apt-get install -y nodejs
+</code></pre>
+
+<p>もう<code>source /etc/profile.d/rbenv.sh</code>やら<code>bash -l -c</code>とかいりません</p>
+
+<h4>railsリポジトリに同梱するDockerfile</h4>
+<pre class="highlight shell"><code>FROM kshogo/docker-rails-base
+
+RUN mkdir /myapp
+WORKDIR /myapp
+
+ADD Gemfile Gemfile
+ADD Gemfile.lock Gemfile.lock
+RUN bundle config without <span class="nb">test </span>development doc
+RUN bundle install
+ADD . /myapp
+
+ENV RAILS_ENV production
+RUN bundle <span class="nb">exec </span>rake db:create
+RUN bundle <span class="nb">exec </span>rake db:migrate
+RUN bundle <span class="nb">exec </span>rake assets:precompile
+
+<span class="c"># Add configuration files in repository to filesystem</span>
+ADD dotenv          /myapp/.env
+ADD start-server.sh /usr/bin/start-server
+RUN chmod +x /usr/bin/start-server
+
+EXPOSE 3000
+ENTRYPOINT <span class="o">[</span><span class="s2">"/usr/bin/start-server"</span><span class="o">]</span>
+
+</code></pre>
+
+<p>ポイントはrailsアプリ全体をADDする前に、<code>Gemfile</code>と<code>Gemcile.lock</code>だけをADDして
+<code>bundle install</code>している箇所です。<br>
+これによって、Gemfileに更新があった場合のみ<code>bundle install</code>が実行されるようになります。</p>
+
+<h4>.dockerignore</h4>
+
+<p>実はこの構成にした直後、「ローカルで<code>docker build</code>したときに<code>vendor/bundle</code>以下にインストールされたgemのファイル群までADDされて無駄」、「Dockerfileの中で<code>.bundle/config</code>を消さないと設定を引き継いでしまう」などの不満点もあり、<br>
+gitignoreファイルみたいに除外指定したいなーと思っていたら、
+<a href="http://blog.docker.com/2014/07/announcing-docker-1-1/">docker 1.1.0</a>でdockerignoreファイルに対応されたのでその不満も解消しました。</p>
+<pre class="highlight plaintext"><code>### Rails ###
+public/assets/*
+
+## Environment normalisation:
+.bundle
+vendor/bundle
+</code></pre>
+
+<h4>ポイント</h4>
+
+<ul>
+<li>＊ADDがキャッシュされるのでGemfileが変更されてなければ<code>bundle install</code>がスキップされる</li>
+<li>＊<code>git checkout</code>すればブランチ違いでのbuildが簡単</li>
+</ul>
+
+</section><section><header><h3>まとめ</h3></header>
+
+<p>railsリポジトリにDockerfileを同梱した方が簡単だったというのが感想です。<br>
+dockerの開発も活発で、ほしいなーと思った機能が早速docker 1.1.0に含まれていたのには感心しました。</p>
+
+<p>今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、
+本来はDBコンテナは分離した方がいいですね。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/07/23/gitconfig/">gitconfigで設定していること</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/06/11/docker-ver1-on-mac-html/">Dockerをver 1.0にアップグレード</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

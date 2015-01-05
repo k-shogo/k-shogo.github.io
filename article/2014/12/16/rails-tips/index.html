@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='' name='keywords'>
+<meta content='' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2></h2>
+<span class='byline'>
+</span>
+</header>
+<section><header><h3>はじめに</h3></header>
+
+<p>自分が rails をさわり始めたときはバージョン1からバージョン2に変わるあたりだったのですが、バージョン2が出た年を振り返るとなんと2007年でした。<br>
+月日の流れが速い事に驚く中、早く知ってたら良かったのになぁって事をつらつらとまとめてみました。<br>
+最近 rails さわり始めてみたよ！って方の参考になれば良いなと思います。<br>
+今回は便利な gem とかではなく、素のrailsで出来ることを挙げています。<br>
+ちなみにバージョンは以下の環境です。</p>
+<pre class="highlight plaintext"><code>About your application's environment
+Ruby version              2.1.3-p242 (x86_64-darwin14.0)
+RubyGems version          2.2.2
+Rack version              1.5
+Rails version             4.1.8
+</code></pre>
+
+</section><section><header><h3>app 以下のディレクトリ構成は追加しても良いんだよ</h3></header>
+
+<p>rails new したときの <code>app</code> 以下のディレクトリ構成は以下のようになっています。</p>
+<pre class="highlight plaintext"><code>- app/
+ |+ assets/
+ |+ controllers/
+ |+ helpers/
+ |+ mailers/
+ |+ models/
+ |+ views/
+</code></pre>
+
+<p>最初はこの通りに作らなきゃいけないのかなって思っていたのですが、最初から用意されている枠に合わない物は追加しても大丈夫です。<br>
+例えば自作のバリデーターをまとめる <code>validators</code> とか、バックグラウンドで動くワーカーが入ってる <code>workers</code> とかですね。</p>
+<pre class="highlight plaintext"><code>- app/                         
+ |+ assets/
+ |+ controllers/
+ |+ decorators/
+ |+ helpers/
+ |+ jobs/
+ |+ mailers/
+ |+ models/
+ |+ queries/
+ |+ uploaders/
+ |+ validators/
+ |+ views/
+ |+ workers/
+</code></pre>
+
+<p>それでも、<code>app</code> 以下じゃ無いよなーって思うような、汎用的なユーティリティとかは <code>lib</code> 以下に配置することもあります。<br>
+ちょっと気をつけるのがロードパス。<br>
+<code>app</code> 以下の一階層分は勝手に呼んでくれるのですが、例えば <code>app/workers/concerns</code> なんてディレクトリを作ったとすると、そこまでは読んでくれません。<br>
+なので <code>config/application.rb</code> でロードするように設定しましょう。<br>
+下の例では式展開を使っているので <code>%w</code> では無く、大文字の <code>%W</code> であることにも注意です。<br>
+深い階層まで一気に追加する場合は、「lib 以下もロードパスに追加」で使っている方法も使えますよ。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="no">File</span><span class="p">.</span><span class="nf">expand_path</span><span class="p">(</span><span class="s1">'../boot'</span><span class="p">,</span> <span class="kp">__FILE__</span><span class="p">)</span>
+<span class="nb">require</span> <span class="s1">'rails/all'</span>
+<span class="no">Bundler</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="o">*</span><span class="no">Rails</span><span class="p">.</span><span class="nf">groups</span><span class="p">)</span>
+
+<span class="k">module</span> <span class="nn">SampleApp</span>
+  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
+    <span class="c1"># app 以下の独自ディレクトリも読み込む</span>
+    <span class="n">config</span><span class="p">.</span><span class="nf">autoload_paths</span> <span class="o">+=</span> <span class="sx">%W(</span><span class="si">#{</span><span class="n">config</span><span class="p">.</span><span class="nf">root</span><span class="si">}</span><span class="sx">/app/jobs/concerns </span><span class="si">#{</span><span class="n">config</span><span class="p">.</span><span class="nf">root</span><span class="si">}</span><span class="sx">/app/workers/concerns)</span>
+    <span class="c1"># lib 以下もロードパスに追加</span>
+    <span class="n">config</span><span class="p">.</span><span class="nf">autoload_paths</span> <span class="o">+=</span> <span class="no">Dir</span><span class="p">[</span><span class="s2">"</span><span class="si">#{</span><span class="n">config</span><span class="p">.</span><span class="nf">root</span><span class="si">}</span><span class="s2">/lib/**/"</span><span class="p">]</span>
+    <span class="c1"># 中略</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+</section><section><header><h3>ネストしたリソースの routes は shallow を検討しよう</h3></header>
+
+<p>ここでは、説明のためにサンプルとなるアプリケーションを作ります。<br>
+ユーザー <code>User</code> は複数のノート <code>Note</code> を持っているアプリケーションをイメージしてください。</p>
+<pre class="highlight plaintext"><code>./bin/rails g scaffold user name:string
+./bin/rails g scaffold note user:references title:string body:text
+</code></pre>
+
+<p>さて、リソースがネストしているので、<code>config/routes.rb</code> にもそのように記述します。</p>
+<pre class="highlight ruby"><code><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+  <span class="n">resources</span> <span class="ss">:users</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:notes</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>そうするとルーティングは以下のようになります。</p>
+<pre class="highlight plaintext"><code>        Prefix Verb   URI Pattern                              Controller#Action
+    user_notes GET    /users/:user_id/notes(.:format)          notes#index
+               POST   /users/:user_id/notes(.:format)          notes#create
+ new_user_note GET    /users/:user_id/notes/new(.:format)      notes#new
+edit_user_note GET    /users/:user_id/notes/:id/edit(.:format) notes#edit
+     user_note GET    /users/:user_id/notes/:id(.:format)      notes#show
+               PATCH  /users/:user_id/notes/:id(.:format)      notes#update
+               PUT    /users/:user_id/notes/:id(.:format)      notes#update
+               DELETE /users/:user_id/notes/:id(.:format)      notes#destroy
+         users GET    /users(.:format)                         users#index
+               POST   /users(.:format)                         users#create
+      new_user GET    /users/new(.:format)                     users#new
+     edit_user GET    /users/:id/edit(.:format)                users#edit
+          user GET    /users/:id(.:format)                     users#show
+               PATCH  /users/:id(.:format)                     users#update
+               PUT    /users/:id(.:format)                     users#update
+               DELETE /users/:id(.:format)                     users#destroy
+</code></pre>
+
+<p>これでルーティングもネストしたリソースに沿った物になりました。<br>
+ただ、特定のノートを参照しようとしたとき、ノートIDさえ分かれば対象は一意に決まるはずですが、その場合でもユーザーIDが必要になってしまいます。<br>
+そこで、<code>shallow: true</code> を指定すると、、、</p>
+<pre class="highlight ruby"><code><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+  <span class="n">resources</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">shallow: </span><span class="kp">true</span> <span class="k">do</span>
+    <span class="n">resources</span> <span class="ss">:notes</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+<pre class="highlight plaintext"><code>       Prefix Verb   URI Pattern                         Controller#Action
+   user_notes GET    /users/:user_id/notes(.:format)     notes#index
+              POST   /users/:user_id/notes(.:format)     notes#create
+new_user_note GET    /users/:user_id/notes/new(.:format) notes#new
+    edit_note GET    /notes/:id/edit(.:format)           notes#edit
+         note GET    /notes/:id(.:format)                notes#show
+              PATCH  /notes/:id(.:format)                notes#update
+              PUT    /notes/:id(.:format)                notes#update
+              DELETE /notes/:id(.:format)                notes#destroy
+        users GET    /users(.:format)                    users#index
+              POST   /users(.:format)                    users#create
+     new_user GET    /users/new(.:format)                users#new
+    edit_user GET    /users/:id/edit(.:format)           users#edit
+         user GET    /users/:id(.:format)                users#show
+              PATCH  /users/:id(.:format)                users#update
+              PUT    /users/:id(.:format)                users#update
+              DELETE /users/:id(.:format)                users#destroy
+</code></pre>
+
+<p>これで <code>notes#show</code> の時に冗長だったユーザーID指定が不要になりました。<br>
+ちょっと注意なのが <code>form_for</code> に渡すパスです。<br>
+例えば、<code>notes#create</code> の時は <code>/users/:user_id/notes</code> で、<code>notes#update</code> の時は <code>/notes/:id</code> とユーザーIDの有無が異なります。<br>
+これだと <code>form_for(@note) do</code> のままだと <code>notes#new</code> の時に <code>undefined method notes_path</code> なんて言われちゃいます。<br>
+（<code>shallow</code> オプションを指定しない場合は <code>form_for([@user, @note])</code> のように指定すれば良い）
+そこで、<code>form_for</code> は以下のように設定します。</p>
+<pre class="highlight ruby"><code><span class="n">form_for</span><span class="p">(</span><span class="vi">@note</span><span class="p">,</span> <span class="ss">url: </span><span class="n">polymorphic_path</span><span class="p">([</span><span class="vi">@user</span><span class="p">,</span> <span class="vi">@note</span><span class="p">]))</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
+</code></pre>
+
+<p>ちなみにコントローラーの <code>new</code>, <code>edit</code> はこんな感じ</p>
+<pre class="highlight ruby"><code><span class="c1"># GET /notes/new</span>
+<span class="k">def</span> <span class="nf">new</span>
+  <span class="vi">@user</span> <span class="o">=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span> <span class="n">params</span><span class="p">[</span><span class="ss">:user_id</span><span class="p">]</span>
+  <span class="vi">@note</span> <span class="o">=</span> <span class="vi">@user</span><span class="p">.</span><span class="nf">notes</span><span class="p">.</span><span class="nf">build</span>
+<span class="k">end</span>
+
+<span class="c1"># GET /notes/1/edit</span>
+<span class="k">def</span> <span class="nf">edit</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>こうすることで、
+新規作成時には <code>action=&quot;/users/1/notes&quot;</code>、編集時には <code>action=&quot;/notes/1&quot;</code> とちゃんと指定できます。</p>
+
+</section><section><header><h3>nilかも？って時には ||, &amp;&amp; とか presense とか try とか便利だよ</h3></header>
+
+<p>例えば、<code>User</code> クラスには名前 <code>name</code> という変数があるとき、<code>name</code> が <code>nil</code> だったら値を設定したいなんて時は、</p>
+<pre class="highlight ruby"><code><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="o">=</span> <span class="s1">'anonymous'</span> <span class="k">unless</span> <span class="n">user</span><span class="p">.</span><span class="nf">name</span>
+</code></pre>
+
+<p>こうせずに</p>
+<pre class="highlight ruby"><code><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="o">||=</span> <span class="s1">'anonymous'</span>
+</code></pre>
+
+<p>こんな感じで書くことが出来るんですね。<br>
+ruby だとこれを「nilガード」なんて呼ばれています。
+分かりやすく式を展開すれば下の意味と同じです。  </p>
+<pre class="highlight ruby"><code><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="o">||</span> <span class="s1">'anonymous'</span><span class="p">)</span>
+</code></pre>
+
+<p>もちろん使いどころは nilガードだけじゃありません。<br>
+<code>User</code> クラスにニックネーム <code>nickname</code> もあったとして、
+「ニックネームが設定されていればそちらを、されていない（nilなら）名前を出したい」なんて時はこうすれば良いわけです。</p>
+<pre class="highlight ruby"><code><span class="n">user</span><span class="p">.</span><span class="nf">nickname</span> <span class="o">||</span> <span class="n">user</span><span class="p">.</span><span class="nf">name</span>
+</code></pre>
+
+<p>同じようなユースケースで <code>presence</code> が使える場合もあります。<br>
+<code>presence</code> は <code>present?</code> メソッドが真なら <code>self</code> を、偽なら <code>nil</code> を返すメソッドです。<br>
+<code>present?</code> は <code>nil</code>, <code>false</code>, 空の配列, 空のハッシュ, 空の文字列, 特定文字列のみ文字列を判定してくれるメソッドです。
+ここでの特定文字列とは 正規表現 <code>/\A[[:space:]]*\z/</code> で表される物です。</p>
+
+<p><code>user.name</code> で <code>nil</code> だけじゃ無くて空白文字も判定したいんだって時に</p>
+<pre class="highlight ruby"><code><span class="n">user</span><span class="p">.</span><span class="nf">name</span><span class="p">.</span><span class="nf">present?</span> <span class="p">?</span> <span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">:</span> <span class="s1">'anonymous'</span>
+</code></pre>
+
+<p><code>presence</code> を使うと</p>
+<pre class="highlight ruby"><code><span class="n">user</span><span class="p">.</span><span class="nf">name</span><span class="p">.</span><span class="nf">presence</span> <span class="o">||</span> <span class="s1">'anonymous'</span>
+</code></pre>
+
+<p>と書けるわけですね。<br>
+次に、少し例を変えて <code>User</code> は <code>Note</code> を <code>has_many</code> で持っているとしましょう。<br>
+こんな感じです。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">has_many</span> <span class="ss">:notes</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Note</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">belongs_to</span> <span class="ss">:user</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>さて、<code>Note</code> からユーザー名を表示したいとして、でも必ずしも対応するユーザーが存在するか分からないとき、</p>
+<pre class="highlight ruby"><code><span class="n">note</span><span class="p">.</span><span class="nf">user</span><span class="p">.</span><span class="nf">name</span> <span class="k">if</span> <span class="n">note</span><span class="p">.</span><span class="nf">user</span>
+</code></pre>
+
+<p>とか</p>
+<pre class="highlight ruby"><code><span class="n">note</span><span class="p">.</span><span class="nf">user</span> <span class="o">&amp;&amp;</span> <span class="n">note</span><span class="p">.</span><span class="nf">user</span><span class="p">.</span><span class="nf">name</span>
+</code></pre>
+
+<p>みたいに書くことも出来るのですが、こんな時には <code>try</code> が使えます。<br>
+<code>try</code> は引数でメソッド名を渡して実行するもので、ただし対象が<code>nil</code> の時には実行されずに <code>nil</code> を返してくれる物です。<br>
+実装はシンプルで、<code>Object</code> と <code>NilClass</code> に <code>try</code> が用意されているんですね。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Object</span>
+  <span class="k">def</span> <span class="nf">try</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="p">.</span><span class="nf">empty?</span> <span class="o">&amp;&amp;</span> <span class="nb">block_given?</span>
+      <span class="k">yield</span> <span class="nb">self</span>
+    <span class="k">else</span>
+      <span class="n">public_send</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="nb">respond_to?</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="nf">first</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">NilClass</span>
+  <span class="k">def</span> <span class="nf">try</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="kp">nil</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p><code>try</code> だとメソッド名の打ち間違いなども <code>nil</code> で返ってきますが、
+存在しないメソッドの場合は <code>NoMethodError</code> を返してくれる <code>try!</code> も用意されています。</p>
+
+</section><section><header><h3>delegate も使ってみよう</h3></header>
+
+<p>上の例では <code>note.user.name</code> とメソッドの呼び出しをしていますが、
+オブジェクト指向プログラミングの界隈だと、「デメテルの法則」に反しているとも言われます。</p>
+
+<p>それじゃあ、といって</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Note</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">belongs_to</span> <span class="ss">:user</span>
+
+  <span class="k">def</span> <span class="nf">user_name</span>
+    <span class="n">user</span><span class="p">.</span><span class="nf">try</span> <span class="ss">:name</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>ノートからユーザー名を取得するメソッドを定義しても良いのですが、数が多くなると大変になっちゃいますね。<br>
+そんなときには <code>delegate</code> が使えます。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Note</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="n">belongs_to</span> <span class="ss">:user</span>
+  <span class="n">delegate</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">to: :user</span><span class="p">,</span> <span class="ss">prefix: :author</span><span class="p">,</span> <span class="ss">allow_nil: </span><span class="kp">true</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>こうすると <code>note.author_name</code> が呼び出せるようになります。<br>
+<code>delegate</code> の使い方は、委譲するメソッド名、移譲先(<code>to</code>)、さらにはメソッドのプレフィックス(<code>prefix</code>)、そしてnilを許可するかどうか(<code>allow_nil</code>)です。<br>
+<code>prefix: false</code> なら <code>note.name</code> と呼び出すことになりますし、<code>prefix: true</code> なら <code>note.user_name</code> となります。<br>
+<code>allow_nil: true</code> としておけば <code>note.user</code> が <code>nil</code> の場合でもエラーにならないので便利ですね。<br>
+さらに、移譲先は関連以外でも定数、クラス変数、インスタンス変数でも大丈夫で、多段の delegate をすることも可能です。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Foo</span>
+  <span class="nc">CONSTANT</span>
+  <span class="vc">@@class_val</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@instance_val</span>
+  <span class="k">end</span>
+
+  <span class="n">delegate</span> <span class="ss">:foo</span><span class="p">,</span> <span class="ss">to: :CONSTANT</span>
+  <span class="n">delegate</span> <span class="ss">:bar</span><span class="p">,</span> <span class="ss">to: :@@class_val</span>
+  <span class="n">delegate</span> <span class="ss">:baz</span><span class="p">,</span> <span class="ss">to: :@instance_val</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>ちなみにプレーンなruby にも委譲の為の <code>Forwardable</code> モジュールが用意されており、使い方も似ています。<br>
+<code>Forwardable</code> の方はメソッドのリネームが出来る所が長所ですが、
+<code>ActiveSupport</code> の <code>delegate</code> に用意されている <code>prefix</code> と <code>allow_nil</code> が使い勝手が良いので、rails だと <code>ActiveSupport</code> の <code>delegate</code> をよく使います。</p>
+
+</section><section><header><h3>クラスマクロは自分で作れる</h3></header>
+
+<p>クラスマクロって例えば <code>attr_accessor</code> みたいなやつですね。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:name</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>これは用意されている物を使うだけで無く、自分で作ることも出来るんです。<br>
+「マクロとか難しそう」という訳では無く、その実態はただのクラスメソッドなので怖くないよ。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:name</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">suffix</span> <span class="kp">attr</span><span class="p">,</span> <span class="n">value</span>
+    <span class="n">define_method</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="kp">attr</span><span class="si">}</span><span class="s2">_with_suffix"</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nb">name</span> <span class="o">=</span> <span class="nb">instance_variable_get</span> <span class="s2">"@</span><span class="si">#{</span><span class="kp">attr</span><span class="si">}</span><span class="s2">"</span>
+      <span class="s2">"</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="nb">name</span><span class="p">.</span><span class="nf">present?</span>
+    <span class="p">}</span>
+    <span class="n">alias_method_chain</span> <span class="kp">attr</span><span class="p">,</span> <span class="ss">:suffix</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Boy</span> <span class="o">&lt;</span> <span class="no">User</span>
+  <span class="n">suffix</span> <span class="ss">:name</span><span class="p">,</span> <span class="s1">'くん'</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Girl</span> <span class="o">&lt;</span> <span class="no">User</span>
+  <span class="n">suffix</span> <span class="ss">:name</span><span class="p">,</span> <span class="s1">'さん'</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>オマケで <code>alias_method_chain</code> の例も入れてみたよ。<br>
+クラスマクロは <code>def self.suffix attr, value</code> の部分で、この定義によって継承したクラスでクラスマクロが使えるようになっている訳です。</p>
+<pre class="highlight plaintext"><code>&gt; girl = Girl.new
+=&gt; #&lt;Girl:0x007fb9314610f8&gt;
+&gt; girl.name = 'はなこ'
+=&gt; "はなこ"
+
+&gt; girl.name_with_suffix
+=&gt; "はなこ さん"
+&gt; girl.name
+=&gt; "はなこ さん"
+&gt; girl.name_without_suffix
+=&gt; "はなこ"
+</code></pre>
+
+<p>実行してみた結果が上の様子です。<code>&gt;</code> が入力、<code>=&gt;</code> が出力です。<br>
+クラスマクロによって、使うと <code>&quot;#{attr}_with_suffix&quot;</code> というメソッドが作られるようになっています。<br>
+つまり Boy, Girl クラスで <code>suffix :name, &#39;さん&#39;</code> と使ったことによって、
+<code>name_with_suffix</code> メソッドがマクロによって定義されているのです。<br>
+さらにマクロによって定義したメソッドの内容は、「名前が設定されていれば、後ろにマクロで指定した文字列を追加する」という物だったので、<code>girl.name_with_suffix</code> によって「はなこ さん」と返ってきている訳です。<br>
+この例だと実は <code>girl.name</code> と呼び出すだけで <code>girl.name_with_suffix</code> と同じ結果を得ることが出来ます。<br>
+これは、<code>alias_method_chain</code> によって、元々の <code>name</code> メソッドが <code>name_without_suffix</code> として待避され、<code>name_with_suffix</code> として定義したメソッドが <code>name</code> としても呼び出せるようになっているからなのです。</p>
+
+<p>クラスマクロを定義する場所は、今回のように継承元クラスや、
+<code>ActiveSupport::Concern</code> でモジュール化するなど、いろいろな方法があります。</p>
+
+</section><section><header><h3>super do で操作を差し込む</h3></header>
+
+<p>さて、下のようなクラスを作ってみます。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:age</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@age</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">birthday</span>
+    <span class="nb">puts</span> <span class="s1">'happy birthday!'</span>
+    <span class="vi">@age</span> <span class="o">+=</span> <span class="mi">1</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p><code>User#birthday</code> メソッドは、「happy birthday!」とメッセージを表示し、
+年齢に1を加えてその値を返す物です。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Boy</span> <span class="o">&lt;</span> <span class="no">User</span>
+  <span class="k">def</span> <span class="nf">birthday</span>
+    <span class="k">super</span>
+    <span class="nb">puts</span> <span class="s1">'some process...'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>Userクラスを継承したBoyクラスにおいて、<code>birthday</code>メソッドをオーバーライドしようとしたとき、
+<code>super</code> によって継承元のメソッドを呼び出すことが可能です。<br>
+しかし、「メッセージの表示」と「年齢の加算」の間に処理を挟みたい時にはどうしましょう。<br>
+そのために <code>super</code> を使わずにオーバーライドしてしまうと、メッセージの定義が重複するなどしてメンテナンス性が下がってしまいます。<br>
+そんなときには継承元クラスに処理を差し込めるポイントを作っておきましょう。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:age</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="vi">@age</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">birthday</span>
+    <span class="nb">puts</span> <span class="s1">'happy birthday!'</span>
+    <span class="k">yield</span> <span class="k">if</span> <span class="nb">block_given?</span>
+    <span class="vi">@age</span> <span class="o">+=</span> <span class="mi">1</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Boy</span> <span class="o">&lt;</span> <span class="no">User</span>
+  <span class="k">def</span> <span class="nf">birthday</span>
+    <span class="k">super</span> <span class="k">do</span>
+      <span class="nb">puts</span> <span class="s1">'some process...'</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>Userクラスに <code>yield if block_given?</code> を用意したので、
+継承したクラスにおいて <code>birthday</code> メソッドをオーバーライドしたとき、
+ブロックによる <code>super</code> を呼び出したときに、そこに処理を差し込むことが可能になります。</p>
+
+<p>ログイン処理などによく用いられる <a href="https://github.com/plataformatec/devise">plataformatec/devise</a> では、
+例えば <code>Devise::SessionsController</code> 等において、「ログインしたときにそのユーザーに何か処理したいな」ってケースのために処理差し込みのポイントを用意してくれていたりします。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Devise</span><span class="o">::</span><span class="no">SessionsController</span> <span class="o">&lt;</span> <span class="no">DeviseController</span>
+  <span class="c1"># POST /resource/sign_in</span>
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">resource</span> <span class="o">=</span> <span class="n">warden</span><span class="p">.</span><span class="nf">authenticate!</span><span class="p">(</span><span class="n">auth_options</span><span class="p">)</span>
+    <span class="n">set_flash_message</span><span class="p">(</span><span class="ss">:notice</span><span class="p">,</span> <span class="ss">:signed_in</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_flashing_format?</span>
+    <span class="n">sign_in</span><span class="p">(</span><span class="n">resource_name</span><span class="p">,</span> <span class="n">resource</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">resource</span> <span class="k">if</span> <span class="nb">block_given?</span>
+    <span class="n">respond_with</span> <span class="n">resource</span><span class="p">,</span> <span class="ss">location: </span><span class="n">after_sign_in_path_for</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+</section><section><header><h3>active model は使えるやつ</h3></header>
+
+<p>rails アプリを作成していると、DBには永続化しないんだけど、ActiveRecordと同じような使い勝手のモデルが欲しいなーと思うことがあります。<br>
+例えば検索用のフォームなどですね。<br>
+view で form_for 使いたいし、validate も同じように定義したいからです。</p>
+
+<p>そんなときには <code>ActiveModel</code> の出番です。</p>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">UserSearchForm</span>
+  <span class="kp">include</span> <span class="no">ActiveModel</span><span class="o">::</span><span class="no">Model</span>
+
+  <span class="kp">attr_accessor</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:age</span>
+  <span class="n">validates</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">presence: </span><span class="kp">true</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>使い方もとても簡単。<code>include ActiveModel::Model</code> するだけです。<br>
+これで <code>validates</code> なども使えるようになっています。</p>
+
+</section><section><header><h3>おわりに</h3></header>
+
+<p>便利そうな Rails Tips をまとめてみました。誰かのお役に立てば幸いです。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/09/13/devise_authentication_token/">deviseをAPIで利用しやすくする -Token Authenticationの追加-</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

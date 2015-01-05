@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>Deviseで認証機能を実装する | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='ruby, devise' name='keywords'>
+<meta content='railsアプリケーションにdevise gemを用いて認証機能を実装してみます。' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>Deviseで認証機能を実装する</h2>
+<span class='byline'>
+<a href="/article/tags/rails/">rails</a>
+<a href="/article/tags/devise/">devise</a>
+</span>
+</header>
+<section><header><h3>背景</h3></header>
+
+<p>Webアプリケーションの作成の際、
+ユーザー認証機能の実装は全て自分で実装しようとすると大変な物になります。<br>
+今回はrailsアプリケーションに<a href="https://github.com/plataformatec/devise">devise</a>gemを用いて
+認証機能の実装を行います。</p>
+
+</section><section><header><h3>Railsアプリケーションの作成</h3></header>
+
+<p>gemを管理するためにbundlerで初期化を行います。</p>
+<pre class="highlight plaintext"><code>bundle init
+</code></pre>
+
+<p>作成されたGemfileに<code>rails</code>を追加します。</p>
+
+<h4><code>Gemfile</code></h4>
+<pre class="highlight ruby"><code><span class="n">gem</span> <span class="s1">'rails'</span>
+</code></pre>
+
+<p>bundlerを用いてrailsをインストールし、
+その後railsアプリケーションのひな形を作成します。<br>
+今回はデータベースにMySQLを指定しています。</p>
+<pre class="highlight plaintext"><code>bundle install --path vendor/bundle
+bundle exec rails new . --skip-bundle -d mysql
+</code></pre>
+
+<p>次にGemfileに<code>gem &#39;devise&#39;</code>を追加し、再度bundleコマンドでgemをインストールします。</p>
+
+</section><section><header><h3>ユーザー認証機能の初期化</h3></header>
+
+<p>以下コマンドでrailsアプリケーションにdeviseの初期設定を行います。</p>
+<pre class="highlight plaintext"><code>bundle exec rails generate devise:install
+</code></pre>
+
+<p>すると、以下のメッセージが表示されます。</p>
+<pre class="highlight plaintext"><code>      create  config/initializers/devise.rb
+      create  config/locales/devise.en.yml
+===============================================================================
+
+Some setup you must do manually if you haven't yet:
+
+  1. Ensure you have defined default url options in your environments files. Here
+     is an example of default_url_options appropriate for a development environment
+     in config/environments/development.rb:
+
+       config.action_mailer.default_url_options = { :host =&gt; 'localhost:3000' }
+
+     In production, :host should be set to the actual host of your application.
+
+  2. Ensure you have defined root_url to *something* in your config/routes.rb.
+     For example:
+
+       root :to =&gt; "home#index"
+
+  3. Ensure you have flash messages in app/views/layouts/application.html.erb.
+     For example:
+
+       &lt;p class="notice"&gt;&lt;%= notice %&gt;&lt;/p&gt;
+       &lt;p class="alert"&gt;&lt;%= alert %&gt;&lt;/p&gt;
+
+  4. If you are deploying on Heroku with Rails 3.2 only, you may want to set:
+
+       config.assets.initialize_on_precompile = false
+
+     On config/application.rb forcing your application to not access the DB
+     or load models when precompiling your assets.
+
+  5. You can copy Devise views (for customization) to your app by running:
+
+       rails g devise:views
+
+===============================================================================
+</code></pre>
+
+<p>1はメールアドレス認証機能を有効化した際の案内メールに記載されるURLに関してのオプションです。<br>
+実際の運用でメールアドレス認証機能を有効化した時には<code>config/environments/production.rb</code>も編集が必要です。</p>
+
+<p>2はトップページの指定を、
+3はメッセージ出力用タグの設置を意味しています。</p>
+
+<p>4はHerokuを用いるときの注意で、
+5はviewをカスタマイズするときの方法を表しています。</p>
+
+</section><section><header><h3>ユーザーモデルの作成</h3></header>
+
+<p>次にユーザーのモデルを作成します。<br>
+今回は認証に用いるモデルをmemberとし、
+memberモデルとviewの作成を行ってみます。</p>
+<pre class="highlight plaintext"><code>bundle exec rails g devise member
+bundle exec rails g devise:views members
+</code></pre>
+
+</section><section><header><h3>メール認証機能の有効化</h3></header>
+
+<p>メール認証機能を有効化するには、migrationファイルで、
+<code>## Confirmable</code>をアンコメントし、
+memberモデルに<code>:confirmable</code>を追加します。</p>
+
+<h4><code>db/migrate/2013xxxxxxxxxx_devise_create_members.rb</code></h4>
+<pre class="highlight ruby"><code><span class="c1">## Confirmable</span>
+<span class="n">t</span><span class="p">.</span><span class="nf">string</span>   <span class="ss">:confirmation_token</span>
+<span class="n">t</span><span class="p">.</span><span class="nf">datetime</span> <span class="ss">:confirmed_at</span>
+<span class="n">t</span><span class="p">.</span><span class="nf">datetime</span> <span class="ss">:confirmation_sent_at</span>
+<span class="n">t</span><span class="p">.</span><span class="nf">string</span>   <span class="ss">:unconfirmed_email</span> <span class="c1"># Only if using reconfirmable</span>
+</code></pre>
+
+<h4><code>app/models/member.rb</code></h4>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Member</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
+  <span class="c1"># Include default devise modules. Others available are:</span>
+  <span class="c1"># :lockable, :timeoutable and :omniauthable</span>
+  <span class="n">devise</span> <span class="ss">:database_authenticatable</span><span class="p">,</span>
+         <span class="ss">:registerable</span><span class="p">,</span>
+         <span class="ss">:confirmable</span><span class="p">,</span>
+         <span class="ss">:recoverable</span><span class="p">,</span>
+         <span class="ss">:rememberable</span><span class="p">,</span>
+         <span class="ss">:trackable</span><span class="p">,</span>
+         <span class="ss">:validatable</span>
+</code></pre>
+
+<p>deviseを初期化した際のメッセージに従い、
+<code>mailer.default_url_options</code>を設定し</p>
+
+<h4><code>config/environments/development.rb</code></h4>
+<pre class="highlight plaintext"><code>config.action_mailer.default_url_options = { :host =&gt; 'localhost:3000' }
+</code></pre>
+
+<p>viewもカスタムしたものを見に行くように変更します。</p>
+
+<h4><code>config/initializer/devise.rb</code></h4>
+<pre class="highlight plaintext"><code>config.scoped_views = true
+</code></pre>
+
+</section><section><header><h3>ユーザー認証を試す</h3></header>
+
+<p>これだけでユーザー認証機能が作成できたので、railsサーバーを起動してみます。</p>
+<pre class="highlight plaintext"><code>bundle exec rails s
+</code></pre>
+
+<p>ユーザー認証ページ(<code>http://localhost:3000/members/sign_up</code>)にアクセスします。</p>
+<pre class="highlight plaintext"><code>Sent mail to hoge@gmail.com (20.9ms)
+Date: Mon, 23 Sep 2013 18:51:38 +0900
+From: please-change-me-at-config-initializers-devise@example.com
+Reply-To: please-change-me-at-config-initializers-devise@example.com
+To: hoge@gmail.com
+Message-ID: &lt;52400f2a2ed81_41aa3fc8b1cf335c8676c@MBA.local.mail&gt;
+Subject: Confirmation instructions
+Mime-Version: 1.0
+Content-Type: text/html;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+&lt;p&gt;Welcome hoge@gmail.com!&lt;/p&gt;
+
+&lt;p&gt;You can confirm your account email through the link below:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://localhost:3000/members/confirmation?confirmation_token=839QMxew4ifNpj1cxFta"&gt;Confirm my account&lt;/a&gt;&lt;/p&gt;
+
+   (0.5ms)  COMMIT
+Redirected to http://localhost:3000/
+Completed 302 Found in 1135ms (ActiveRecord: 3.7ms)
+
+
+Started GET "/" for 127.0.0.1 at 2013-09-23 18:51:38 +0900
+Processing by Rails::WelcomeController#index as HTML
+  Rendered vendor/bundle/ruby/2.0.0/gems/railties-4.0.0/lib/rails/templates/rails/welcome/index.html.erb (0.9ms)
+Completed 200 OK in 5ms (Views: 3.7ms | ActiveRecord: 0.0ms)
+</code></pre>
+
+<p>するとコンソールにユーザー登録の際に送信されるメッセージが流れてくるので、そこに記載されているメールアドレス認証URLを叩きます。<br>
+<code>http://localhost:3000/members/confirmation?confirmation_token=839QMxew4ifNpj1cxFta</code></p>
+
+<p>メールアドレス認証が完了した後は、
+<code>http://localhost:3000/members/sign_in</code>からログインすることが可能になっています。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/25/vagrant/">vagrantで仮想環境を手軽に構築する</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/18/rails-old-database/">railsで規約に沿わない古いデータベースを扱う</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

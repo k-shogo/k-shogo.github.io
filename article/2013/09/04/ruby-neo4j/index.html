@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>rubyからグラフデータベースneo4jを利用する | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='ruby, neo4j, グラフデータベース' name='keywords'>
+<meta content='rubyからグラフデータベースであるNeo4jを利用してみます。' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>rubyからグラフデータベースneo4jを利用する</h2>
+<span class='byline'>
+<a href="/article/tags/rails/">rails</a>
+<a href="/article/tags/neo4j/">neo4j</a>
+</span>
+</header>
+<section><header><h3>neo4jとは</h3></header>
+
+<p><a href="http://www.neo4j.org/">neo4j</a>とは
+Neo Technologyが開発したJavaベースの
+グラフデータベースです。
+（<a href="http://oss.infoscience.co.jp/neo4j/neo4j.org/">日本語ページ</a>）</p>
+
+<p>グラフデータベースは、
+一つ一つのデータを行で表現するリレーショナルデータベースと異なり、
+ノード（頂点）、リレーションシップ（エッジ）、プロパティ（属性）
+という3つの基本構成要素でデータを格納します。<br>
+グラフデータベースが有用なのは
+TwitterやFacebookのように、フォローや友人関係を扱う時です。<br>
+「友人のそのまた友人を探す」や「任意の二人を選択し、最短の関係（パス）を探す」などの
+問題を解こうとしたとき、
+リレーショナルデータベースでは関係の探索に大量の結合演算が必要になりますが、
+グラフ構造をそのまま格納しているグラフデータベースなら高速に処理することが可能です。</p>
+
+<p>neo4jはオープンソースですが、
+ライセンスはAGPLv3なので、
+商用利用などの際は
+<a href="http://oss.infoscience.co.jp/neo4j/neo4j.org/licensing-guide.html">ライセンス選択の手引き</a>を参考にしてください。</p>
+
+</section><section><header><h3>neo4jのインストール</h3></header>
+
+<p>neo4jはjavaベースなので事前にjavaをインストールしてください。<br>
+その上でmacならbrweでインストールすることが可能です。</p>
+<pre class="highlight plaintext"><code>$ brew install neo4j
+</code></pre>
+
+<p>neo4jにはデフォルトでブラウザからアクセスできる機能が組み込まれています。<br>
+neo4jを起動し、
+<code>http://localhost:7474/webadmin/</code>
+にアクセスする事でブラウザからデータなどが確認可能です。</p>
+
+</section><section><header><h3>rubyからneo4jを利用する</h3></header>
+
+<p>rubyからneo4jを利用するために
+<a href="https://github.com/maxdemarzi/neography">neography</a>のGemを使用します。</p>
+
+<p><code>Gemfile</code>に
+<code>gem &#39;neography&#39;</code>を記述して<code>bundle install</code>します。</p>
+
+<p>rubyからneo4jに接続してみます。<br>
+neo4jのポートなどがデフォルトのままなら、
+neographyをrequireして<code>Neography::Rest.new</code>するだけなので簡単です。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'neography'</span>
+<span class="vi">@neo</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Rest</span><span class="p">.</span><span class="nf">new</span>
+</code></pre>
+
+<p>接続先などの設定がデフォルトと異なる場合でも
+<code>Neography::Rest.new</code>の引数に設定を渡すだけす。</p>
+
+<p>ノードの作成、プロパティの追加、リレーションの追加などのサンプルです。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'neography'</span>
+<span class="vi">@neo</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Rest</span><span class="p">.</span><span class="nf">new</span>
+
+<span class="c1"># ノード作成</span>
+<span class="n">node1</span> <span class="o">=</span> <span class="vi">@neo</span><span class="p">.</span><span class="nf">create_node</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"tanaka"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">20</span><span class="p">)</span>
+<span class="n">node2</span> <span class="o">=</span> <span class="vi">@neo</span><span class="p">.</span><span class="nf">create_node</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"suzuki"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">24</span><span class="p">)</span>
+
+<span class="c1"># ノードにプロパティを追加</span>
+<span class="vi">@neo</span><span class="p">.</span><span class="nf">set_node_properties</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="p">{</span><span class="ss">weight: </span><span class="s1">'60kg'</span><span class="p">})</span>
+
+<span class="c1"># 関係を追加（node1 -&gt; node2 方向）</span>
+<span class="vi">@neo</span><span class="p">.</span><span class="nf">create_relationship</span><span class="p">(</span><span class="ss">:friend</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">)</span>
+
+<span class="c1"># 関係を取得</span>
+<span class="vi">@neo</span><span class="p">.</span><span class="nf">get_node_relationships</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="ss">:out</span><span class="p">,</span> <span class="ss">:friend</span><span class="p">)</span>
+<span class="vi">@neo</span><span class="p">.</span><span class="nf">get_node_relationships</span><span class="p">(</span><span class="n">node2</span><span class="p">,</span> <span class="ss">:in</span><span class="p">,</span> <span class="ss">:friend</span><span class="p">)</span>
+</code></pre>
+
+<p>それぞれの行を実行すると、
+REST APIの結果をハッシュに格納した物が返ります。<br>
+このままだと少々扱いにくいです。</p>
+<pre class="highlight ruby"><code><span class="p">{</span>
+  <span class="s2">"extensions"</span> <span class="o">=&gt;</span> <span class="p">{},</span>
+  <span class="s2">"paged_traverse"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/paged/traverse/{returnType}{?pageSize,leaseTime}"</span><span class="p">,</span>
+  <span class="s2">"outgoing_relationships"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/relationships/out"</span><span class="p">,</span>
+  <span class="s2">"traverse"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/traverse/{returnType}"</span><span class="p">,</span>
+  <span class="s2">"all_typed_relationships"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/relationships/all/{-list|&amp;|types}"</span><span class="p">,</span>
+  <span class="s2">"property"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/properties/{key}"</span><span class="p">,</span>
+  <span class="s2">"all_relationships"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/relationships/all"</span><span class="p">,</span>
+  <span class="s2">"self"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15"</span><span class="p">,</span>
+  <span class="s2">"properties"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/properties"</span><span class="p">,</span>
+  <span class="s2">"outgoing_typed_relationships"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/relationships/out/{-list|&amp;|types}"</span><span class="p">,</span>
+  <span class="s2">"incoming_relationships"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/relationships/in"</span><span class="p">,</span>
+  <span class="s2">"incoming_typed_relationships"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/relationships/in/{-list|&amp;|types}"</span><span class="p">,</span>
+  <span class="s2">"create_relationship"</span> <span class="o">=&gt;</span> <span class="s2">"http://localhost:7474/db/data/node/15/relationships"</span><span class="p">,</span>
+  <span class="s2">"data"</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="s2">"weight"</span> <span class="o">=&gt;</span> <span class="s2">"60kg"</span><span class="p">,</span> <span class="s2">"name"</span> <span class="o">=&gt;</span> <span class="s2">"tanaka"</span><span class="p">,</span> <span class="s2">"age"</span> <span class="o">=&gt;</span> <span class="mi">20</span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+</section><section><header><h3>rubyからneo4jを利用する2</h3></header>
+
+<p>前述の利用では、
+返ってくるデータが少々扱いにくいところがありました。<br>
+そこでneographyには抽象化度を上げた利用方法が用意されています。</p>
+
+<p>例えばノードの作成は以下のようになります。</p>
+<pre class="highlight ruby"><code><span class="n">node1</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"tanaka"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">20</span><span class="p">)</span>
+</code></pre>
+
+<p>このとき返ってくるのは<code>Neography::Node</code>クラスになります。<br>
+プロパティへのアクセスも抽象化されています。</p>
+<pre class="highlight ruby"><code><span class="c1"># プロパティ :age を取得</span>
+<span class="n">node1</span><span class="p">[</span><span class="ss">:age</span><span class="p">]</span>
+<span class="c1"># ドットでもアクセス可能</span>
+<span class="n">node1</span><span class="p">.</span><span class="nf">name</span>
+<span class="c1"># プロパティの変更</span>
+<span class="n">node1</span><span class="p">[</span><span class="ss">:age</span><span class="p">]</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="c1"># 新しくプロパティを追加</span>
+<span class="n">node1</span><span class="p">.</span><span class="nf">weight</span> <span class="o">=</span> <span class="mi">190</span>
+<span class="c1"># プロパティの削除</span>
+<span class="n">node1</span><span class="p">.</span><span class="nf">age</span> <span class="o">=</span> <span class="kp">nil</span>
+</code></pre>
+
+<p>ノードの削除は<code>del</code>で行います</p>
+<pre class="highlight ruby"><code><span class="n">node1</span><span class="p">.</span><span class="nf">del</span>
+</code></pre>
+
+<p>接続先の設定について変更する場合は
+<code>Neography.configure</code>ブロックで行います。</p>
+<pre class="highlight ruby"><code><span class="no">Neography</span><span class="p">.</span><span class="nf">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">protocol</span>       <span class="o">=</span> <span class="s2">"http://"</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">server</span>         <span class="o">=</span> <span class="s2">"localhost"</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">port</span>           <span class="o">=</span> <span class="mi">7474</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">directory</span>      <span class="o">=</span> <span class="s2">""</span>  <span class="c1"># prefix this path with '/' </span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">cypher_path</span>    <span class="o">=</span> <span class="s2">"/cypher"</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">gremlin_path</span>   <span class="o">=</span> <span class="s2">"/ext/GremlinPlugin/graphdb/execute_script"</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">log_file</span>       <span class="o">=</span> <span class="s2">"neography.log"</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">log_enabled</span>    <span class="o">=</span> <span class="kp">false</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">max_threads</span>    <span class="o">=</span> <span class="mi">20</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">authentication</span> <span class="o">=</span> <span class="kp">nil</span>  <span class="c1"># 'basic' or 'digest'</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">username</span>       <span class="o">=</span> <span class="kp">nil</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">password</span>       <span class="o">=</span> <span class="kp">nil</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">parser</span>         <span class="o">=</span> <span class="no">MultiJsonParser</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>接続先は<code>Neography.configuration</code>でアクセスすることが可能です。</p>
+
+<p>また、接続先を引数に取ることも出来ます。</p>
+<pre class="highlight ruby"><code><span class="vi">@neo2</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Rest</span><span class="p">.</span><span class="nf">new</span><span class="p">({</span><span class="ss">:server</span> <span class="o">=&gt;</span> <span class="s1">'192.168.10.1'</span><span class="p">})</span>
+<span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">({</span><span class="ss">name: </span><span class="s2">"tanaka"</span><span class="p">},</span> <span class="vi">@neo2</span><span class="p">)</span> 
+</code></pre>
+
+<p>続いて、ノード間にリレーションを張ってみます。<br>
+リレーションには方向性があり、<code>outgoing</code>,<code>incoming</code>,<code>both</code>でアクセスします。</p>
+<pre class="highlight ruby"><code><span class="c1"># ノードの作成</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"tanaka"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">20</span><span class="p">)</span>
+<span class="n">n2</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"suzuki"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">25</span><span class="p">)</span>
+
+<span class="c1"># n1からn2方向へfriend関係を追加</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friend</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n2</span>
+<span class="c1"># n2からn1方向へfriend関係を追加</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">incoming</span><span class="p">(</span><span class="ss">:friend</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n2</span>
+<span class="c1"># n1、n2間にfriend関係を追加（両方向）</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friend</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n2</span>
+</code></pre>
+
+<p>ノードのリレーションは<code>rels</code>でアクセスできます。</p>
+<pre class="highlight ruby"><code><span class="c1"># n1の持つ全てのリレーションを取得</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">rels</span>
+<span class="c1"># n1の持つリレーションの中で種類がfriendの物を取得</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">rels</span><span class="p">(</span><span class="ss">:friend</span><span class="p">)</span>
+<span class="c1"># n1の持つリレーションの中で種類がfriendであり、かつn1から出る方向のリレーションを取得</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">rels</span><span class="p">(</span><span class="ss">:friend</span><span class="p">).</span><span class="nf">outgoing</span>
+</code></pre>
+
+<p>リレーションを取得すれば、開始ノード、終端ノードにアクセスできます。</p>
+<pre class="highlight ruby"><code><span class="c1"># リレーションの取得</span>
+<span class="n">rel</span> <span class="o">=</span> <span class="n">n1</span><span class="p">.</span><span class="nf">rels</span><span class="p">(</span><span class="ss">:friend</span><span class="p">).</span><span class="nf">outgoing</span><span class="p">.</span><span class="nf">first</span>
+<span class="c1"># 開始ノードの取得</span>
+<span class="n">rel</span><span class="p">.</span><span class="nf">start_node</span>
+<span class="c1"># 終端ノードの取得</span>
+<span class="n">rel</span><span class="p">.</span><span class="nf">end_node</span>
+<span class="c1"># リレーションの削除</span>
+<span class="n">rel</span><span class="p">.</span><span class="nf">del</span>
+</code></pre>
+
+</section><section><header><h3>rubyからneo4jを利用する3</h3></header>
+
+<p><code>Neography::Node#rels</code>でリレーション
+<code>Neography::Relationship</code>を取得したときは、
+開始ノードや終端ノードにアクセスしただけでした。<br>
+もう少し進んで<code>Neography::NodeTraverser</code>を利用してみましょう。</p>
+
+<p>5つのノードを作成し、リレーションとして友人関係（friends）を定義します。</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'neography'</span>
+
+<span class="c1"># ノードの作成</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"1"</span><span class="p">)</span>
+<span class="n">n2</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"2"</span><span class="p">)</span>
+<span class="n">n3</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"3"</span><span class="p">)</span>
+<span class="n">n4</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"4"</span><span class="p">)</span>
+<span class="n">n5</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"5"</span><span class="p">)</span>
+
+<span class="c1"># 関係の追加</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n2</span>
+<span class="n">n2</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n3</span>
+<span class="n">n2</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n4</span>
+<span class="n">n3</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n4</span>
+<span class="n">n3</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n5</span>
+</code></pre>
+
+<p>関係をグラフにすると以下のような物になります。</p>
+
+<p><img alt="グラフ" width="377" height="273" src="/images/2013-09-04-ruby-neo4j/ss.png" /></p>
+
+<p>ここから<code>Neography::NodeTraverser</code>を利用します。<br>
+<code>Neography::NodeTraverser</code>の利用には、
+リレーションを張るのに使用した
+<code>outgoing</code>,<code>incoming</code>,<code>both</code>を使います。</p>
+
+<p>ノード&quot;1&quot;を基準にして友人を辿ってみます。</p>
+<pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["2"]</span>
+</code></pre>
+
+<p>2関係先まで見てみます。</p>
+<pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["2", "4", "3", "1"]</span>
+</code></pre>
+
+<p>3関係先までにしてみます。</p>
+<pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["2", "4", "3", "2", "3", "5", "4", "2", "1", "2"]</span>
+</code></pre>
+
+<p>デフォルトでは深さ優先探索が使われているので、
+<code>order</code>で幅優先探索に変更してみます。</p>
+<pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">order</span><span class="p">(</span><span class="ss">:breadth</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["2", "4", "3", "1", "3", "2", "5", "4", "2", "2"]</span>
+</code></pre>
+
+<p><code>:breadth</code>以外にも<code>&quot;breadth&quot;</code>,<code>&quot;breadth first&quot;</code>,<code>&quot;breadthFirst&quot;</code>,<code>:wide</code>,<code>&quot;wide&quot;</code>の指定でも同じです。</p>
+
+<p><code>friends</code>関係が各ノード間で双方向に張られているので、
+トラバースの結果に同一ノードが含まれています。<br>
+そこで、重複したノードを除外してみます。</p>
+<pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">order</span><span class="p">(</span><span class="ss">:breadth</span><span class="p">).</span><span class="nf">uniqueness</span><span class="p">(</span><span class="ss">:nodeglobal</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["2", "4", "3", "5"]</span>
+</code></pre>
+
+<p><code>:nodeglobal</code>は<code>&quot;node global&quot;</code>,<code>&quot;nodeglobal&quot;</code>,<code>&quot;node_global&quot;</code>としてしても同じです。<br>
+<code>uniqueenss</code>の指定は、
+<code>&quot;node global&quot;</code>以外にも
+<code>&quot;node path&quot;</code>,
+<code>&quot;node recent&quot;</code>,
+<code>&quot;relationship global&quot;</code>, 
+<code>&quot;relationship path&quot;</code>,
+<code>&quot;relationship recent&quot;</code>がありますが、
+今回は割愛します。</p>
+
+<p>次に、2関係先だけの友達に限定してみます。
+ベースは先ほどの物を使います。</p>
+<pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">order</span><span class="p">(</span><span class="ss">:breadth</span><span class="p">).</span><span class="nf">uniqueness</span><span class="p">(</span><span class="ss">:nodeglobal</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["2", "4", "3"]</span>
+</code></pre>
+
+<p>この指定だと1関係先のノード&quot;2&quot;が含まれているので、ここに<code>filter</code>を追加します。</p>
+<pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nf">order</span><span class="p">(</span><span class="ss">:breadth</span><span class="p">).</span><span class="nf">uniqueness</span><span class="p">(</span><span class="ss">:nodeglobal</span><span class="p">).</span><span class="nf">filter</span><span class="p">(</span><span class="s2">"position.length() == 2;"</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["4", "3"]</span>
+</code></pre>
+
+<p>2関係先だけに限定できました。<br>
+ここまでをまとめると</p>
+<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'neography'</span>
+
+<span class="c1"># ノードの作成</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"1"</span><span class="p">)</span>
+<span class="n">n2</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"2"</span><span class="p">)</span>
+<span class="n">n3</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"3"</span><span class="p">)</span>
+<span class="n">n4</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"4"</span><span class="p">)</span>
+<span class="n">n5</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Node</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">name: </span><span class="s2">"5"</span><span class="p">)</span>
+
+<span class="c1"># 関係の追加</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n2</span>
+<span class="n">n2</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n3</span>
+<span class="n">n2</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n4</span>
+<span class="n">n3</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n4</span>
+<span class="n">n3</span><span class="p">.</span><span class="nf">both</span><span class="p">(</span><span class="ss">:friends</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">n5</span>
+
+<span class="c1"># 友人の推薦</span>
+<span class="k">def</span> <span class="nf">suggestions_for</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+  <span class="n">node</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span>
+    <span class="nf">depth</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span>
+    <span class="nf">order</span><span class="p">(</span><span class="ss">:breadth</span><span class="p">).</span>
+    <span class="nf">uniqueness</span><span class="p">(</span><span class="ss">:nodeglobal</span><span class="p">).</span>
+    <span class="nf">filter</span><span class="p">(</span><span class="s2">"position.length() == 2;"</span><span class="p">).</span>
+    <span class="nf">map</span><span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span> <span class="p">}.</span><span class="nf">join</span><span class="p">(</span><span class="s1">', '</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">n1</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">さんに推薦する人：</span><span class="si">#{</span><span class="n">suggestions_for</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+<span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">n3</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">さんに推薦する人：</span><span class="si">#{</span><span class="n">suggestions_for</span><span class="p">(</span><span class="n">n3</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+<span class="nb">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="n">n5</span><span class="p">.</span><span class="nf">name</span><span class="si">}</span><span class="s2">さんに推薦する人：</span><span class="si">#{</span><span class="n">suggestions_for</span><span class="p">(</span><span class="n">n5</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="c1"># 結果</span>
+<span class="c1"># 1さんに推薦する人：3, 4</span>
+<span class="c1"># 3さんに推薦する人：1</span>
+<span class="c1"># 5さんに推薦する人：2, 4</span>
+</code></pre>
+
+<p>最後にノード間の経路を求めてみます。  </p>
+<pre class="highlight ruby"><code><span class="c1"># n1からn5までの全ての友人関係の経路を最大深度を4として検索</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">all_paths_to</span><span class="p">(</span><span class="n">n5</span><span class="p">).</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">to_a</span>
+<span class="c1"># ループした経路を除外</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">all_simple_paths_to</span><span class="p">(</span><span class="n">n5</span><span class="p">).</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">to_a</span>
+<span class="c1"># 最短経路の場合</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">all_shortest_paths_to</span><span class="p">(</span><span class="n">n5</span><span class="p">).</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">to_a</span>
+
+<span class="c1"># リレーションだけ取得</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">shortest_path_to</span><span class="p">(</span><span class="n">n5</span><span class="p">).</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">rels</span><span class="p">.</span><span class="nf">to_a</span>
+<span class="c1"># ノードだけ取得</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">shortest_path_to</span><span class="p">(</span><span class="n">n5</span><span class="p">).</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">nodes</span><span class="p">.</span><span class="nf">to_a</span>
+
+<span class="c1"># 最短経路の名前を表示</span>
+<span class="n">n1</span><span class="p">.</span><span class="nf">shortest_path_to</span><span class="p">(</span><span class="n">n5</span><span class="p">).</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="nf">nodes</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
+<span class="c1"># =&gt; ["1", "2", "3", "5"]</span>
+</code></pre>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/08/ruby-natto/">rubyのmecabバインディングnattoを使う</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/04/ruby-mecab/">rubyから形態素解析ライブラリmecabを利用する</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

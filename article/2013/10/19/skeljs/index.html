@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>skel.jsでレスポンシブWebデザイン対応のWebサイトを構築する | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='skel.js, html, haml, middleman' name='keywords'>
+<meta content='skel.jsでレスポンシブWebデザイン対応のWebサイトを構築する方法を説明します。' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>skel.jsでレスポンシブWebデザイン対応のWebサイトを構築する</h2>
+<span class='byline'>
+<a href="/article/tags/js/">js</a>
+<a href="/article/tags/html/">html</a>
+<a href="/article/tags/haml/">haml</a>
+<a href="/article/tags/middleman/">middleman</a>
+</span>
+</header>
+<section><header><h3>背景</h3></header>
+
+<p><a href="http://skeljs.org">skel.js</a>はレスポンシブなWebサイトを構築する為の軽量(19KB)なフロントエンドフレームワークです。<br>
+jQueryなどの他のスクリプトに依存することなくグリッドシステムを利用でき、
+表示サイズごとのbreakpointの設定も簡単です。
+また、reset cssやbox-modelなどの有用なCSSのショートカットも用意されています。</p>
+
+</section><section><header><h3>準備</h3></header>
+
+<p>今回は<a href="http://middlemanapp.com">middleman</a>をベースにskel.jsを扱ってみます。</p>
+
+<p>bundlerでrubyプロジェクトの作成を開始します。</p>
+<pre class="highlight plaintext"><code>bundle init
+</code></pre>
+
+<p>Gemfileに<code>middleman</code>を追加し、</p>
+<pre class="highlight plaintext"><code>gem 'middleman'
+</code></pre>
+
+<p><code>middleman</code>をインストール。
+そしてmiddlemanプロジェクトを初期化します。</p>
+<pre class="highlight plaintext"><code>bundle install --path vendor/bundle
+bundle exec middleman init .
+</code></pre>
+
+<p>middleman初期化時にGemfileが上書きされるので、</p>
+<pre class="highlight plaintext"><code>      update  Gemfile
+         run  bundle install from "."
+Could not find gem 'ruby18_source_location (&gt;= 0) ruby' in the gems available on this machine.
+Run `bundle install` to install missing gems.
+      create  .gitignore
+      create  config.rb
+      create  source/index.html.erb
+      create  source/layouts/layout.erb
+      create  source/stylesheets
+      create  source/stylesheets/all.css
+      create  source/stylesheets/normalize.css
+      create  source/javascripts
+      create  source/javascripts/all.js
+      create  source/images
+      create  source/images/background.png
+      create  source/images/middleman.png
+</code></pre>
+
+<p>改めて依存関係をインストールします。</p>
+<pre class="highlight plaintext"><code>bundle
+</code></pre>
+
+</section><section><header><h3>skel.jsのインストール</h3></header>
+
+<p><a href="http://skeljs.org/download">skel.jsをダウンロード</a>し、
+javascriptディレクトリに配置するだけでインストールは完了です。</p>
+
+</section><section><header><h3>skel.jsの設定</h3></header>
+
+<p>今回はcoffee scriptで設定を記述してみます。
+javascriptディレクトリに<code>skel.config.coffee</code>というファイルを作成します。</p>
+
+<h4><code>skel.config.coffee</code></h4>
+<pre class="highlight coffeescript"><code><span class="nb">window</span><span class="p">.</span><span class="na">_skel_config</span><span class="o">=</span>
+  <span class="na">prefix</span><span class="o">:</span> <span class="s">"/assets/stylesheets/style"</span>
+  <span class="na">resetCSS</span><span class="o">:</span> <span class="no">true</span>
+  <span class="na">boxModel</span><span class="o">:</span> <span class="s">"border"</span>
+  <span class="na">grid</span><span class="o">:</span>
+    <span class="na">gutters</span><span class="o">:</span> <span class="mi">30</span>
+  <span class="na">breakpoints</span><span class="o">:</span>
+    <span class="na">wide</span><span class="o">:</span>
+      <span class="na">range</span><span class="o">:</span> <span class="s">"1200-"</span>
+      <span class="na">containers</span><span class="o">:</span> <span class="mi">1140</span>
+      <span class="na">grid</span><span class="o">:</span>
+        <span class="na">gutters</span><span class="o">:</span> <span class="mi">50</span>
+    <span class="na">narrow</span><span class="o">:</span>
+      <span class="na">range</span><span class="o">:</span> <span class="s">"641-1199"</span>
+      <span class="na">containers</span><span class="o">:</span> <span class="mi">960</span>
+    <span class="na">mobile</span><span class="o">:</span>
+      <span class="na">range</span><span class="o">:</span> <span class="s">"-640"</span>
+      <span class="na">viewportWidth</span><span class="o">:</span> <span class="mi">640</span>
+      <span class="na">containers</span><span class="o">:</span> <span class="s">"fluid"</span>
+      <span class="na">grid</span><span class="o">:</span>
+        <span class="na">collapse</span><span class="o">:</span> <span class="no">true</span>
+</code></pre>
+
+<p><code>breakpoints</code>は任意のブレイクポイントの名前と、それに対してのオプションを指定することが出来ます。<br>
+ここでは<code>wide</code>, <code>narrow</code>, <code>mobile</code>と3つのブレイクポイントを作り、
+それぞれに切り替えの条件を指定しています。</p>
+
+<p><code>prefix</code>はCSSをskel.jsから動的に読み込む場合に指定します。（デフォルトは&ldquo;style&quot;であり、無効にするにはnullを指定します）<br>
+これは<code>breakpoints</code>と連動していて、
+たとえば<code>mobile</code>時では<code>/assets/stylesheets/style.css</code>と<code>/assets/stylesheets/style-mobile.css</code>が読み込まれます。<br>
+もちろん個別のstylesheetsの読み込みを抑制することも可能です。</p>
+
+<p><code>resetCSS</code>オプションを有効にすることで、
+skel.jsにビルトインされているReset CSSが自動的に読み込まれます。<br>
+他にも<code>normalizeCSS</code>も用意されています。</p>
+
+<p><code>boxModel</code>には&quot;border&rdquo;, &ldquo;content&rdquo;, &ldquo;margin&rdquo;, &ldquo;padding&quot;のいずれかを指定できます。</p>
+
+</section><section><header><h3>使いかた</h3></header>
+
+<p>設定ファイルとskel.jsをまとめて読み込むために
+<code>all.coffee</code>を作成し、</p>
+
+<h4><code>all.coffee</code></h4>
+<pre class="highlight coffeescript"><code><span class="c1">#= require 'skel.config'
+#= require 'skel.js'
+</span></code></pre>
+
+<p>layoutファイルで読み込みます</p>
+
+<h4><code>layout.haml</code></h4>
+<pre class="highlight haml"><code><span class="nn">!!!
+</span><span class="nt">%html</span>
+  <span class="nt">%head</span>
+    <span class="nt">%meta</span><span class="p">{</span><span class="ss">:charset</span> <span class="o">=&gt;</span> <span class="s2">"utf-8"</span><span class="p">}</span>
+    <span class="nt">%meta</span><span class="p">{</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">"viewport"</span><span class="p">,</span> <span class="ss">:content</span> <span class="o">=&gt;</span> <span class="s2">"width=device-width, user-scalable=no"</span><span class="p">}</span>
+    <span class="nt">%title</span><span class="p">=</span> <span class="n">current_page</span><span class="p">.</span><span class="nf">data</span><span class="p">.</span><span class="nf">title</span> <span class="o">||</span> <span class="s2">"Title"</span>
+    <span class="p">=</span> <span class="n">javascript_include_tag</span>  <span class="s2">"all"</span>
+    <span class="nt">%noscript</span>
+      <span class="p">=</span> <span class="n">stylesheet_link_tag</span> <span class="s2">"skel-noscript.css"</span><span class="p">,</span> <span class="s2">"style"</span><span class="p">,</span> <span class="s2">"style-wide"</span>
+  <span class="nt">%body</span><span class="p">{</span><span class="ss">:class</span> <span class="o">=&gt;</span> <span class="n">page_classes</span><span class="p">}</span>
+    <span class="nc">.container</span>
+      <span class="p">=</span> <span class="k">yield</span>
+</code></pre>
+
+<p>CSSはskel.jsから動的に読み込みますが、
+jsが無効化されている場合に備えてnoscriptの中にjsが無効化されている場合に読み込みむCSSを指定します。</p>
+
+<p>グリッドシステムを使う場合には
+<code>&lt;div class=&quot;row&quot;&gt;</code>の内部に<code>&lt;div class=&quot;4u&quot;&gt;</code>などと&quot;数字+u&quot;のクラスを作成するだけで、
+カラム数12のグリッドに配置されます。  </p>
+
+<p>後は<code>.row</code>, <code>.4u</code>とそのまま用いてもよし、
+それらのクラスを元に自分でCSS拡張してもよしです。</p>
+
+</section><section><header><h3>まとめ</h3></header>
+
+<p><a href="http://getbootstrap.com">bootstrap</a>などを用いると、
+グリッドシステムの他にボタンをはじめとした様々なパーツをすぐに利用することが出来ます。
+プログラマがとりあえず体裁を整えるために使うのは有効ですが、
+デザインが画一的になってしまう欠点もあります。<br>
+しかもbootstrapを元にデザインを変更しようとするのも手間がかかります。</p>
+
+<p>デザインは自前で構築する場合に
+そのベースとしてレスポンシブルなデザインに対応した軽量フレームワークであるskel.jsを有効に活用できそうです。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/11/05/rails-csv-download/">railsにCSV形式でのダウンロード機能を追加する</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/10/11/docker/">DockerでImmutable Infrastractureに触れる</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

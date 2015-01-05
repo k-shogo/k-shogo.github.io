@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>スマートフォン向けのWebアプリケーションフレームワークApp.jsを使ってみる | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='javascript, App.js, middleman' name='keywords'>
+<meta content='スマートフォン向けWebアプリケーションフレームワークのApp.jsを使ってみます' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>スマートフォン向けのWebアプリケーションフレームワークApp.jsを使ってみる</h2>
+<span class='byline'>
+<a href="/article/tags/js/">js</a>
+<a href="/article/tags/middleman/">middleman</a>
+</span>
+</header>
+<section><header><h3>App.jsとは</h3></header>
+
+<p><a href="http://code.kik.com/app/">App.js</a>
+はスマートフォン向けのWebアプリケーションフレームワークです。  </p>
+
+</section><section><header><h3>準備</h3></header>
+
+<p>今回はApp.jsをmiddlemanと組み合わせてデモを作りたいと思います。</p>
+
+<p>環境準備の概要です。</p>
+
+<ul>
+<li>middlemanをインストール
+
+<ul>
+<li><code>bundle init</code>でbundlerの準備</li>
+<li><code>Gemfile</code>に<code>gem &#39;middleman&#39;</code>を追加</li>
+<li><code>bundle install --path vendor/bundle</code>でインストール</li>
+<li><code>bundle exec middleman init .</code>で初期化</li>
+</ul></li>
+<li>bowerでjsを管理
+
+<ul>
+<li><code>.bowerrc</code>と<code>component.json</code>を用意</li>
+<li><code>bower install</code>でインストール</li>
+</ul></li>
+<li>App.jsのビルド</li>
+</ul>
+
+<h4><code>.bowerrc</code></h4>
+<pre class="highlight ruby"><code><span class="p">{</span>
+  <span class="s2">"directory"</span> <span class="p">:</span> <span class="s2">"vendor/components"</span><span class="p">,</span>
+  <span class="s2">"json"</span>      <span class="p">:</span> <span class="s2">"component.json"</span><span class="p">,</span>
+  <span class="s2">"endpoint"</span>  <span class="p">:</span> <span class="s2">"https://bower.herokuapp.com"</span>
+<span class="p">}</span>
+</code></pre>
+
+<h4><code>component.json</code></h4>
+<pre class="highlight ruby"><code><span class="p">{</span>
+  <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"middleman-app.js"</span><span class="p">,</span>
+  <span class="s2">"version"</span><span class="p">:</span> <span class="s2">"0.0.0"</span><span class="p">,</span>
+  <span class="s2">"dependencies"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"zepto"</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+    <span class="s2">"appjs"</span><span class="p">:</span> <span class="s2">"kikinteractive/app"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>zepto.jsは最新を使うのでバージョンには<code>null</code>を、
+App.jsはbowerのcomponentに登録されていないので、githubを参照しています。</p>
+
+</section><section><header><h3>App.jsのビルド</h3></header>
+
+<p>App.jsのビルドには<a href="http://yui.github.io/yuicompressor/">YUI Compressor</a>が必要でした。<br>
+Macならbrewに登録されていたのでインストールします。</p>
+
+<h4>YUI Compressorのインストール</h4>
+<pre class="highlight shell"><code>brew intall yuicompressor
+</code></pre>
+
+<p>プロジェクトディレクトリ以下の<code>vendor/components/appjs</code>にbuildのスクリプトが用意されています。<br>
+しかし、スクリプト内部のYUI Compressorコマンドは<code>yui-compressor</code>という指定に対して、
+brewでインストールした物は<code>yuicompressor</code>とハイフン無しになっています。</p>
+
+<p>なのでbuildのスクリプトを開き、<code>yui-compressor</code>を<code>yuicompressor</code>に置換しました。<br>
+これでやっとビルド出来るのでbuildスクリプトを起動します。<br>
+buildsディレクトリ以下にファイルが作成されました。</p>
+<pre class="highlight plaintext"><code>├── app-DEBUG.js
+├── app.css
+├── app.js
+└── default.css
+</code></pre>
+
+</section><section><header><h3>middlemanの設定</h3></header>
+
+<p>js, css, imageはassets以下にまとめるのが好みなので、
+<code>config.rb</code>を編集しました。</p>
+
+<h4><code>config.rb</code></h4>
+<pre class="highlight ruby"><code><span class="n">set</span> <span class="ss">:css_dir</span><span class="p">,</span> <span class="s1">'assets/stylesheets'</span>
+<span class="n">set</span> <span class="ss">:js_dir</span><span class="p">,</span> <span class="s1">'assets/javascripts'</span>
+<span class="n">set</span> <span class="ss">:images_dir</span><span class="p">,</span> <span class="s1">'assets/images'</span>
+<span class="n">set</span> <span class="ss">:bower_dir</span><span class="p">,</span> <span class="s1">'../vendor/components'</span>
+</code></pre>
+
+<p>次にcssとjsにApp.jsのコンポーネントを追加します。</p>
+
+<h4><code>assets/stylesheets/all.css.sass</code></h4>
+<pre class="highlight sass"><code><span class="c1">//= require 'appjs/builds/default.css'
+</span></code></pre>
+
+<h4><code>assets/javascripts/all.js.coffee</code></h4>
+<pre class="highlight coffeescript"><code><span class="c1">#= require 'zepto'
+#= require 'appjs/builds/app.js'
+</span>
+<span class="nx">App</span><span class="p">.</span><span class="na">load</span> <span class="s">'home'</span>
+</code></pre>
+
+<h4><code>layouts/layout.haml</code></h4>
+<pre class="highlight haml"><code><span class="nn">!!!
+</span><span class="nt">%html</span>
+  <span class="nt">%head</span>
+    <span class="nt">%title</span> My App
+    <span class="nt">%meta</span><span class="p">{</span><span class="ss">name: </span><span class="s2">"viewport"</span><span class="p">,</span> <span class="ss">content: </span><span class="s2">"width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"</span><span class="p">}</span>
+    <span class="p">=</span> <span class="n">stylesheet_link_tag</span> <span class="s2">"all"</span>
+    <span class="p">=</span> <span class="n">javascript_include_tag</span>  <span class="s2">"all"</span>
+  <span class="nt">%body</span>
+    <span class="p">=</span> <span class="k">yield</span>
+</code></pre>
+
+<h4><code>index.html.haml</code></h4>
+<pre class="highlight haml"><code><span class="nc">.app-page</span><span class="p">{</span><span class="s2">"data-page"</span> <span class="o">=&gt;</span> <span class="s2">"home"</span><span class="p">}</span>
+  <span class="nc">.app-topbar</span>
+    <span class="nc">.app-title</span> Page title
+  <span class="nc">.app-content</span>
+</code></pre>
+
+</section><section><header><h3>確認</h3></header>
+
+<p><code>bundle exec middleman</code>でmiddlemanサーバーを起動し、
+<code>localhost:4567</code>にアクセスしてみましょう。</p>
+
+<p><img alt="スクリーンショット" width="396" height="744" src="/images/2013-09-03-appjs/ss.png" /></p>
+
+<p>タイトルバーが出来ました。<br>
+次はもう少しカスタマイズしてみたいと思います。</p>
+
+</section><section><header><h3>余談</h3></header>
+
+<p>App.jsはbowerのcomponentに登録されていなかったので、
+bowerで管理しようとすると、
+自前でのビルドが必要となります。<br>
+しかし環境によってはbuildスクリプトも修正しないといけないので、
+あまりbowerで管理しているメリットを受けられない気がします。<br>
+そうすると素直にCDNから引っ張ってきた方が良い気もしますね。</p>
+<pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://cdn.kik.com/app/1/app.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/03/ruby-kuromoji/">rubyから形態素解析ライブラリkuromojiを使う</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2013/09/03/ruby-xml/">rubyでxmlを読み込む</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

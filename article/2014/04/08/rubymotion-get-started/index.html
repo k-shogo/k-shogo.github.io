@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>RubyMotion事始め | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='rubymotion' name='keywords'>
+<meta content='RubyMotionでの開発を始めました' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>RubyMotion事始め</h2>
+<span class='byline'>
+<a href="/article/tags/rubymotion/">rubymotion</a>
+</span>
+</header>
+<section><header><h3>はじめに</h3></header>
+
+<p>今まではサーバーサイドの開発が主だったのですが、
+思い立って<a href="http://www.rubymotion.com/">RubyMotion</a>を始めて見ました。</p>
+
+</section><section><header><h3>プロジェクトの開始</h3></header>
+
+<p>プロジェクトの開始は<code>motion create</code>コマンドで行います。</p>
+<pre class="highlight plaintext"><code>motion create sample
+</code></pre>
+
+<p>これで初期のファイルが作成されます。</p>
+<pre class="highlight plaintext"><code>Create sample
+Create sample/.gitignore
+Create sample/app/app_delegate.rb
+Create sample/Gemfile
+Create sample/Rakefile
+Create sample/resources/Default-568h@2x.png
+Create sample/spec/main_spec.rb
+</code></pre>
+
+<h4><code>app/app_delegate.rb</code></h4>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">AppDelegate</span>
+  <span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">application</span><span class="p">,</span> <span class="n">didFinishLaunchingWithOptions</span><span class="ss">:launchOptions</span><span class="p">)</span>
+    <span class="kp">true</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+</section><section><header><h3>初めてのビルド</h3></header>
+
+<p>プロジェクトディレクトリに移動して<code>rake</code>コマンドでビルドしてみます。</p>
+<pre class="highlight plaintext"><code>cd sample
+rake
+</code></pre>
+
+<p>ビルドされて、自動的にシミュレーターが立ち上がります。</p>
+<pre class="highlight plaintext"><code>     Build ./build/iPhoneSimulator-7.1-Development
+   Compile ./app/app_delegate.rb
+    Create ./build/iPhoneSimulator-7.1-Development/sample.app
+      Link ./build/iPhoneSimulator-7.1-Development/sample.app/sample
+    Create ./build/iPhoneSimulator-7.1-Development/sample.app/PkgInfo
+    Create ./build/iPhoneSimulator-7.1-Development/sample.app/Info.plist
+      Copy ./resources/Default-568h@2x.png
+    Create ./build/iPhoneSimulator-7.1-Development/sample.dSYM
+  Simulate ./build/iPhoneSimulator-7.1-Development/sample.app
+(main)&gt;
+</code></pre>
+
+<p>なにもコードを追加していないので、真っ黒なシミュレーターが現れます。</p>
+
+</section><section><header><h3>外部ライブラリの利用</h3></header>
+
+<p>RubyMotionは外部のライブラリを用いることも容易です。<br>
+CRubyのライブラリをそのまま使えるわけではありませんが、
+RubyMotion用Gemも豊富に用意されています。</p>
+
+<p>使いたいライブラリを<code>Gemfile</code>に追記します。<br>
+今回は<a href="https://github.com/clearsightstudio/ProMotion">ProMotion</a>を使用してみます。</p>
+
+<h4><code>Gemfile</code></h4>
+<pre class="highlight ruby"><code><span class="n">source</span> <span class="s1">'https://rubygems.org'</span>
+
+<span class="n">gem</span> <span class="s1">'ProMotion'</span>
+</code></pre>
+
+<p><code>Gemfile</code>に依存関係を記述したら<code>bundle install</code>コマンドでライブラリをインストールします。<br>
+グローバルに入れない場合は<code>bundle install --path vendor/bundle</code>など、インストールパスを指定しましょう。</p>
+
+<p><code>Rake</code>ファイルに<code>bundler</code>を使う設定がなされていれば、
+<code>bundle exec rake</code>としなくとも<code>rake</code>コマンドだけでタスクを実行できます。  </p>
+
+<h4><code>Rakefile</code></h4>
+<pre class="highlight ruby"><code><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="vg">$:</span><span class="p">.</span><span class="nf">unshift</span><span class="p">(</span><span class="s2">"/Library/RubyMotion/lib"</span><span class="p">)</span>
+<span class="nb">require</span> <span class="s1">'motion/project/template/ios'</span>
+
+<span class="k">begin</span>
+  <span class="nb">require</span> <span class="s1">'bundler'</span>
+  <span class="no">Bundler</span><span class="p">.</span><span class="nf">require</span>
+<span class="k">rescue</span> <span class="no">LoadError</span>
+<span class="k">end</span>
+
+<span class="no">Motion</span><span class="o">::</span><span class="no">Project</span><span class="o">::</span><span class="no">App</span><span class="p">.</span><span class="nf">setup</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
+  <span class="c1"># Use `rake config' to see complete project settings.</span>
+  <span class="n">app</span><span class="p">.</span><span class="nf">name</span> <span class="o">=</span> <span class="s1">'sample'</span>
+<span class="k">end</span>
+</code></pre>
+
+</section><section><header><h3>ProMotionをつかってみる</h3></header>
+
+<p><code>bundler</code>で<code>ProMotion</code>をインストールできたので、
+画面を作ってみます。</p>
+
+<h4><code>app/app_delegate.rb</code></h4>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">AppDelegate</span> <span class="o">&lt;</span> <span class="no">PM</span><span class="o">::</span><span class="no">Delegate</span>
+  <span class="k">def</span> <span class="nf">on_load</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+    <span class="nb">open</span> <span class="no">RootScreen</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">nav_bar: </span><span class="kp">true</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<h4><code>app/screens/root_screen.rb</code></h4>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">RootScreen</span> <span class="o">&lt;</span> <span class="no">PM</span><span class="o">::</span><span class="no">Screen</span>
+  <span class="n">title</span> <span class="s2">"Root Screen"</span>
+
+  <span class="k">def</span> <span class="nf">on_load</span>
+    <span class="n">set_nav_bar_button</span> <span class="ss">:right</span><span class="p">,</span> <span class="ss">title: </span><span class="s2">"Help"</span><span class="p">,</span> <span class="ss">action: :open_help_screen</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">open_help_screen</span>
+    <span class="nb">open</span> <span class="no">HelpScreen</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<h4><code>app/screens/help_screen.rb</code></h4>
+<pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">HelpScreen</span> <span class="o">&lt;</span> <span class="no">PM</span><span class="o">::</span><span class="no">TableScreen</span>
+  <span class="n">title</span> <span class="s2">"Table Screen"</span>
+
+  <span class="k">def</span> <span class="nf">table_data</span>
+    <span class="p">[{</span>
+      <span class="ss">title: </span><span class="s2">"Help"</span><span class="p">,</span>
+      <span class="ss">cells: </span><span class="p">[</span>
+        <span class="p">{</span> <span class="ss">title: </span><span class="s2">"About this app"</span><span class="p">,</span> <span class="ss">action: :tapped_about</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="ss">title: </span><span class="s2">"Log out"</span><span class="p">,</span> <span class="ss">action: :log_out</span> <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}]</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">tapped_about</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">{})</span>
+    <span class="nb">open</span> <span class="no">AboutScreen</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">log_out</span>
+    <span class="c1"># Log out!</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>これで<code>rake</code>すれば、画面のあるアプリが立ち上がります。<br>
+すこしアプリ開発っぽくなってきましたね。</p>
+
+<p><img alt="promotion" width="800" height="800" src="/images/2014-04-08-rubymotion-get-started/promotion.png" /></p>
+
+</section><section><header><h3>CocoaPodsの利用</h3></header>
+
+<p>RubyMotionでも<a href="http://cocoapods.org/">CocoaPods</a>で管理されている
+ライブラリも利用することが可能です。</p>
+
+<p><code>Gemfile</code>に<a href="https://github.com/HipByte/motion-cocoapods">motion-cocoapods</a>を追加します。</p>
+
+<h4><code>Gemfile</code></h4>
+<pre class="highlight ruby"><code><span class="n">source</span> <span class="s1">'https://rubygems.org'</span>
+
+<span class="n">gem</span> <span class="s1">'ProMotion'</span>
+<span class="n">gem</span> <span class="s1">'motion-cocoapods'</span>
+</code></pre>
+
+<p><code>Rakefile</code>の中で<code>app.pods</code>ブロックにてCocoaPodsライブラリとの依存関係を記述します。</p>
+
+<h4><code>Rakefile</code></h4>
+<pre class="highlight ruby"><code><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="vg">$:</span><span class="p">.</span><span class="nf">unshift</span><span class="p">(</span><span class="s2">"/Library/RubyMotion/lib"</span><span class="p">)</span>
+<span class="nb">require</span> <span class="s1">'motion/project/template/ios'</span>
+
+<span class="k">begin</span>
+  <span class="nb">require</span> <span class="s1">'bundler'</span>
+  <span class="no">Bundler</span><span class="p">.</span><span class="nf">require</span>
+<span class="k">rescue</span> <span class="no">LoadError</span>
+<span class="k">end</span>
+
+<span class="no">Motion</span><span class="o">::</span><span class="no">Project</span><span class="o">::</span><span class="no">App</span><span class="p">.</span><span class="nf">setup</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
+  <span class="c1"># Use `rake config' to see complete project settings.</span>
+  <span class="n">app</span><span class="p">.</span><span class="nf">name</span> <span class="o">=</span> <span class="s1">'sample'</span>
+
+  <span class="n">app</span><span class="p">.</span><span class="nf">pods</span> <span class="k">do</span>
+    <span class="n">pod</span> <span class="s1">'AFNetworking'</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+
+<p><code>rake</code>タスクに<code>pod:install</code>が追加されているので、CocoaPods管理ライブラリをインストールできます。</p>
+<pre class="highlight plaintext"><code>rake pod:install
+</code></pre>
+
+<p>これで<code>vendor/Pods</code>以下にインストールされます。</p>
+
+</section><section><header><h3>まとめ</h3></header>
+
+<p>gemとCocoaPodsを用いての環境の準備をしてみました。<br>
+どちらも外部ライブラリを容易に扱えるので便利ですね。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/04/09/rubymotion-core-data-query/">CoreDataQueryでデータを保存する [RubyMotion]</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/03/16/active-model-tire/">ActiveModelとtireでElasticsearch上でのみCRUDを行う</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>

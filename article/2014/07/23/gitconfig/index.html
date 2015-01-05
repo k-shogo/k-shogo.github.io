@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>gitconfigで設定していること | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='git, gitconfig' name='keywords'>
+<meta content='gitconfigで設定していることをまとめます' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>gitconfigで設定していること</h2>
+<span class='byline'>
+<a href="/article/tags/git/">git</a>
+</span>
+</header>
+<section><header><h3>gitconfig全体</h3></header>
+
+<p><code>~/.gitconfig</code>のgitコマンド全体に関わる設定を紹介します</p>
+<pre class="highlight conf"><code>[<span class="n">user</span>]
+  <span class="n">name</span> = <span class="n">John</span> <span class="n">Doe</span>
+  <span class="n">email</span> = <span class="n">john</span>.<span class="n">doe</span>@<span class="n">gmail</span>.<span class="n">com</span>
+[<span class="n">color</span>]
+  <span class="n">ui</span> = <span class="n">auto</span>
+[<span class="n">alias</span>]
+  <span class="n">co</span> = <span class="n">checkout</span>
+  <span class="n">cm</span> = <span class="n">commit</span>
+  <span class="n">st</span> = <span class="n">status</span>
+  <span class="n">br</span> = <span class="n">branch</span> -<span class="n">av</span>
+  <span class="n">ft</span> = <span class="n">fetch</span> --<span class="n">prune</span>
+  <span class="n">uncommit</span> = <span class="n">reset</span> <span class="n">HEAD</span>^
+  <span class="n">hist</span> = <span class="n">log</span> --<span class="n">graph</span> --<span class="n">stat</span>
+  <span class="n">l</span> = <span class="n">log</span> --<span class="n">graph</span> --<span class="n">all</span> --<span class="n">format</span>=<span class="n">format</span>:<span class="s1">'%C(bold red)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold blue)― %an%C(reset)%C(bold yellow)%d%C(reset)'</span> --<span class="n">abbrev</span>-<span class="n">commit</span> --<span class="n">date</span>=<span class="n">relative</span>
+  <span class="n">ignore</span> = !<span class="s2">"f() { local s=$1; shift; while [ $# -gt 0 ]; do s="</span>$<span class="n">s</span>,$<span class="m">1</span><span class="s2">"; shift; done; curl "</span><span class="n">http</span>://<span class="n">www</span>.<span class="n">gitignore</span>.<span class="n">io</span>/<span class="n">api</span>/$<span class="n">s</span><span class="s2">"; }; f"</span>
+  <span class="n">delete</span>-<span class="n">merged</span>-<span class="n">branches</span> = !<span class="n">git</span> <span class="n">branch</span> --<span class="n">merged</span> | <span class="n">grep</span> -<span class="n">v</span> \\* | <span class="n">xargs</span> -<span class="n">I</span> % <span class="n">git</span> <span class="n">branch</span> -<span class="n">d</span> %
+  <span class="n">sco</span> = !<span class="n">git</span> <span class="n">checkout</span> $(<span class="n">git</span> <span class="n">branch</span> | <span class="n">peco</span>)
+[<span class="n">push</span>]
+  <span class="n">default</span> = <span class="n">simple</span>
+</code></pre>
+
+</section><section><header><h3>エイリアス系</h3></header>
+<pre class="highlight conf"><code>[<span class="n">alias</span>]
+  <span class="n">co</span> = <span class="n">checkout</span>
+  <span class="n">cm</span> = <span class="n">commit</span>
+  <span class="n">st</span> = <span class="n">status</span>
+  <span class="n">br</span> = <span class="n">branch</span> -<span class="n">av</span>
+  <span class="n">ft</span> = <span class="n">fetch</span> --<span class="n">prune</span>
+</code></pre>
+
+<p>よく使うコマンドはエイリアスを設定するとタイプ数を減少させることが出来ます。  </p>
+
+<p>ブランチを表示する<code>branch</code>コマンドでは
+<code>-a</code>オプションでリモートも含めたすべてのブランチを、
+<code>-v</code>オプションでコミットメッセージを含めた情報を表示させています。</p>
+
+<p>フェッチコマンド<code>fetch</code>では
+<code>--prune</code>オプションを指定し、自動的にリモートで削除されているブランチを削除するようにしています。</p>
+
+</section><section><header><h3>簡易undo</h3></header>
+<pre class="highlight conf"><code>[<span class="n">alias</span>]
+  <span class="n">uncommit</span> = <span class="n">reset</span> <span class="n">HEAD</span>^
+</code></pre>
+
+<p><code>reset</code>コマンドではオプションの<code>--soft</code>, <code>--hard</code>, <code>--mixed</code>の使い分けにより、
+HEAD, インデックス, ワーキングツリーがそれぞれどうなるか気にしなければなりません。<br>
+好みの動作でよく使うものをエイリアスで登録しています。</p>
+
+</section><section><header><h3>ログ表示系</h3></header>
+<pre class="highlight conf"><code>[<span class="n">alias</span>]
+  <span class="n">hist</span> = <span class="n">log</span> --<span class="n">graph</span> --<span class="n">stat</span>
+  <span class="n">l</span> = <span class="n">log</span> --<span class="n">graph</span> --<span class="n">all</span> --<span class="n">format</span>=<span class="n">format</span>:<span class="s1">'%C(bold red)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold blue)― %an%C(reset)%C(bold yellow)%d%C(reset)'</span> --<span class="n">abbrev</span>-<span class="n">commit</span> --<span class="n">date</span>=<span class="n">relative</span>
+</code></pre>
+
+</section><section><header><h3>gitignoreの自動生成</h3></header>
+<pre class="highlight conf"><code>[<span class="n">alias</span>]
+  <span class="n">ignore</span> = !<span class="s2">"f() { local s=$1; shift; while [ $# -gt 0 ]; do s="</span>$<span class="n">s</span>,$<span class="m">1</span><span class="s2">"; shift; done; curl "</span><span class="n">http</span>://<span class="n">www</span>.<span class="n">gitignore</span>.<span class="n">io</span>/<span class="n">api</span>/$<span class="n">s</span><span class="s2">"; }; f"</span>
+  <span class="n">delete</span>-<span class="n">merged</span>-<span class="n">branches</span> = !<span class="n">git</span> <span class="n">branch</span> --<span class="n">merged</span> | <span class="n">grep</span> -<span class="n">v</span> \\* | <span class="n">xargs</span> -<span class="n">I</span> % <span class="n">git</span> <span class="n">branch</span> -<span class="n">d</span> %
+</code></pre>
+
+<p>使用言語は環境に合わせたgitignoreを適宜用意するのは面倒なものです。<br>
+そんなときは<a href="https://github.com/github/gitignore">githubがまとめているgitignore</a>を参考にするのもよいですが、
+コマンドからgitignoreを生成できるようにしておくとより簡単になります。</p>
+
+<p>そこで<a href="http://www.gitignore.io/">gitignore.io</a>というサービスを利用し、コマンドからgitignoreを生成できるようにしています。<br>
+使い方は<code>git ignore ruby,rails</code>とオプション指定をカンマ区切りで渡すだけ。<br>
+以下のように生成されたgitignoreが表示されます。</p>
+<pre class="highlight plaintext"><code># Created by http://www.gitignore.io
+
+### Ruby ###
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+## Specific to RubyMotion:
+.dat*
+.repl_history
+build/
+
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+## Environment normalisation:
+/.bundle/
+/lib/bundler/man/
+
+# for a library or gem, you might want to ignore these files since the code is
+# intended to run in multiple environments; otherwise, check them in:
+# Gemfile.lock
+# .ruby-version
+# .ruby-gemset
+
+# unless supporting rvm &lt; 1.11.0 or doing something fancy, ignore this:
+.rvmrc
+
+
+### Rails ###
+*.rbc
+capybara-*.html
+.rspec
+/log
+/tmp
+/db/*.sqlite3
+/public/system
+/coverage/
+/spec/tmp
+**.orig
+rerun.txt
+pickle-email-*.html
+
+# TODO Comment out these rules if you are OK with secrets being uploaded to the repo
+config/initializers/secret_token.rb
+config/secrets.yml
+
+## Environment normalisation:
+/.bundle
+/vendor/bundle
+
+# these should all be checked in to normalise the environment:
+# Gemfile.lock, .ruby-version, .ruby-gemset
+
+# unless supporting rvm &lt; 1.11.0 or doing something fancy, ignore this:
+.rvmrc
+</code></pre>
+
+<p>ローカルに反映させたい場合は<code>git ignore ruby,rails &gt; .gitignore</code>のようにリダイレクトを使います。<br>
+あとは自動生成されたものを元にカスタマイズしましょう。<br>
+<code>git ignore list</code>とすると対応しているオプション指定の一覧を見ることが出来ます。</p>
+
+</section><section><header><h3>マージされたブランチを削除する</h3></header>
+<pre class="highlight conf"><code>[<span class="n">alias</span>]
+  <span class="n">delete</span>-<span class="n">merged</span>-<span class="n">branches</span> = !<span class="n">git</span> <span class="n">branch</span> --<span class="n">merged</span> | <span class="n">grep</span> -<span class="n">v</span> \\* | <span class="n">xargs</span> -<span class="n">I</span> % <span class="n">git</span> <span class="n">branch</span> -<span class="n">d</span> %
+</code></pre>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/09/13/devise_authentication_token/">deviseをAPIで利用しやすくする -Token Authenticationの追加-</a>
+</h3>
+</header>
+<span class='timestamp'>next article</span>
+</article>
+</li>
+</ul>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/07/08/rails-in-docker/">dockerでrailsを動かすときの構成はどうするべきか</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>
