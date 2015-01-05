@@ -69,14 +69,14 @@
 
 </section><section><header><h3>環境構築</h3></header>
 
-<p>仮想環境の構築には
-<a href="https://www.virtualbox.org">virtualbox</a>と
+<p>仮想環境の構築には<br>
+<a href="https://www.virtualbox.org">virtualbox</a>と<br>
 <a href="http://www.vagrantup.com/">vagrant</a>を用います。</p>
 
-<p>通常はインストールする際には公式ページからdmgファイル等をダウンロードし、
+<p>通常はインストールする際には公式ページからdmgファイル等をダウンロードし、<br>
 インストールウィザードに従ったり、ApplicationフォルダにD&amp;Dします。</p>
 
-<p>しかし今回はhomebrewの拡張である
+<p>しかし今回はhomebrewの拡張である<br>
 <a href="https://github.com/phinze/homebrew-cask">homebrew-cask</a>を用いてみます。<br>
 homebrew-caskはMacのGUIアプリケーションをhomebrewで管理できるようになる拡張機能です。</p>
 
@@ -86,7 +86,7 @@ brew install brew-cask
 </code></pre>
 
 <p>homebrew-caskの使用方法は、brewコマンドを拡張した物になります。<br>
-例えば利用可能なパッケージの検索が、通常<code>brew search</code>であるのに対し、
+例えば利用可能なパッケージの検索が、通常<code>brew search</code>であるのに対し、<br>
 <code>brew cask search</code>になります。</p>
 <pre class="highlight plaintext"><code>$ brew search google
 google-app-engine    google-perftools     google-sparsehash    google-sql-tool      google-go
@@ -96,7 +96,7 @@ google-app-engine-launcher  google-chrome-canary    google-earth            goog
 google-chrome           google-drive        google-hangouts         google-quick-search-box
 </code></pre>
 
-<p>Google Chromeをインストールしたければ、
+<p>Google Chromeをインストールしたければ、<br>
 <code>brew cask install google-chrome</code>とするだけです。</p>
 
 <p>今回はvirtualboxとvagrantの導入を行うので以下のコマンドでインストールを行います。</p>
@@ -104,29 +104,29 @@ google-chrome           google-drive        google-hangouts         google-quick
 brew cask install vagrant
 </code></pre>
 
-<p>homebrew本体との差異は、
-homebrewでは<code>/usr/local/Cellar</code>以下に実体を配置しますが、
+<p>homebrew本体との差異は、<br>
+homebrewでは<code>/usr/local/Cellar</code>以下に実体を配置しますが、<br>
 homebrew-caskではデフォルトで<code>/opt/homebrew-cask/Caskroom</code>に配置します。</p>
 
 </section><section><header><h3>仮想環境の作成</h3></header>
 
-<p>vagrantが利用できるようになったので、仮想環境の構築を行います。
+<p>vagrantが利用できるようになったので、仮想環境の構築を行います。<br>
 vagrantの仮想環境はboxと呼ばれるOSの仮想イメージで管理します。<br>
-boxを自作することも可能ですが、
-最初はvatualbox用にセットアップされたbox等が公開されている
+boxを自作することも可能ですが、<br>
+最初はvatualbox用にセットアップされたbox等が公開されている<br>
 <a href="http://www.vagrantbox.es/">vagrant boxes</a>を利用するのが便利です。</p>
 
-<p>使いたいboxファイルのアドレスをコピーし、
+<p>使いたいboxファイルのアドレスをコピーし、<br>
 vagrantの初期化を行います。</p>
 <pre class="highlight plaintext"><code>vagrant init precise64 http://files.vagrantup.com/precise64.box
 </code></pre>
 
-<p>設定ファイルであるVagrantが作成されます。
+<p>設定ファイルであるVagrantが作成されます。<br>
 取りあえずデフォルトで起動してみましょう。</p>
 <pre class="highlight plaintext"><code>vagrant up
 </code></pre>
 
-<p>これだけで仮想環境が立ち上がります。  </p>
+<p>これだけで仮想環境が立ち上がります。</p>
 <pre class="highlight plaintext"><code>Bringing machine 'default' up with 'virtualbox' provider...
 [default] Box 'precise64' was not found. Fetching box from specified URL for
 the provider 'virtualbox'. Note that if the URL does not have

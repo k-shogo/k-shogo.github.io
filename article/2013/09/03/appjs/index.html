@@ -62,8 +62,8 @@
 </header>
 <section><header><h3>App.jsとは</h3></header>
 
-<p><a href="http://code.kik.com/app/">App.js</a>
-はスマートフォン向けのWebアプリケーションフレームワークです。  </p>
+<p><a href="http://code.kik.com/app/">App.js</a><br>
+はスマートフォン向けのWebアプリケーションフレームワークです。</p>
 
 </section><section><header><h3>準備</h3></header>
 
@@ -108,7 +108,7 @@
 <span class="p">}</span>
 </code></pre>
 
-<p>zepto.jsは最新を使うのでバージョンには<code>null</code>を、
+<p>zepto.jsは最新を使うのでバージョンには<code>null</code>を、<br>
 App.jsはbowerのcomponentに登録されていないので、githubを参照しています。</p>
 
 </section><section><header><h3>App.jsのビルド</h3></header>
@@ -121,7 +121,7 @@ Macならbrewに登録されていたのでインストールします。</p>
 </code></pre>
 
 <p>プロジェクトディレクトリ以下の<code>vendor/components/appjs</code>にbuildのスクリプトが用意されています。<br>
-しかし、スクリプト内部のYUI Compressorコマンドは<code>yui-compressor</code>という指定に対して、
+しかし、スクリプト内部のYUI Compressorコマンドは<code>yui-compressor</code>という指定に対して、<br>
 brewでインストールした物は<code>yuicompressor</code>とハイフン無しになっています。</p>
 
 <p>なのでbuildのスクリプトを開き、<code>yui-compressor</code>を<code>yuicompressor</code>に置換しました。<br>
@@ -135,7 +135,7 @@ buildsディレクトリ以下にファイルが作成されました。</p>
 
 </section><section><header><h3>middlemanの設定</h3></header>
 
-<p>js, css, imageはassets以下にまとめるのが好みなので、
+<p>js, css, imageはassets以下にまとめるのが好みなので、<br>
 <code>config.rb</code>を編集しました。</p>
 
 <h4><code>config.rb</code></h4>
@@ -179,7 +179,7 @@ buildsディレクトリ以下にファイルが作成されました。</p>
 
 </section><section><header><h3>確認</h3></header>
 
-<p><code>bundle exec middleman</code>でmiddlemanサーバーを起動し、
+<p><code>bundle exec middleman</code>でmiddlemanサーバーを起動し、<br>
 <code>localhost:4567</code>にアクセスしてみましょう。</p>
 
 <p><img alt="スクリーンショット" width="396" height="744" src="/images/2013-09-03-appjs/ss.png" /></p>
@@ -189,10 +189,10 @@ buildsディレクトリ以下にファイルが作成されました。</p>
 
 </section><section><header><h3>余談</h3></header>
 
-<p>App.jsはbowerのcomponentに登録されていなかったので、
-bowerで管理しようとすると、
+<p>App.jsはbowerのcomponentに登録されていなかったので、<br>
+bowerで管理しようとすると、<br>
 自前でのビルドが必要となります。<br>
-しかし環境によってはbuildスクリプトも修正しないといけないので、
+しかし環境によってはbuildスクリプトも修正しないといけないので、<br>
 あまりbowerで管理しているメリットを受けられない気がします。<br>
 そうすると素直にCDNから引っ張ってきた方が良い気もしますね。</p>
 <pre class="highlight html"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://cdn.kik.com/app/1/app.js"</span><span class="nt">&gt;&lt;/script&gt;</span>

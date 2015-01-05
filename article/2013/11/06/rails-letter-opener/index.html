@@ -61,20 +61,20 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>railsアプリからメールを送信することは簡単にできますが、
+<p>railsアプリからメールを送信することは簡単にできますが、<br>
 開発中に送信メールを確認したいときはどうするでしょうか。</p>
 
 <p>今回はrailsアプリ開発中にメールを確認する方法を紹介します。</p>
 
 </section><section><header><h3>準備</h3></header>
 
-<p>今回はメール確認の例として、
-<a href="https://github.com/plataformatec/devise">devise</a>
+<p>今回はメール確認の例として、<br>
+<a href="https://github.com/plataformatec/devise">devise</a><br>
 を用いてメール認証が必要なユーザー登録の仕組みを用意します。</p>
 
 <h4>deviseインストール</h4>
 
-<p>railsアプリケーションがすでに初期化されていたとして、
+<p>railsアプリケーションがすでに初期化されていたとして、<br>
 Gemfileにdeviseを追加し、インストールを行います。</p>
 <pre class="highlight plaintext"><code>bundle exec rails generate devise:install
 bundle exec rails generate devise user
@@ -143,15 +143,15 @@ bundle exec rails generate devise:views users
 <pre class="highlight ruby"><code>  <span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">default_url_options</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">host: </span><span class="s1">'localhost:3000'</span> <span class="p">}</span>
 </code></pre>
 
-<p>これでrailsサーバーを起動して、
-<code>http://localhost:3000/users/sign_up</code>にアクセスすればユーザー登録が出来るので、
+<p>これでrailsサーバーを起動して、<br>
+<code>http://localhost:3000/users/sign_up</code>にアクセスすればユーザー登録が出来るので、<br>
 メールが送信されます。</p>
 
 <p><img alt="フォーム" width="810" height="734" src="/images/2013-11-06-rails-letter-opener/form.jpg" /></p>
 
 </section><section><header><h3>コンソールでの確認</h3></header>
 
-<p>railsサーバーを起動しているコンソールを見てみると、
+<p>railsサーバーを起動しているコンソールを見てみると、<br>
 メール送信のログが出力されています。</p>
 <pre class="highlight plaintext"><code>Sent mail to hoge@email.com (12.1ms)
 Date: Wed, 06 Nov 2013 10:05:01 +0900
@@ -211,15 +211,15 @@ Redirected to http://localhost:3000/
 Completed 302 Found in 148ms (ActiveRecord: 8.1ms)
 </code></pre>
 
-<p>エンコードされてしまっているので、
+<p>エンコードされてしまっているので、<br>
 confirmation_token付きのリンクを確認できなくなってしまいました。</p>
 
 <p>そもそもメールの内容をコンソールから確認するのは面倒ですね。</p>
 
 </section><section><header><h3>letter_opener</h3></header>
 
-<p>一つ目のメール確認方法は
-<a href="https://github.com/ryanb/letter_opener">letter_opener</a>
+<p>一つ目のメール確認方法は<br>
+<a href="https://github.com/ryanb/letter_opener">letter_opener</a><br>
 です。</p>
 
 <p>Gemfileにletter_openerを追加し、インストールします。</p>
@@ -228,19 +228,19 @@ confirmation_token付きのリンクを確認できなくなってしまいま�
 <span class="k">end</span>
 </code></pre>
 
-<p><code>config/environments/development.rb</code>に
+<p><code>config/environments/development.rb</code>に<br>
 <code>config.action_mailer.delivery_method = :letter_opener</code>の一行を追加します。</p>
 <pre class="highlight ruby"><code>  <span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">default_url_options</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">host: </span><span class="s1">'localhost:3000'</span> <span class="p">}</span>
   <span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">delivery_method</span> <span class="o">=</span> <span class="ss">:letter_opener</span>
 </code></pre>
 
-<p>これだけでメールが送信されたとき（今回の場合はユーザー登録を行ったとき）に
+<p>これだけでメールが送信されたとき（今回の場合はユーザー登録を行ったとき）に<br>
 ブラウザでメールを確認することが出来ます。</p>
 
 <p><img alt="letter_opener_web" width="810" height="761" src="/images/2013-11-06-rails-letter-opener/01.jpg" /></p>
 
-<p>さらに
-<a href="https://github.com/fgrehm/letter_opener_web">letter_opener_web</a>
+<p>さらに<br>
+<a href="https://github.com/fgrehm/letter_opener_web">letter_opener_web</a><br>
 というgemもあります。</p>
 
 <p>こちらもGemfileに追加し</p>
@@ -249,7 +249,7 @@ confirmation_token付きのリンクを確認できなくなってしまいま�
 <span class="k">end</span>
 </code></pre>
 
-<p><code>config/environments/development.rb</code>の
+<p><code>config/environments/development.rb</code>の<br>
 <code>config.action_mailer.delivery_method</code>を<code>:letter_opener_web</code>に変更</p>
 <pre class="highlight ruby"><code>  <span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">default_url_options</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">host: </span><span class="s1">'localhost:3000'</span> <span class="p">}</span>
   <span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">delivery_method</span> <span class="o">=</span> <span class="ss">:letter_opener_web</span>
@@ -265,25 +265,25 @@ confirmation_token付きのリンクを確認できなくなってしまいま�
 <span class="k">end</span>
 </code></pre>
 
-<p>これで
-<code>http://localhost:3000/letter_opener</code>にアクセスすることで
+<p>これで<br>
+<code>http://localhost:3000/letter_opener</code>にアクセスすることで<br>
 送信されたメールを確認することが出来るようになります。</p>
 
 <p><img alt="letter_opener_web" width="1176" height="734" src="/images/2013-11-06-rails-letter-opener/02.jpg" /></p>
 
 </section><section><header><h3>mailcatcher</h3></header>
 
-<p>もう一つの方法は
+<p>もう一つの方法は<br>
 <a href="http://mailcatcher.me">mailcatcher</a>です。</p>
 
-<p>先ほどのletter_openerはrailsアプリケーションに組み込みましたが、
+<p>先ほどのletter_openerはrailsアプリケーションに組み込みましたが、<br>
 mailcatcherは単独で動作する開発用のSMTPサーバーです。</p>
 
 <p>gemで配布されており、インストールは簡単です。</p>
 <pre class="highlight plaintext"><code>gem install mailcatcher
 </code></pre>
 
-<p><code>mailcatcher</code>コマンドで起動し、
+<p><code>mailcatcher</code>コマンドで起動し、<br>
 デフォルトではバックグラウンドで起動し、<code>smtp://localhost:1025</code>が使用されます。</p>
 
 <p>起動オプションで適宜変更することも可能です。</p>
@@ -300,8 +300,8 @@ mailcatcherは単独で動作する開発用のSMTPサーバーです。</p>
     -h, --help                       Display this help information
 </code></pre>
 
-<p>railsアプリケーションと連携する場合は
-<code>config/environments/development.rb</code>の
+<p>railsアプリケーションと連携する場合は<br>
+<code>config/environments/development.rb</code>の<br>
 <code>config.action_mailer.smtp_settings</code>で設定を行います。</p>
 <pre class="highlight ruby"><code>  <span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">delivery_method</span> <span class="o">=</span> <span class="ss">:smtp</span>
   <span class="n">config</span><span class="p">.</span><span class="nf">action_mailer</span><span class="p">.</span><span class="nf">smtp_settings</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">address: </span><span class="s1">'localhost'</span><span class="p">,</span> <span class="ss">port: </span><span class="mi">1025</span> <span class="p">}</span>
@@ -313,7 +313,7 @@ mailcatcherは単独で動作する開発用のSMTPサーバーです。</p>
 
 </section><section><header><h3>まとめ</h3></header>
 
-<p>どちらの方法も少しの設定で開発環境でメールを確認出来るようになるので、
+<p>どちらの方法も少しの設定で開発環境でメールを確認出来るようになるので、<br>
 railsアプリからメールを送信する機能を確認する場合に活用できそうです。</p>
 </section>
 </article>

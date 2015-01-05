@@ -61,13 +61,13 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>railsでは<code>rails g scaffold</code>などでModelを作成すれば、
+<p>railsでは<code>rails g scaffold</code>などでModelを作成すれば、<br>
 自動的にidが付与されます。<br>
-しかもprimary_keyでauto_incrementでかつindexも張られるので、
+しかもprimary_keyでauto_incrementでかつindexも張られるので、<br>
 普段はidを気にする必要はありません。</p>
 
 <p>railsを使い、自分でデータ構造を決める場合はrailsの流儀に則った方が楽で、問題も起こりません。<br>
-しかし、古いデータを活用した場合、流儀にそぐわない事もあり得ます。  </p>
+しかし、古いデータを活用した場合、流儀にそぐわない事もあり得ます。</p>
 
 <p>今回は規約に沿わない場合の対応について大きく分けて2つの場合について説明します。<br>
 なお環境は以下の物で検証しています。</p>
@@ -80,16 +80,16 @@
 
 </section><section><header><h3>主キーがidではない</h3></header>
 
-<p>主キーがidではない場合として、
+<p>主キーがidではない場合として、<br>
 具体的に商品（Item）テーブルの主キーが文字列である場合を考えます。</p>
 
-<p>主キーがidで無い場合のポイントは
+<p>主キーがidで無い場合のポイントは<br>
 <code>create_tabel</code>の<code>id: false</code>です。<br>
 これによってidが自動生成されることはなくなります。<br>
-他のオプションで<code>primary_key</code>と言う物もありますが、
+他のオプションで<code>primary_key</code>と言う物もありますが、<br>
 これはinteger型で名前をidから変更するだけの物です。</p>
 
-<p>下記の例では<code>null: false</code>とする事でnot nullな制約を追加し、
+<p>下記の例では<code>null: false</code>とする事でnot nullな制約を追加し、<br>
 <code>add_index :items, :code, unique: true</code>でユニーク制約を定義しています。</p>
 
 <h4>Migrationファイル</h4>
@@ -121,18 +121,18 @@
 </section><section><header><h3>複合主キーを扱いたい</h3></header>
 
 <p>次は複合主キーを扱う場合についてです。<br>
-具体的に先ほど使った商品（Item）について、
+具体的に先ほど使った商品（Item）について、<br>
 各商品に任意のタグ（Tag）がついているとします。<br>
 タグは商品コード（item_code）とタグコード（code）の複合主キーを持っています。</p>
 
-<p>railsで複合主キーを扱う場合、
+<p>railsで複合主キーを扱う場合、<br>
 <a href="https://github.com/composite-primary-keys/composite_primary_keys">composite_primary_keys</a>のgemを使用します。<br>
 composite_primary_keysの準備として<code>Gemfile</code>に<code>gem &#39;composite_primary_keys&#39;</code>を追加し<code>bundle install</code>します。</p>
 
-<p>Migrationファイルのポイントは、
+<p>Migrationファイルのポイントは、<br>
 <code>:item_code</code>と<code>:code</code>の組み合わせがユニークである制約の定義です。<br>
 複合主キーがユニークである制約は<code>add_index :tags, [:item_code, :code], unique: true</code>だけでも十分です。<br>
-複合主キーが2つ3つと長くなる場合、インデックス名が長すぎてエラーが発生する事もあるので、
+複合主キーが2つ3つと長くなる場合、インデックス名が長すぎてエラーが発生する事もあるので、<br>
 その場合は<code>name</code>でインデックス名を指定してあげましょう。</p>
 
 <h4>Migrationファイル</h4>
@@ -151,13 +151,13 @@ composite_primary_keysの準備として<code>Gemfile</code>に<code>gem &#39;co
 <span class="k">end</span>
 </code></pre>
 
-<p>モデルに関しては、
-先ほどは<code>self.primary_key</code>を使いましたが、
+<p>モデルに関しては、<br>
+先ほどは<code>self.primary_key</code>を使いましたが、<br>
 複合主キーの場合は<code>self.primary_keys</code>を使います。<br>
-これによって<code>Tag.find &#39;item_code&#39;, &#39;code&#39;</code>と、
+これによって<code>Tag.find &#39;item_code&#39;, &#39;code&#39;</code>と、<br>
 findメソッドで複合主キーを扱うことが可能になります。</p>
 
-<p>また、<code>foreign_key</code>によって、どのカラムが外部キーなのかを指定することで、
+<p>また、<code>foreign_key</code>によって、どのカラムが外部キーなのかを指定することで、<br>
 関連を定義することが可能です。</p>
 
 <h4>Tag Model</h4>
@@ -188,7 +188,7 @@ findメソッドで複合主キーを扱うことが可能になります。</p>
 <pre class="highlight plaintext"><code>TypeError: ["item_code", "code"] is not a symbol
 </code></pre>
 
-<p>根本では<code>serializable_hash</code>を呼び出すところでのエラーなので、
+<p>根本では<code>serializable_hash</code>を呼び出すところでのエラーなので、<br>
 モデルでserializable_hashをオーバーライドする事で解決します。</p>
 <pre class="highlight ruby"><code><span class="k">def</span> <span class="nf">serializable_hash</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span>
   <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>

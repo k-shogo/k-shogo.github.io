@@ -61,10 +61,10 @@
 </header>
 <section><header><h3>はじめに</h3></header>
 
-<p>&ldquo;<a href="/article/2014/02/10/docker-on-mac">Macに正式対応したdocker ver 0.8 のセットアップ</a>&quot;では、
+<p>&ldquo;<a href="/article/2014/02/10/docker-on-mac">Macに正式対応したdocker ver 0.8 のセットアップ</a>&quot;では、<br>
 Mac OSXにboot2dockerをインストールしてdockerを扱う環境を整備しました。</p>
 
-<p>直接dockerコマンドを叩けるようになったとはいえ、
+<p>直接dockerコマンドを叩けるようになったとはいえ、<br>
 コンテナはboot2dockerのVM上にあるのでアクセスするには一手間かける必要があります。</p>
 
 </section><section><header><h3>コンテナ作成</h3></header>
@@ -103,7 +103,7 @@ EXPOSE 9200
 CMD ./bin/elasticsearch -f
 </code></pre>
 
-<p>Elasticsearchサーバー構築のためのDockerfileを用意して、
+<p>Elasticsearchサーバー構築のためのDockerfileを用意して、<br>
 同一ディレクトリで<code>docker build</code>します。</p>
 <pre class="highlight plaintext"><code>$ docker build -t="elasticsearch" .
 </code></pre>
@@ -143,7 +143,7 @@ boot2dockerのssh待ち受けポートは2022なので、そこを指定して�
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>コンテナ上のElasticsearchサーバーにアクセスできました。  </p>
+<p>コンテナ上のElasticsearchサーバーにアクセスできました。</p>
 
 </section><section><header><h3>まとめ</h3></header>
 

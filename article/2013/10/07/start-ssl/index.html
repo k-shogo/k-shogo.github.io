@@ -62,18 +62,18 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>自前のサービスでhttps通信をサポートするには、
+<p>自前のサービスでhttps通信をサポートするには、<br>
 SSL証明書が必要になります。<br>
-自分で使用するだけなら、
-SSL証明書も自前で作成するいわゆるオレオレ証明書を用いても良いのですが、
-外部に公開するサービスの場合そうとも行きません。
-SSL証明書というと値段が高い印象がありましたが、
+自分で使用するだけなら、<br>
+SSL証明書も自前で作成するいわゆるオレオレ証明書を用いても良いのですが、<br>
+外部に公開するサービスの場合そうとも行きません。<br>
+SSL証明書というと値段が高い印象がありましたが、<br>
 <a href="https://www.startssl.com/">StartSSL</a>というサービスで無料でSSL証明書の発行を受けられると言うことで試してみました。</p>
 
 </section><section><header><h3>StartSSLにユーザー登録する</h3></header>
 
 <p>証明書の発行を行う前に、StartSSLにユーザー登録する必要があります。<br>
-<a href="https://www.startssl.com/">StartSSL</a>から、
+<a href="https://www.startssl.com/">StartSSL</a>から、<br>
 &ldquo;StartSSL Free (Class1)&quot;を選択します。</p>
 
 <p><img alt="01" width="800" height="539" src="/images/2013-10-07-start-ssl/01.jpg" /></p>
@@ -86,19 +86,19 @@ SSL証明書というと値段が高い印象がありましたが、
 
 <p><img alt="03" width="800" height="394" src="/images/2013-10-07-start-ssl/03.jpg" /></p>
 
-<p>名前、住所、メールアドレスなど
+<p>名前、住所、メールアドレスなど<br>
 個人情報の登録を行います。</p>
 
 <p><img alt="04" width="800" height="338" src="/images/2013-10-07-start-ssl/04.jpg" /></p>
 
-<p>登録したメールアドレスに本人確認のメールが届くので、
+<p>登録したメールアドレスに本人確認のメールが届くので、<br>
 受信したメールのauthentication codeを入力して登録を完了させます。<br>
 この時、「もっと詳細な住所を教えて欲しい」と言う旨のメールが送られてくることがあります。<br>
 その場合はStartSSLの担当者とメールをやりとりして登録を完了させましょう。</p>
 
 <p><img alt="05" width="800" height="226" src="/images/2013-10-07-start-ssl/05.jpg" /></p>
 
-<p>登録を完了すると、
+<p>登録を完了すると、<br>
 StartSSLへのログイン用SSL証明書発行のためのURLが送られてきます。<br>
 そのリンクからブラウザに証明書をインストールしましょう。<br>
 暗号化セキュリティーレベルはデフォルトの2048（高）で良いと思います。<br>
@@ -109,7 +109,7 @@ StartSSLへのログイン用SSL証明書発行のためのURLが送られてき
 
 </section><section><header><h3>ドメインの認証</h3></header>
 
-<p>ユーザー登録が完了したら、次はドメインの認証です。
+<p>ユーザー登録が完了したら、次はドメインの認証です。<br>
 Validations Wizardタブを選択します。</p>
 
 <p><img alt="07" width="800" height="569" src="/images/2013-10-07-start-ssl/07.jpg" /></p>
@@ -118,14 +118,14 @@ Validations Wizardタブを選択します。</p>
 
 <p><img alt="08" width="800" height="319" src="/images/2013-10-07-start-ssl/08.jpg" /></p>
 
-<p>自分が管理しているドメインであることを示すために、
-登録したドメインの
-postmaster, hostmaster, webmasterなど、いずれかのメールアドレスでメールを受け取る必要があります。
+<p>自分が管理しているドメインであることを示すために、<br>
+登録したドメインの<br>
+postmaster, hostmaster, webmasterなど、いずれかのメールアドレスでメールを受け取る必要があります。<br>
 メールを受信できるように事前に設定しておきましょう。</p>
 
 <p><img alt="09" width="800" height="365" src="/images/2013-10-07-start-ssl/09.jpg" /></p>
 
-<p>先ほど指定した名前に確認用メールが送られてくるので、
+<p>先ほど指定した名前に確認用メールが送られてくるので、<br>
 メールに記載されているコードを入力して進みます。</p>
 
 <p><img alt="10" width="800" height="311" src="/images/2013-10-07-start-ssl/10.jpg" /></p>
@@ -133,8 +133,8 @@ postmaster, hostmaster, webmasterなど、いずれかのメールアドレス�
 </section><section><header><h3>秘密鍵の発行</h3></header>
 
 <p>ドメインの認証が終わったら、秘密鍵の発行です。<br>
-Certificates Wizardタブを選択し、
-Certificate Targetは
+Certificates Wizardタブを選択し、<br>
+Certificate Targetは<br>
 Web Server SSL/TLS Certificateを指定します。</p>
 
 <p><img alt="11" width="800" height="439" src="/images/2013-10-07-start-ssl/11.jpg" /></p>
@@ -153,25 +153,25 @@ Web Server SSL/TLS Certificateを指定します。</p>
 
 <p><img alt="14" width="800" height="293" src="/images/2013-10-07-start-ssl/14.jpg" /></p>
 
-<p>サブドメインを登録します。  </p>
+<p>サブドメインを登録します。</p>
 
 <p><img alt="15" width="800" height="349" src="/images/2013-10-07-start-ssl/15.jpg" /></p>
 
-<p>次に進むとメールを送信するという表示がされるので、
+<p>次に進むとメールを送信するという表示がされるので、<br>
 メールが来るのを待ちます。<br>
-メールを受信したら、Tool Boxタブに移動し、
+メールを受信したら、Tool Boxタブに移動し、<br>
 Retrieve Certificateを選択します。</p>
 
 <p><img alt="16" width="800" height="434" src="/images/2013-10-07-start-ssl/16.jpg" /></p>
 
-<p>すると公開鍵が表示されるので、
+<p>すると公開鍵が表示されるので、<br>
 テキストエリアの内容を保存しておきます。</p>
 
 <p><img alt="17" width="800" height="425" src="/images/2013-10-07-start-ssl/17.jpg" /></p>
 
 </section><section><header><h3>証明書の設置</h3></header>
 
-<p>サーバーにSSL証明書を設置し、
+<p>サーバーにSSL証明書を設置し、<br>
 HTTPSでの通信を出来るようにします。<br>
 今回はnginxでSSL証明書を利用できるようにしてみます。</p>
 
@@ -184,7 +184,7 @@ HTTPSでの通信を出来るようにします。<br>
 wget https://www.startssl.com/certs/sub.class1.server.ca.pem
 </code></pre>
 
-<p>先ほど保存しておいた秘密鍵と公開鍵を配置します.
+<p>先ほど保存しておいた秘密鍵と公開鍵を配置します.<br>
 今回はそれぞれ<code>startssl.key</code>と<code>startssl.crt</code>と言う名前で設置しました。<br>
 例えばvimでファイルを作成して鍵の中身を貼り付けます。</p>
 <pre class="highlight plaintext"><code>vim startssl.key
@@ -195,29 +195,29 @@ vim startssl.crt
 <pre class="highlight plaintext"><code>chmod 400 startssl.crt startssl.key ca.pem sub.class1.server.ca.pem
 </code></pre>
 
-<p>Apacheを使用する場合は中間証明書を指定するディレクティブがありますが、
+<p>Apacheを使用する場合は中間証明書を指定するディレクティブがありますが、<br>
 nginxには中間証明書を直接指定するディレクティブが用意されていません。<br>
 そこでサーバ証明書と中間証明書を結合します。<br>
 証明書は順に辿らないと駄目なので、結合の順番には注意しましょう。</p>
 <pre class="highlight plaintext"><code>cat sub.class1.server.ca.pem &gt;&gt; startssl.crt
 </code></pre>
 
-<p>秘密鍵にはパスワードが設定されているため、
+<p>秘密鍵にはパスワードが設定されているため、<br>
 nginxのstart/restart時にそのパスワードを入力する必要が出てきます。<br>
-自動起動する場合には不便なので、
-パスワードを解除する場合は
-以下のようにバックアップを作成した後、パスワードがない鍵を作成します。  </p>
+自動起動する場合には不便なので、<br>
+パスワードを解除する場合は<br>
+以下のようにバックアップを作成した後、パスワードがない鍵を作成します。</p>
 <pre class="highlight plaintext"><code>cp startssl.key startssl.key.org
 openssl rsa -in startssl.key -out startssl.key
 </code></pre>
 
 <p>nginxの設定を一部抜粋します。<br>
-<code>ssl_certificate</code>で中間証明書と結合した証明書を、
+<code>ssl_certificate</code>で中間証明書と結合した証明書を、<br>
 <code>ssl_certificate_key</code>で秘密鍵を指定します。<br>
-オプションとして
-SSLダウングレード攻撃を考慮して、
-SSLバージョン指定<code>ssl_protocols</code>,
-暗号スイート指定<code>ssl_ciphers</code>,
+オプションとして<br>
+SSLダウングレード攻撃を考慮して、<br>
+SSLバージョン指定<code>ssl_protocols</code>,<br>
+暗号スイート指定<code>ssl_ciphers</code>,<br>
 暗号選択方式指定<code>ssl_prefer_server_ciphers</code>を行いました。</p>
 <pre class="highlight nginx"><code><span class="k">server</span> <span class="p">{</span>
 

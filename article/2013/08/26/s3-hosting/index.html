@@ -62,8 +62,8 @@
 </header>
 <section><header><h3>設定</h3></header>
 
-<p>S3でホスティングする場合の設定は、
-Static Website Hostingの項目で
+<p>S3でホスティングする場合の設定は、<br>
+Static Website Hostingの項目で<br>
 Enable website hostingを有効化するだけ。</p>
 
 <p><img alt="AWS_Management_Console" width="700" height="517" src="/images/2013-08-26-s3-hosting/S3_Management_Console.png" /></p>
@@ -85,15 +85,15 @@ Enable website hostingを有効化するだけ。</p>
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>あとはPermissionの設定で、
-パブリックな接続を許可しましょう。
+<p>あとはPermissionの設定で、<br>
+パブリックな接続を許可しましょう。<br>
 Versionはなぜか2008-10-17です。</p>
 
 </section><section><header><h3>middlemanからデプロイ</h3></header>
 
-<p>middlemanからのS3のデプロイには、
-<a href="https://github.com/karlfreeman/middleman-sync">middleman-sync</a>を使うと簡単です。
-<code>config.rb</code>の中に<code>sync</code>ブロックを追加し、
+<p>middlemanからのS3のデプロイには、<br>
+<a href="https://github.com/karlfreeman/middleman-sync">middleman-sync</a>を使うと簡単です。<br>
+<code>config.rb</code>の中に<code>sync</code>ブロックを追加し、<br>
 リージョン、バケット名、アクセスキーを記述するだけです。</p>
 
 <h4><code>config.rb</code></h4>

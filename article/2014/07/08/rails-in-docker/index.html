@@ -62,7 +62,7 @@
 </header>
 <section><header><h3>はじめに</h3></header>
 
-<p>dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、
+<p>dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、<br>
 構成も落ち着いてきたのでまとめます。</p>
 
 </section><section><header><h3>お試しバージョン</h3></header>
@@ -139,7 +139,7 @@ CMD bash -l -c <span class="s1">'bundle exec rails s'</span>
 <p>毎回rubyをビルドし直すのが時間がかかるので、rubyが入ったコンテナのリポジトリを分離し、<br>
 ruby, node等を用意したコンテナ + railsリポジトリ + railsが動作するコンテナ の3リポジトリ構成にしてみました。<br>
 つまり先ほどのDockerfileを半分に分割する感じです。<br>
-さらにrailsのセットアップ部分で<code>bash -l -c</code>とかつけるのもイケてないと感じたので、
+さらにrailsのセットアップ部分で<code>bash -l -c</code>とかつけるのもイケてないと感じたので、<br>
 セットアップのスクリプトを分離しても見ました。</p>
 
 <h4>railsを動作させるコンテナのDockerfile</h4>
@@ -200,7 +200,7 @@ bundle <span class="nb">exec </span>rake assets:precompile <span class="nv">RAIL
 </section><section><header><h3>現在の構成</h3></header>
 
 <p>そもそもDockerでrbenvいらないじゃん + railsリポジトリの中にDockerfileがあった方がいいねってことで、<br>
-ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。  </p>
+ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。</p>
 
 <h4>ベースとなるコンテナのDockerfile</h4>
 <pre class="highlight shell"><code>FROM dockerfile/ubuntu
@@ -275,14 +275,14 @@ ENTRYPOINT <span class="o">[</span><span class="s2">"/usr/bin/start-server"</spa
 
 </code></pre>
 
-<p>ポイントはrailsアプリ全体をADDする前に、<code>Gemfile</code>と<code>Gemcile.lock</code>だけをADDして
+<p>ポイントはrailsアプリ全体をADDする前に、<code>Gemfile</code>と<code>Gemcile.lock</code>だけをADDして<br>
 <code>bundle install</code>している箇所です。<br>
 これによって、Gemfileに更新があった場合のみ<code>bundle install</code>が実行されるようになります。</p>
 
 <h4>.dockerignore</h4>
 
 <p>実はこの構成にした直後、「ローカルで<code>docker build</code>したときに<code>vendor/bundle</code>以下にインストールされたgemのファイル群までADDされて無駄」、「Dockerfileの中で<code>.bundle/config</code>を消さないと設定を引き継いでしまう」などの不満点もあり、<br>
-gitignoreファイルみたいに除外指定したいなーと思っていたら、
+gitignoreファイルみたいに除外指定したいなーと思っていたら、<br>
 <a href="http://blog.docker.com/2014/07/announcing-docker-1-1/">docker 1.1.0</a>でdockerignoreファイルに対応されたのでその不満も解消しました。</p>
 <pre class="highlight plaintext"><code>### Rails ###
 public/assets/*
@@ -304,7 +304,7 @@ vendor/bundle
 <p>railsリポジトリにDockerfileを同梱した方が簡単だったというのが感想です。<br>
 dockerの開発も活発で、ほしいなーと思った機能が早速docker 1.1.0に含まれていたのには感心しました。</p>
 
-<p>今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、
+<p>今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、<br>
 本来はDBコンテナは分離した方がいいですね。</p>
 </section>
 </article>

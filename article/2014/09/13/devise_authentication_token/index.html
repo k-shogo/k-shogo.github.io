@@ -62,11 +62,11 @@
 </header>
 <section><header><h3>はじめに</h3></header>
 
-<p>この記事では認証のプラグインである<a href="https://github.com/plataformatec/devise">devise</a>を
+<p>この記事では認証のプラグインである<a href="https://github.com/plataformatec/devise">devise</a>を<br>
 JSON APIで利用しやすく拡張することを目的としています。</p>
 
 <p>deviseにはトークンによる認証機能もありましたが、現在デフォルトでは削除されています。<br>
-公式wiki <a href="https://github.com/plataformatec/devise/wiki/How-To:-Simple-Token-Authentication-Example">How To: Simple Token Authentication Example</a>には<code>TokenAuthenticatable</code>が削除された経緯や、
+公式wiki <a href="https://github.com/plataformatec/devise/wiki/How-To:-Simple-Token-Authentication-Example">How To: Simple Token Authentication Example</a>には<code>TokenAuthenticatable</code>が削除された経緯や、<br>
 自分で実装する場合のサンプルへのリンクがありますが、気になる箇所があったため自分で実装した物をまとめます。</p>
 
 <p>本サンプルアプリケーションのソースコードは<a href="https://github.com/k-shogo/devise_api_sample">github.com/k-shogo/devise<em>api</em>sample</a>で公開しています。</p>
@@ -82,7 +82,7 @@ JavaScript Runtime        Node.js (V8)
 </section><section><header><h3>サンプルアプリケーション</h3></header>
 
 <p>deviseの認証をweb, apiどちらからでも使用できるようにするサンプルアプリケーションを作成します。<br>
-今回は単純なノートアプリを題材とします。
+今回は単純なノートアプリを題材とします。<br>
 何はともあれ<code>rails new</code>から始めましょう。</p>
 <pre class="highlight shell"><code>rails new devise_api_sample
 </code></pre>
@@ -94,12 +94,12 @@ JavaScript Runtime        Node.js (V8)
 <span class="n">gem</span> <span class="s1">'cancancan'</span>
 </code></pre>
 
-<p>他にも、本サンプルでは
-<a href="https://github.com/indirect/haml-rails">haml-rails</a>,
-<a href="https://github.com/doabit/semantic-ui-sass">semantic-ui-sass</a>,
-<a href="https://github.com/kossnocorp/jquery.turbolinks">jquery-turbolinks</a>,
-<a href="https://github.com/plataformatec/simple_form">simple_form</a>,
-<a href="https://github.com/comfy/active_link_to">active_link_to</a>
+<p>他にも、本サンプルでは<br>
+<a href="https://github.com/indirect/haml-rails">haml-rails</a>,<br>
+<a href="https://github.com/doabit/semantic-ui-sass">semantic-ui-sass</a>,<br>
+<a href="https://github.com/kossnocorp/jquery.turbolinks">jquery-turbolinks</a>,<br>
+<a href="https://github.com/plataformatec/simple_form">simple_form</a>,<br>
+<a href="https://github.com/comfy/active_link_to">active_link_to</a><br>
 を使用しています。</p>
 
 <p><code>bundle install</code>と<code>./bin/rake db:create</code>を忘れずに。</p>
@@ -167,8 +167,8 @@ JavaScript Runtime        Node.js (V8)
 <span class="k">end</span>
 </code></pre>
 
-<p>viewをカスタマイズするために生成したので、
-<code>config/initializers/devise.rb</code>にて
+<p>viewをカスタマイズするために生成したので、<br>
+<code>config/initializers/devise.rb</code>にて<br>
 <code>config.scoped_views = true</code>としておきます。</p>
 
 </section><section><header><h3>ノートモデルを作る</h3></header>
@@ -190,7 +190,7 @@ JavaScript Runtime        Node.js (V8)
 <span class="k">end</span>
 </code></pre>
 
-<p>abilityを設定したら、
+<p>abilityを設定したら、<br>
 <code>app/controllers/notes_controller.rb</code>に<code>load_and_authorize_resource</code>を追加して、アクセスコントロールします。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">NotesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
   <span class="n">load_and_authorize_resource</span>
@@ -259,8 +259,8 @@ JavaScript Runtime        Node.js (V8)
 <span class="k">end</span>
 </code></pre>
 
-<p>ほぼデフォルトのままですが、
-<code>index</code>では自分が作成したノートだけを返すように, 
+<p>ほぼデフォルトのままですが、<br>
+<code>index</code>では自分が作成したノートだけを返すように, <br>
 <code>create</code>ではノートと作成者が関連付くように変更しています。</p>
 
 </section><section><header><h3>見た目を調整</h3></header>
@@ -303,11 +303,11 @@ JavaScript Runtime        Node.js (V8)
         ログイン
 </code></pre>
 
-<p><a href="https://github.com/k-shogo/devise_api_sample/blob/master/config/initializers/simple_form.rb">simple_formのsemantic-ui対応</a>
-や
+<p><a href="https://github.com/k-shogo/devise_api_sample/blob/master/config/initializers/simple_form.rb">simple_formのsemantic-ui対応</a><br>
+や<br>
 <a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/helpers/semantic_ui_helper.rb">フラッシュメッセージ用helper</a>, <a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/assets/javascripts/semantic_ui_helper.js.coffee">メッセージ削除用js</a>等はオマケ要素なのでgithubを参照してください。</p>
 
-<p>画面はこんな感じになりました。
+<p>画面はこんな感じになりました。<br>
 <img alt="main" width="1075" height="485" src="/images/2014-09-13-devise_authentication_token/main.png" /></p>
 
 </section><section><header><h3>アクセストークン発行画面</h3></header>
@@ -363,8 +363,8 @@ JavaScript Runtime        Node.js (V8)
 
 <p><code>config/routes.rb</code>に<code>resource :authentication_token, only: [:update, :destroy]</code>を追加します。</p>
 
-<p>ユーザーが自分でアクセストークンを発行できるように、
-ユーザーの設定画面<code>app/views/users/registrations/edit.html.haml</code>に
+<p>ユーザーが自分でアクセストークンを発行できるように、<br>
+ユーザーの設定画面<code>app/views/users/registrations/edit.html.haml</code>に<br>
 アクセストークン発行ボタンをつけます。</p>
 <pre class="highlight haml"><code><span class="nt">%h2</span>
   Edit <span class="si">#{</span><span class="n">resource_name</span><span class="p">.</span><span class="nf">to_s</span><span class="p">.</span><span class="nf">humanize</span><span class="si">}</span>
@@ -400,7 +400,7 @@ JavaScript Runtime        Node.js (V8)
 <span class="p">=</span> <span class="n">link_to</span> <span class="s2">"Back"</span><span class="p">,</span> <span class="ss">:back</span>
 </code></pre>
 
-<p>アクセストークン発行ボタンは<code>remote</code>設定にしたので、
+<p>アクセストークン発行ボタンは<code>remote</code>設定にしたので、<br>
 押下したときの動作を<code>app/assets/javascripts/authentication_token.js.coffee</code>で定義します。</p>
 <pre class="highlight coffeescript"><code><span class="nx">$</span> <span class="o">-&gt;</span>
   <span class="nx">$</span><span class="p">(</span><span class="s">'#generate_authentication_token'</span><span class="p">)</span>
@@ -418,7 +418,7 @@ JavaScript Runtime        Node.js (V8)
 
 </section><section><header><h3>アクセストークンによる認証</h3></header>
 
-<p>トークンの発行が出来るようになったので、
+<p>トークンの発行が出来るようになったので、<br>
 続いてトークンによる認証の機構を追加します。</p>
 
 <p>今回は<code>app/controllers/application_controller.rb</code>に追加します。</p>
@@ -447,14 +447,14 @@ JavaScript Runtime        Node.js (V8)
 <span class="k">end</span>
 </code></pre>
 
-<p>これで、リクエストパラメーターに<code>email</code>と<code>token</code>が含まれていた場合に、
+<p>これで、リクエストパラメーターに<code>email</code>と<code>token</code>が含まれていた場合に、<br>
 トークンによってユーザーを認証出来るようになりました。</p>
 
 </section><section><header><h3>deviseのjson API対応</h3></header>
 
-<p>ここまででトークンによる認証は実装しましたが、
+<p>ここまででトークンによる認証は実装しましたが、<br>
 このままだとwebでユーザー登録 &amp; トークン発行後にしかAPIが利用できません。<br>
-そこでユーザー登録もAPIで利用できるようにするために
+そこでユーザー登録もAPIで利用できるようにするために<br>
 <code>config/application.rb</code>でdeviseがjsonのリクエストにも対応できるように設定します。</p>
 <pre class="highlight ruby"><code><span class="k">module</span> <span class="nn">DeviseApiUse</span>
   <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Application</span>
@@ -469,18 +469,18 @@ JavaScript Runtime        Node.js (V8)
 <p>なお、<a href="http://edgeguides.rubyonrails.org/4_2_release_notes.html">rails 4.2 release notes</a>にクラスレベルの<code>respond_to</code>は削除されたので、<a href="https://github.com/plataformatec/responders">responders</a>を追加してね、とあるので今後少し注意かもしれません。</p>
 
 <blockquote>
-<p>respond_with and the corresponding class-level respond_to have been moved to the responders gem.
+<p>respond_with and the corresponding class-level respond_to have been moved to the responders gem.<br>
 To use the following, add gem &lsquo;responders&rsquo;, &rsquo;~&gt; 2.0&rsquo; to your Gemfile:</p>
 </blockquote>
 
 <p>APIでのログイン時、アクセストークンが無い場合に生成して返すように、ログインの動作を拡張します。</p>
 
 <p>これでユーザー登録もAPIで利用可能になりました。<br>
-APIでのログイン時、ユーザー情報のJSONを返すのですが、
-ユーザーがトークンを発行していない場合は改めてトークン発行APIを叩く必要があります。　　
+APIでのログイン時、ユーザー情報のJSONを返すのですが、<br>
+ユーザーがトークンを発行していない場合は改めてトークン発行APIを叩く必要があります。　　<br>
 そこで、APIでのログイン時のみ、「トークンが発行されていない場合は作成する」ように拡張します。</p>
 
-<p>deviseのコントローラーを拡張するので、
+<p>deviseのコントローラーを拡張するので、<br>
 <code>config/routes.rb</code>でdeviseのルーティングをカスタマイズし、独自コントローラーに向くようにします。</p>
 <pre class="highlight ruby"><code><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
   <span class="n">resources</span> <span class="ss">:notes</span>
@@ -501,7 +501,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、
 <span class="k">end</span>
 </code></pre>
 
-<p><code>Devise::SessionsController</code>の<code>create</code>にはブロックを渡せるので、
+<p><code>Devise::SessionsController</code>の<code>create</code>にはブロックを渡せるので、<br>
 それによってAPIでのログイン時にトークンが無い場合には発行してからレスポンスを返すようにしています。</p>
 
 </section><section><header><h3>APIのリクエストを試してみる</h3></header>

@@ -62,18 +62,18 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>&ldquo;<a href="/article/2013/09/04/ruby-mecab/">rubyから形態素解析ライブラリmecabを利用する</a>&quot;では、
+<p>&ldquo;<a href="/article/2013/09/04/ruby-mecab/">rubyから形態素解析ライブラリmecabを利用する</a>&quot;では、<br>
 mecabの基本的な言語バインディングを用いました。<br>
-このバインディングはSWIGを用いてMeCabと密に結合しているため、
+このバインディングはSWIGを用いてMeCabと密に結合しているため、<br>
 mecab gemのバージョンとMeCabのバージョンを合わせる必要がありました。<br>
 今回はmecab gem以外の選択肢を使ってみます。</p>
 
 </section><section><header><h3>納豆</h3></header>
 
-<p>今回はrubyからmecabを利用するために
+<p>今回はrubyからmecabを利用するために<br>
 <a href="https://bitbucket.org/buruzaemon/natto/overview">natto</a>というgemを使用します。</p>
 
-<p>nattoは、FFI（foreign function interface：外部関数インタフェース）を使用して、
+<p>nattoは、FFI（foreign function interface：外部関数インタフェース）を使用して、<br>
 RubyとMeCabを繋ぐgemです。<br>
 nattoはC言語拡張ではないためコンパイルは必要ありません。<br>
 そのためCRuby（MRI / YARV）でもJRuby（JVM）でも実行できる利点があります。<br>
@@ -81,11 +81,11 @@ nattoはC言語拡張ではないためコンパイルは必要ありません�
 
 </section><section><header><h3>mecabを最新に</h3></header>
 
-<p>mecab gemをbundlerから管理するために、
+<p>mecab gemをbundlerから管理するために、<br>
 mecab本体のバージョンを0.98にしていました。<br>
 nattoを利用するに当たって最新のバージョンに戻します。</p>
 
-<p>既に古いバージョンがインストールされている場合、
+<p>既に古いバージョンがインストールされている場合、<br>
 いったんアンインストールします。</p>
 <pre class="highlight plaintext"><code>brew uninstall mecab mecab-ipadic
 </code></pre>
@@ -94,7 +94,7 @@ nattoを利用するに当たって最新のバージョンに戻します。</p
 <pre class="highlight plaintext"><code>brew versions mecab
 </code></pre>
 
-<p>最新バージョンを確認したら、
+<p>最新バージョンを確認したら、<br>
 <code>/usr/local</code>に移動してformulaをチェックアウトします。<br>
 このとき最新バージョンは<code>0.996</code>でした。</p>
 <pre class="highlight plaintext"><code>git checkout ee21df2 /usr/local/Library/Formula/mecab.rb
@@ -110,7 +110,7 @@ nattoを利用するに当たって最新のバージョンに戻します。</p
 
 <p><code>Gemfile</code>に<code>gem &#39;natto&#39;</code>を追加して<code>bundle install</code>でインストールします。</p>
 
-<p>使い方は<code>Natto::MeCab.new</code>して、
+<p>使い方は<code>Natto::MeCab.new</code>して、<br>
 <code>parse</code>メソッドに渡すだけです。</p>
 <pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'natto'</span>
 

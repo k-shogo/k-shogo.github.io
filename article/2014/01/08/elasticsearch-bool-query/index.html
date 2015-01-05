@@ -64,21 +64,21 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>&ldquo;<a href="/article/2013/09/03/rails-elasticsearch/">railsから全文検索エンジンelasticsearchを利用する</a>&quot;では、
-全文検索を手軽に実装することを目的としていたので、
+<p>&ldquo;<a href="/article/2013/09/03/rails-elasticsearch/">railsから全文検索エンジンelasticsearchを利用する</a>&quot;では、<br>
+全文検索を手軽に実装することを目的としていたので、<br>
 検索クエリーの組み立てにはあまり踏み込んでいませんでした。</p>
 
 <p>今回は複数のOR, AND条件の組み合わせなどを設定したい場合の記述方法を説明します。</p>
 
 </section><section><header><h3>bool query</h3></header>
 
-<p>elasticsearchには複雑なクエリーを組み立てるための
-<a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html">bool query</a>
+<p>elasticsearchには複雑なクエリーを組み立てるための<br>
+<a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html">bool query</a><br>
 という仕組みが用意されています。</p>
 
 <p>bool queryでは<code>must</code>, <code>should</code>, <code>must_not</code>の組み合わせで表現を行います。<br>
-<code>must</code>は必ず満たすべき条件を、
-<code>should</code>は少なくとも満たす条件を、
+<code>must</code>は必ず満たすべき条件を、<br>
+<code>should</code>は少なくとも満たす条件を、<br>
 <code>must_not</code>は満たしてはならない条件を指定します。</p>
 
 <h4>tireでの記述例</h4>
@@ -102,13 +102,13 @@
 <span class="k">end</span>
 </code></pre>
 
-<p>上記の例の場合、
-<code>tags:ruby OR tags:java AND NOT tags:python</code>
+<p>上記の例の場合、<br>
+<code>tags:ruby OR tags:java AND NOT tags:python</code><br>
 と指定していることになります。</p>
 
 <h4>boolクエリーの拡張</h4>
 
-<p>複数のboolクエリーを組み合わせる場合、
+<p>複数のboolクエリーを組み合わせる場合、<br>
 各条件をブロックでまとめ、見通しを良くすることも可能です。</p>
 <pre class="highlight ruby"><code><span class="n">tags_query</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="k">do</span> <span class="o">|</span><span class="n">boolean</span><span class="o">|</span>
   <span class="n">boolean</span><span class="p">.</span><span class="nf">should</span> <span class="p">{</span> <span class="n">string</span> <span class="s1">'tags:ruby'</span> <span class="p">}</span>
@@ -137,8 +137,8 @@
 <h4>boolクエリーにおけるshouldのオプション</h4>
 
 <p>boolクエリーでは<code>should</code>の最小数一致数を指定することも可能です。<br>
-elasticsearchでは
-<a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-minimum-should-match.html">minimum_should_match</a>パラメータで指定しますが、
+elasticsearchでは<br>
+<a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-minimum-should-match.html">minimum_should_match</a>パラメータで指定しますが、<br>
 tireでは<code>minimum_number_should_match</code>での指定なので若干注意が必要です。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Article</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
   <span class="kp">include</span> <span class="no">Tire</span><span class="o">::</span><span class="no">Model</span><span class="o">::</span><span class="no">Search</span>

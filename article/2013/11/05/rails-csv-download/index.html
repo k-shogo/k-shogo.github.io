@@ -61,19 +61,19 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>webアプリケーションの作成時に、
+<p>webアプリケーションの作成時に、<br>
 「一覧データをExcelで開きたい」という要望をよく伺います。</p>
 
-<p>そこで本記事ではrailsアプリにデータの一覧をcsv形式でダウンロード出来る機能を
+<p>そこで本記事ではrailsアプリにデータの一覧をcsv形式でダウンロード出来る機能を<br>
 追加する方法について解説します。</p>
 
 </section><section><header><h3>モデルの変更</h3></header>
 
 <p>まずはモデルにCSV形式のデータを返却するメソッドを定義します。<br>
-今回は例として商品(Item)モデルを扱い、
+今回は例として商品(Item)モデルを扱い、<br>
 商品モデルは商品名と価格のカラムを持つということにします。</p>
 
-<p>CSVファイルを扱うには、
+<p>CSVファイルを扱うには、<br>
 標準のCSVパッケージを使うのが簡単です。<br>
 ファイルサイズが巨大（例えば 100Mバイト以上）で無ければ性能的にも問題ないでしょう。</p>
 <pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'csv'</span>
@@ -90,8 +90,8 @@
 <span class="k">end</span>
 </code></pre>
 
-<p>CSV生成時のオプションとして、
-<code>headers</code>および<code>write_headers</code>でヘッダー行書き込みを、
+<p>CSV生成時のオプションとして、<br>
+<code>headers</code>および<code>write_headers</code>でヘッダー行書き込みを、<br>
 <code>force_quotes</code>で全てのフィールドの作成時にクオートを追加することを指定しています。</p>
 
 <p>また、Excelで開くことを想定して<code>#encode</code>メソッドでShift JISの文字コードを指定しています。</p>
@@ -109,10 +109,10 @@
   <span class="k">end</span>
 </code></pre>
 
-<p><code>respond_to</code>ブロック内部に
+<p><code>respond_to</code>ブロック内部に<br>
 <code>format.csv</code>を追加することで、アドレス末尾に<code>.csv</code>を指定されたとき（例えば<code>localhost:3000/items.csv</code>）の動作を規定します。</p>
 
-<p>CSV形式を指定した場合は直接ダウンロードさせたいので、
+<p>CSV形式を指定した場合は直接ダウンロードさせたいので、<br>
 <code>send_data</code>を用いています。</p>
 
 </section><section><header><h3>ビューにダウンロードのリンクを張る</h3></header>
@@ -121,8 +121,8 @@
 <pre class="highlight haml"><code><span class="p">=</span> <span class="n">link_to</span> <span class="s1">'CSV形式でダウンロード'</span><span class="p">,</span> <span class="n">items_path</span><span class="p">(</span><span class="ss">format: </span><span class="s1">'csv'</span><span class="p">)</span>
 </code></pre>
 
-<p>コントローラーの<code>index</code>メソッドにcsvでの返却を追加したので
-<code>items_path</code>を指定し、
+<p>コントローラーの<code>index</code>メソッドにcsvでの返却を追加したので<br>
+<code>items_path</code>を指定し、<br>
 そこに<code>format: &#39;csv&#39;</code>を渡すことでアドレス末尾に<code>.csv</code>を指定する場合と同じ動作をさせています。</p>
 </section>
 </article>

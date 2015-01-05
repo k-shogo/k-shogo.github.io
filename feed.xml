@@ -4,10 +4,198 @@
   <id>http://k-shogo.github.io/</id>
   <link href="http://k-shogo.github.io/"/>
   <link href="http://k-shogo.github.io/feed.xml" rel="self"/>
-  <updated>2014-12-16T16:22:00+09:00</updated>
+  <updated>2015-01-05T17:56:00+09:00</updated>
   <author>
     <name>k-shogo</name>
   </author>
+  <entry>
+    <title>君もelixirを始めてみないか</title>
+    <link rel="alternate" href="/article/2015/01/05/lets_start_elixir/"/>
+    <id>/article/2015/01/05/lets_start_elixir/</id>
+    <published>2015-01-05T17:56:00+09:00</published>
+    <updated>2015-01-05T17:56:00+09:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;h3&gt;elixirって何？&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href="http://elixir-lang.org"&gt;elixir&lt;/a&gt; (エリクサー)は&lt;a href="http://www.erlang.org"&gt;Erlang&lt;/a&gt;で作られた言語なんだ。&lt;br&gt;
+最初はCoffeeScriptとJavaScriptみたいな関係なのかって思ってくれれば良い。&lt;br&gt;
+Erlangの上に作られているから、elixirの特徴を語るにはまずErlangについて述べる必要がある。&lt;/p&gt;
+
+&lt;p&gt;Erlangは1986年にJoe Armstrong, Robert Virding, Mike Williams の3人によって最初のバージョンが作られた。&lt;br&gt;
+元々は通信機器メーカーのEricsson内部の独自言語だったけれど、1998年にオープンソースとしてリリースされた。&lt;br&gt;
+Erlangの特徴をぎゅっとまとめると、並行性と信頼性そしてホットスワップだ。&lt;br&gt;
+Erlangの開発は Joe Armstrong 博士が電話交換制御用ソフトウェアを構築するために、&lt;br&gt;
+Prologをベースに並行プロセスやエラー処理の仕組みを追加したことに端を発している。&lt;br&gt;
+並行性と信頼性、ホットスワップの特徴は通信事業者向けの分散アプリケーションの開発に必要だったんだ。&lt;/p&gt;
+
+&lt;p&gt;elixirはBEAMと呼ばれるErlangの仮想環境で動作するから、Erlangの並行性と信頼性の特徴を受け継いでいる。&lt;br&gt;
+そして拡張機能としてマクロを使ったメタプログラミング等も扱うことが出来るんだ。&lt;/p&gt;
+
+&lt;p&gt;elixirよりまず、Erlangの知名度も高くは無いよね。&lt;br&gt;
+でも案外身近なところで使われてたりするんだ。&lt;br&gt;
+Twitterでは&lt;a href="https://www.ejabberd.im"&gt;ejabberd&lt;/a&gt;というJabber/XMPP実装が使われている（今現在もそうかは分からないけど）ようだし、&lt;br&gt;
+&lt;a href="https://www.erlang-solutions.com/about/news/whatsapp-engineers-talk-about-scaling-450-million-users-erlang-erlang-factory-sf-bay-6-7"&gt;WhatsAppもErlangを使用しているみたいだ&lt;/a&gt;。&lt;br&gt;
+Erlangは何億人とユーザーを抱えるような大規模なシステムでかなりの実績を積んでいる。&lt;br&gt;
+プロセッサのマルチコア化が進む現在、並行性と信頼性を備えるErlangが活躍できる場面が多くなっていくんじゃないかなって思わないかい？&lt;br&gt;
+Matzも注目する言語なんて記事もあるよ。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://magazine.rubyist.net/?0017-Legwork"&gt;Rubyist Magazine - Rubyist のための他言語探訪 【第 10 回】 Erlang&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.atmarkit.co.jp/news/200704/27/erlang.html"&gt;twitterブームの陰で注目を集める“Erlang” － ＠IT&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://techon.nikkeibp.co.jp/article/TOPCOL/20070710/135665/"&gt;組み込みから生まれた言語Erlangの時代が来る - 日経エレクトロニクス - 日経テクノロジーオンライン&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;そんなに言うならelixirじゃなくて素のErlangで良いじゃんって思うかもしれないね。&lt;br&gt;
+答える代わりに質問だ、上の記事は2007の物なんだけど、Erlangって今流行ってる？&lt;br&gt;
+ちょっとこの記事を見て欲しい&lt;br&gt;
+&lt;a href="http://www.infoq.com/jp/news/2012/01/Katz-CouchDB-Couchbase-Server"&gt;Damien Katz氏がApache CouchDBから離反し、Couchbase Server開発を継続&lt;/a&gt;&lt;br&gt;
+CouchDBがコードの大半をErlangからC/C++するって内容だ。&lt;br&gt;
+Damien Katz氏はインタビューの中で流行ってない原因を述べている。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Erlangは素晴らしい言語です。信頼性が高く、信頼できるしっかりとしたシステムを簡単に構築できます。しかし、エコシステムがとても小さいです。なので、ツールや性能に対する投資は他の一般的な言語とは比べようもないくらい少ないです。私はErlangにもっと人気の言語になって欲しいと思います。ErlangがJavaよりも速くならない理由はどこにもありません。しかし、その奇妙な構文が人々を遠ざけ、普及と商用投資を妨げています。でも私はErlangが好きです。性能が重要なコンポーネントでの利用は少なくしますが、今後も致命的に重要なコンポーネントに使うつもりです。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;そう、流行らないのは取っつきにくいからだ。&lt;br&gt;
+であれば、取っつきやすければ Erlang のパワーを享受できるようになるね。&lt;br&gt;
+そういう考えで始まったプロジェクトには&lt;a href="http://reia-lang.org/"&gt;Reia Programming Language&lt;/a&gt;という物もある、しかし残念ながらReiaの開発は停止してしまっている。&lt;br&gt;
+Reiaの後に登場し、後継のプロジェクトに指名され、2014年9月18日にv1.0.0がリリースされたのがelixirなんだ。&lt;/p&gt;
+
+&lt;h3&gt;開発環境は整ってるの？&lt;/h3&gt;
+
+&lt;p&gt;何が取っつきやすくなったかって、それはもちろん文法なんだけど、&lt;br&gt;
+今や言語そのものが良くたって開発環境が良くないと流行らないよね。&lt;br&gt;
+だから文法の前に開発の環境について紹介しておくね。&lt;/p&gt;
+
+&lt;p&gt;まずは &lt;code&gt;Mix&lt;/code&gt; だ。&lt;br&gt;
+&lt;code&gt;Mix&lt;/code&gt; は ruby だと &lt;code&gt;rake&lt;/code&gt; と &lt;code&gt;bundler&lt;/code&gt; を合わせたようなものなんだ。&lt;br&gt;
+rubyのプロジェクト開始は &lt;code&gt;bundle init&lt;/code&gt; して、&lt;code&gt;Gemfile&lt;/code&gt; を編集して、&lt;code&gt;bundle install&lt;/code&gt;するよね。&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mkdir ruby_app
+&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;cd &lt;/span&gt;ruby_app
+&lt;span class="gp"&gt;$ &lt;/span&gt;bundle init
+&lt;span class="gp"&gt;$ &lt;/span&gt;vim Gemfile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;source&lt;/span&gt; &lt;span class="s2"&gt;"https://rubygems.org"&lt;/span&gt;
+
+&lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s2"&gt;"rails"&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;bundle install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;elixir&lt;/code&gt; の &lt;code&gt;mix&lt;/code&gt; の場合は &lt;code&gt;mix new elixir_app&lt;/code&gt; して &lt;code&gt;mix.exs&lt;/code&gt; の &lt;code&gt;deps&lt;/code&gt; を編集して、&lt;code&gt;mix deps.get&lt;/code&gt; だ。&lt;br&gt;
+ここでは &lt;code&gt;deps&lt;/code&gt; に &lt;a href="https://github.com/elixir-lang/ecto"&gt;elixir-lang/ecto&lt;/a&gt; というライブラリを追加している。&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mix new elixir_app
+&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;cd &lt;/span&gt;elixir_app
+&lt;span class="gp"&gt;$ &lt;/span&gt;vim mix.exs
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="k"&gt;defmodule&lt;/span&gt; &lt;span class="no"&gt;ElixirApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="no"&gt;Mixfile&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+  &lt;span class="kn"&gt;use&lt;/span&gt; &lt;span class="no"&gt;Mix&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="no"&gt;Project&lt;/span&gt;
+
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="n"&gt;project&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;app:&lt;/span&gt; &lt;span class="ss"&gt;:elixir_app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+     &lt;span class="ss"&gt;version:&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;0.0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+     &lt;span class="ss"&gt;elixir:&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;~&amp;gt; 1.0"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+     &lt;span class="ss"&gt;deps:&lt;/span&gt; &lt;span class="n"&gt;deps&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# Configuration for the OTP application&lt;/span&gt;
+  &lt;span class="c1"&gt;#&lt;/span&gt;
+  &lt;span class="c1"&gt;# Type `mix help compile.app` for more information&lt;/span&gt;
+  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="n"&gt;application&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;applications:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:logger&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+
+  &lt;span class="c1"&gt;# Dependencies can be Hex packages:&lt;/span&gt;
+  &lt;span class="c1"&gt;#&lt;/span&gt;
+  &lt;span class="c1"&gt;#   {:mydep, "~&amp;gt; 0.3.0"}&lt;/span&gt;
+  &lt;span class="c1"&gt;#&lt;/span&gt;
+  &lt;span class="c1"&gt;# Or git/path repositories:&lt;/span&gt;
+  &lt;span class="c1"&gt;#&lt;/span&gt;
+  &lt;span class="c1"&gt;#   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}&lt;/span&gt;
+  &lt;span class="c1"&gt;#&lt;/span&gt;
+  &lt;span class="c1"&gt;# Type `mix help deps` for more examples and options&lt;/span&gt;
+  &lt;span class="k"&gt;defp&lt;/span&gt; &lt;span class="n"&gt;deps&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="p"&gt;[&lt;/span&gt;
+      &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:ecto&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;~&amp;gt; 0.4"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;
+  &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mix deps.get
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;rubyでの&lt;a href="https://rubygems.org/"&gt;RubyGems.org&lt;/a&gt;に対応するライブラリのホスティングは&lt;a href="https://hex.pm/"&gt;Hex&lt;/a&gt;という物があるし、&lt;br&gt;
+依存関係には &lt;a href="https://github.com/"&gt;GitHub&lt;/a&gt; のリポジトリを指定することも出来る。&lt;/p&gt;
+
+&lt;p&gt;インタラクティブシェルは &lt;code&gt;irb&lt;/code&gt; に相当する &lt;code&gt;iex&lt;/code&gt; が用意されているし、テストも標準で &lt;code&gt;ExUnit&lt;/code&gt; という物がある。&lt;br&gt;
+さらに、是非紹介しておきたいのが Elixir Release Manager &lt;a href="https://github.com/bitwalker/exrm"&gt;bitwalker/exrm&lt;/a&gt;だ。&lt;br&gt;
+詳しい使い方は後に回すけれど、exrm はリリース用のビルドを行うことが出来るし、さらにダウンタイムなしのアップグレードやダウングレードを簡単にしてくれる。&lt;/p&gt;
+
+&lt;table&gt;&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;機能&lt;/th&gt;
+&lt;th style="text-align: left"&gt;ruby&lt;/th&gt;
+&lt;th style="text-align: left"&gt;elixir&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;ビルドツール&lt;/td&gt;
+&lt;td style="text-align: left"&gt;rake&lt;/td&gt;
+&lt;td style="text-align: left"&gt;mix&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;ライブラリ管理&lt;/td&gt;
+&lt;td style="text-align: left"&gt;bundle&lt;/td&gt;
+&lt;td style="text-align: left"&gt;mix&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;標準リポジトリ&lt;/td&gt;
+&lt;td style="text-align: left"&gt;RubyGems.org&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Hex&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;インタラクティブシェル&lt;/td&gt;
+&lt;td style="text-align: left"&gt;irb&lt;/td&gt;
+&lt;td style="text-align: left"&gt;iex&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;テスト&lt;/td&gt;
+&lt;td style="text-align: left"&gt;minitest&lt;/td&gt;
+&lt;td style="text-align: left"&gt;ExUnit&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+
+&lt;h3&gt;とりあえずコードを見てみる&lt;/h3&gt;
+
+&lt;p&gt;文法を詳しく説明する前に、少しコードを見てみよう。&lt;br&gt;
+Ruby だと全てがオブジェクトだから、メソッドの返値のオブジェクトにあるメソッドを次々呼び出すことでメソッドチェーン出来るよね。&lt;/p&gt;
+&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="nf"&gt;select&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt; &lt;span class="p"&gt;}.&lt;/span&gt;&lt;span class="nf"&gt;map&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [10, 20, 30]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;elixirはオブジェクト指向じゃなく関数型だから、データから関数を呼ぶわけじゃ無いからメソッドチェーンは出来ない。&lt;br&gt;
+&lt;code&gt;fn e -&amp;gt; e &amp;lt; 4 end&lt;/code&gt; とかは ruby の &lt;code&gt;lambda&lt;/code&gt; みたいな物だよ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;filtered&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="no"&gt;Enum&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;list&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="no"&gt;Enum&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filtered&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [10, 20, 30]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;メソッドチェーンできないのは面倒くさいなと思うかもしれないけど、実は同じような感覚で記述することも出来る。&lt;/p&gt;
+
+&lt;p&gt;ポイントは elixir では操作対象は必ず関数の第一引数になるという点だ。&lt;br&gt;
+さらに、「関数の結果を受けて、次の関数の第一引数へ渡す」ための&lt;code&gt;|&amp;gt;&lt;/code&gt;記法も用意されている。&lt;br&gt;
+この&lt;code&gt;Kernel.|&amp;gt;/2&lt;/code&gt;を使って先ほどのコードを書き直すと&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;|&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;Enum&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;|&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;Enum&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [10, 20, 30]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;さらに無名関数を&lt;code&gt;&amp;amp;&lt;/code&gt;(&lt;code&gt;Kernel.SpecialForms.&amp;amp;/1&lt;/code&gt;) で省略できるから、慣れると圧縮して書く事も出来るよ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;|&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;Enum&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;&amp;amp;1&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="o"&gt;|&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;Enum&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;&amp;amp;1&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="c1"&gt;# =&amp;gt; [10, 20, 30]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;まだ追記していくよ&lt;/h3&gt;
+</content>
+  </entry>
   <entry>
     <title>早く知っておけば良かったrailsの技</title>
     <link rel="alternate" href="/article/2014/12/16/rails-tips/"/>
@@ -45,7 +233,7 @@ Rails version             4.1.8
 
 &lt;p&gt;最初はこの通りに作らなきゃいけないのかなって思っていたのですが、最初から用意されている枠に合わない物は追加しても大丈夫です。&lt;br&gt;
 例えば自作のバリデーターをまとめる &lt;code&gt;validators&lt;/code&gt; とか、バックグラウンドで動くワーカーが入ってる &lt;code&gt;workers&lt;/code&gt; とかですね。&lt;/p&gt;
-&lt;pre class="highlight plaintext"&gt;&lt;code&gt;- app/                         
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;- app/
  |+ assets/
  |+ controllers/
  |+ decorators/
@@ -149,7 +337,7 @@ new_user_note GET    /users/:user_id/notes/new(.:format) notes#new
 ちょっと注意なのが &lt;code&gt;form_for&lt;/code&gt; に渡すパスです。&lt;br&gt;
 例えば、&lt;code&gt;notes#create&lt;/code&gt; の時は &lt;code&gt;/users/:user_id/notes&lt;/code&gt; で、&lt;code&gt;notes#update&lt;/code&gt; の時は &lt;code&gt;/notes/:id&lt;/code&gt; とユーザーIDの有無が異なります。&lt;br&gt;
 これだと &lt;code&gt;form_for(@note) do&lt;/code&gt; のままだと &lt;code&gt;notes#new&lt;/code&gt; の時に &lt;code&gt;undefined method notes_path&lt;/code&gt; なんて言われちゃいます。&lt;br&gt;
-（&lt;code&gt;shallow&lt;/code&gt; オプションを指定しない場合は &lt;code&gt;form_for([@user, @note])&lt;/code&gt; のように指定すれば良い）
+（&lt;code&gt;shallow&lt;/code&gt; オプションを指定しない場合は &lt;code&gt;form_for([@user, @note])&lt;/code&gt; のように指定すれば良い）&lt;br&gt;
 そこで、&lt;code&gt;form_for&lt;/code&gt; は以下のように設定します。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;form_for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vi"&gt;@note&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;url: &lt;/span&gt;&lt;span class="n"&gt;polymorphic_path&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;&lt;span class="vi"&gt;@user&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="vi"&gt;@note&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
@@ -166,7 +354,7 @@ new_user_note GET    /users/:user_id/notes/new(.:format) notes#new
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;こうすることで、
+&lt;p&gt;こうすることで、&lt;br&gt;
 新規作成時には &lt;code&gt;action=&amp;quot;/users/1/notes&amp;quot;&lt;/code&gt;、編集時には &lt;code&gt;action=&amp;quot;/notes/1&amp;quot;&lt;/code&gt; とちゃんと指定できます。&lt;/p&gt;
 
 &lt;h3&gt;nilかも？って時には ||, &amp;amp;&amp;amp; とか presense とか try とか便利だよ&lt;/h3&gt;
@@ -180,20 +368,20 @@ new_user_note GET    /users/:user_id/notes/new(.:format) notes#new
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;こんな感じで書くことが出来るんですね。&lt;br&gt;
-ruby だとこれを「nilガード」なんて呼ばれています。
-分かりやすく式を展開すれば下の意味と同じです。  &lt;/p&gt;
+ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt;
+分かりやすく式を展開すれば下の意味と同じです。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;name&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="s1"&gt;'anonymous'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;もちろん使いどころは nilガードだけじゃありません。&lt;br&gt;
-&lt;code&gt;User&lt;/code&gt; クラスにニックネーム &lt;code&gt;nickname&lt;/code&gt; もあったとして、
+&lt;code&gt;User&lt;/code&gt; クラスにニックネーム &lt;code&gt;nickname&lt;/code&gt; もあったとして、&lt;br&gt;
 「ニックネームが設定されていればそちらを、されていない（nilなら）名前を出したい」なんて時はこうすれば良いわけです。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nickname&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;name&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;同じようなユースケースで &lt;code&gt;presence&lt;/code&gt; が使える場合もあります。&lt;br&gt;
 &lt;code&gt;presence&lt;/code&gt; は &lt;code&gt;present?&lt;/code&gt; メソッドが真なら &lt;code&gt;self&lt;/code&gt; を、偽なら &lt;code&gt;nil&lt;/code&gt; を返すメソッドです。&lt;br&gt;
-&lt;code&gt;present?&lt;/code&gt; は &lt;code&gt;nil&lt;/code&gt;, &lt;code&gt;false&lt;/code&gt;, 空の配列, 空のハッシュ, 空の文字列, 特定文字列のみ文字列を判定してくれるメソッドです。
+&lt;code&gt;present?&lt;/code&gt; は &lt;code&gt;nil&lt;/code&gt;, &lt;code&gt;false&lt;/code&gt;, 空の配列, 空のハッシュ, 空の文字列, 特定文字列のみ文字列を判定してくれるメソッドです。&lt;br&gt;
 ここでの特定文字列とは 正規表現 &lt;code&gt;/\A[[:space:]]*\z/&lt;/code&gt; で表される物です。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;user.name&lt;/code&gt; で &lt;code&gt;nil&lt;/code&gt; だけじゃ無くて空白文字も判定したいんだって時に&lt;/p&gt;
@@ -244,12 +432,12 @@ ruby だとこれを「nilガード」なんて呼ばれています。
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;try&lt;/code&gt; だとメソッド名の打ち間違いなども &lt;code&gt;nil&lt;/code&gt; で返ってきますが、
+&lt;p&gt;&lt;code&gt;try&lt;/code&gt; だとメソッド名の打ち間違いなども &lt;code&gt;nil&lt;/code&gt; で返ってきますが、&lt;br&gt;
 存在しないメソッドの場合は &lt;code&gt;NoMethodError&lt;/code&gt; を返してくれる &lt;code&gt;try!&lt;/code&gt; も用意されています。&lt;/p&gt;
 
 &lt;h3&gt;delegate も使ってみよう&lt;/h3&gt;
 
-&lt;p&gt;上の例では &lt;code&gt;note.user.name&lt;/code&gt; とメソッドの呼び出しをしていますが、
+&lt;p&gt;上の例では &lt;code&gt;note.user.name&lt;/code&gt; とメソッドの呼び出しをしていますが、&lt;br&gt;
 オブジェクト指向プログラミングの界隈だと、「デメテルの法則」に反しているとも言われます。&lt;/p&gt;
 
 &lt;p&gt;それじゃあ、といって&lt;/p&gt;
@@ -290,7 +478,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;ちなみにプレーンなruby にも委譲の為の &lt;code&gt;Forwardable&lt;/code&gt; モジュールが用意されており、使い方も似ています。&lt;br&gt;
-&lt;code&gt;Forwardable&lt;/code&gt; の方はメソッドのリネームが出来る所が長所ですが、
+&lt;code&gt;Forwardable&lt;/code&gt; の方はメソッドのリネームが出来る所が長所ですが、&lt;br&gt;
 &lt;code&gt;ActiveSupport&lt;/code&gt; の &lt;code&gt;delegate&lt;/code&gt; に用意されている &lt;code&gt;prefix&lt;/code&gt; と &lt;code&gt;allow_nil&lt;/code&gt; が使い勝手が良いので、rails だと &lt;code&gt;ActiveSupport&lt;/code&gt; の &lt;code&gt;delegate&lt;/code&gt; をよく使います。&lt;/p&gt;
 
 &lt;h3&gt;クラスマクロは自分で作れる&lt;/h3&gt;
@@ -340,13 +528,13 @@ ruby だとこれを「nilガード」なんて呼ばれています。
 
 &lt;p&gt;実行してみた結果が上の様子です。&lt;code&gt;&amp;gt;&lt;/code&gt; が入力、&lt;code&gt;=&amp;gt;&lt;/code&gt; が出力です。&lt;br&gt;
 クラスマクロによって、使うと &lt;code&gt;&amp;quot;#{attr}_with_suffix&amp;quot;&lt;/code&gt; というメソッドが作られるようになっています。&lt;br&gt;
-つまり Boy, Girl クラスで &lt;code&gt;suffix :name, &amp;#39;さん&amp;#39;&lt;/code&gt; と使ったことによって、
+つまり Boy, Girl クラスで &lt;code&gt;suffix :name, &amp;#39;さん&amp;#39;&lt;/code&gt; と使ったことによって、&lt;br&gt;
 &lt;code&gt;name_with_suffix&lt;/code&gt; メソッドがマクロによって定義されているのです。&lt;br&gt;
 さらにマクロによって定義したメソッドの内容は、「名前が設定されていれば、後ろにマクロで指定した文字列を追加する」という物だったので、&lt;code&gt;girl.name_with_suffix&lt;/code&gt; によって「はなこ さん」と返ってきている訳です。&lt;br&gt;
 この例だと実は &lt;code&gt;girl.name&lt;/code&gt; と呼び出すだけで &lt;code&gt;girl.name_with_suffix&lt;/code&gt; と同じ結果を得ることが出来ます。&lt;br&gt;
 これは、&lt;code&gt;alias_method_chain&lt;/code&gt; によって、元々の &lt;code&gt;name&lt;/code&gt; メソッドが &lt;code&gt;name_without_suffix&lt;/code&gt; として待避され、&lt;code&gt;name_with_suffix&lt;/code&gt; として定義したメソッドが &lt;code&gt;name&lt;/code&gt; としても呼び出せるようになっているからなのです。&lt;/p&gt;
 
-&lt;p&gt;クラスマクロを定義する場所は、今回のように継承元クラスや、
+&lt;p&gt;クラスマクロを定義する場所は、今回のように継承元クラスや、&lt;br&gt;
 &lt;code&gt;ActiveSupport::Concern&lt;/code&gt; でモジュール化するなど、いろいろな方法があります。&lt;/p&gt;
 
 &lt;h3&gt;super do で操作を差し込む&lt;/h3&gt;
@@ -366,7 +554,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;User#birthday&lt;/code&gt; メソッドは、「happy birthday!」とメッセージを表示し、
+&lt;p&gt;&lt;code&gt;User#birthday&lt;/code&gt; メソッドは、「happy birthday!」とメッセージを表示し、&lt;br&gt;
 年齢に1を加えてその値を返す物です。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Boy&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;User&lt;/span&gt;
   &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;birthday&lt;/span&gt;
@@ -376,7 +564,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Userクラスを継承したBoyクラスにおいて、&lt;code&gt;birthday&lt;/code&gt;メソッドをオーバーライドしようとしたとき、
+&lt;p&gt;Userクラスを継承したBoyクラスにおいて、&lt;code&gt;birthday&lt;/code&gt;メソッドをオーバーライドしようとしたとき、&lt;br&gt;
 &lt;code&gt;super&lt;/code&gt; によって継承元のメソッドを呼び出すことが可能です。&lt;br&gt;
 しかし、「メッセージの表示」と「年齢の加算」の間に処理を挟みたい時にはどうしましょう。&lt;br&gt;
 そのために &lt;code&gt;super&lt;/code&gt; を使わずにオーバーライドしてしまうと、メッセージの定義が重複するなどしてメンテナンス性が下がってしまいます。&lt;br&gt;
@@ -404,11 +592,11 @@ ruby だとこれを「nilガード」なんて呼ばれています。
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Userクラスに &lt;code&gt;yield if block_given?&lt;/code&gt; を用意したので、
-継承したクラスにおいて &lt;code&gt;birthday&lt;/code&gt; メソッドをオーバーライドしたとき、
+&lt;p&gt;Userクラスに &lt;code&gt;yield if block_given?&lt;/code&gt; を用意したので、&lt;br&gt;
+継承したクラスにおいて &lt;code&gt;birthday&lt;/code&gt; メソッドをオーバーライドしたとき、&lt;br&gt;
 ブロックによる &lt;code&gt;super&lt;/code&gt; を呼び出したときに、そこに処理を差し込むことが可能になります。&lt;/p&gt;
 
-&lt;p&gt;ログイン処理などによく用いられる &lt;a href="https://github.com/plataformatec/devise"&gt;plataformatec/devise&lt;/a&gt; では、
+&lt;p&gt;ログイン処理などによく用いられる &lt;a href="https://github.com/plataformatec/devise"&gt;plataformatec/devise&lt;/a&gt; では、&lt;br&gt;
 例えば &lt;code&gt;Devise::SessionsController&lt;/code&gt; 等において、「ログインしたときにそのユーザーに何か処理したいな」ってケースのために処理差し込みのポイントを用意してくれていたりします。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Devise&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;SessionsController&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;DeviseController&lt;/span&gt;
   &lt;span class="c1"&gt;# POST /resource/sign_in&lt;/span&gt;
@@ -425,7 +613,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。
 &lt;h3&gt;active model は使えるやつ&lt;/h3&gt;
 
 &lt;p&gt;rails アプリを作成していると、DBには永続化しないんだけど、ActiveRecordと同じような使い勝手のモデルが欲しいなーと思うことがあります。&lt;br&gt;
-例えば検索用のフォームなどですね。&lt;br&gt;
+例えば検索用のフォームなどですね。 &lt;br&gt;
 view で form_for 使いたいし、validate も同じように定義したいからです。&lt;/p&gt;
 
 &lt;p&gt;そんなときには &lt;code&gt;ActiveModel&lt;/code&gt; の出番です。&lt;/p&gt;
@@ -456,11 +644,11 @@ view で form_for 使いたいし、validate も同じように定義したい�
     </author>
     <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
 
-&lt;p&gt;この記事では認証のプラグインである&lt;a href="https://github.com/plataformatec/devise"&gt;devise&lt;/a&gt;を
+&lt;p&gt;この記事では認証のプラグインである&lt;a href="https://github.com/plataformatec/devise"&gt;devise&lt;/a&gt;を&lt;br&gt;
 JSON APIで利用しやすく拡張することを目的としています。&lt;/p&gt;
 
 &lt;p&gt;deviseにはトークンによる認証機能もありましたが、現在デフォルトでは削除されています。&lt;br&gt;
-公式wiki &lt;a href="https://github.com/plataformatec/devise/wiki/How-To:-Simple-Token-Authentication-Example"&gt;How To: Simple Token Authentication Example&lt;/a&gt;には&lt;code&gt;TokenAuthenticatable&lt;/code&gt;が削除された経緯や、
+公式wiki &lt;a href="https://github.com/plataformatec/devise/wiki/How-To:-Simple-Token-Authentication-Example"&gt;How To: Simple Token Authentication Example&lt;/a&gt;には&lt;code&gt;TokenAuthenticatable&lt;/code&gt;が削除された経緯や、&lt;br&gt;
 自分で実装する場合のサンプルへのリンクがありますが、気になる箇所があったため自分で実装した物をまとめます。&lt;/p&gt;
 
 &lt;p&gt;本サンプルアプリケーションのソースコードは&lt;a href="https://github.com/k-shogo/devise_api_sample"&gt;github.com/k-shogo/devise&lt;em&gt;api&lt;/em&gt;sample&lt;/a&gt;で公開しています。&lt;/p&gt;
@@ -476,7 +664,7 @@ JavaScript Runtime        Node.js (V8)
 &lt;h3&gt;サンプルアプリケーション&lt;/h3&gt;
 
 &lt;p&gt;deviseの認証をweb, apiどちらからでも使用できるようにするサンプルアプリケーションを作成します。&lt;br&gt;
-今回は単純なノートアプリを題材とします。
+今回は単純なノートアプリを題材とします。&lt;br&gt;
 何はともあれ&lt;code&gt;rails new&lt;/code&gt;から始めましょう。&lt;/p&gt;
 &lt;pre class="highlight shell"&gt;&lt;code&gt;rails new devise_api_sample
 &lt;/code&gt;&lt;/pre&gt;
@@ -488,12 +676,12 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s1"&gt;'cancancan'&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;他にも、本サンプルでは
-&lt;a href="https://github.com/indirect/haml-rails"&gt;haml-rails&lt;/a&gt;,
-&lt;a href="https://github.com/doabit/semantic-ui-sass"&gt;semantic-ui-sass&lt;/a&gt;,
-&lt;a href="https://github.com/kossnocorp/jquery.turbolinks"&gt;jquery-turbolinks&lt;/a&gt;,
-&lt;a href="https://github.com/plataformatec/simple_form"&gt;simple_form&lt;/a&gt;,
-&lt;a href="https://github.com/comfy/active_link_to"&gt;active_link_to&lt;/a&gt;
+&lt;p&gt;他にも、本サンプルでは&lt;br&gt;
+&lt;a href="https://github.com/indirect/haml-rails"&gt;haml-rails&lt;/a&gt;,&lt;br&gt;
+&lt;a href="https://github.com/doabit/semantic-ui-sass"&gt;semantic-ui-sass&lt;/a&gt;,&lt;br&gt;
+&lt;a href="https://github.com/kossnocorp/jquery.turbolinks"&gt;jquery-turbolinks&lt;/a&gt;,&lt;br&gt;
+&lt;a href="https://github.com/plataformatec/simple_form"&gt;simple_form&lt;/a&gt;,&lt;br&gt;
+&lt;a href="https://github.com/comfy/active_link_to"&gt;active_link_to&lt;/a&gt;&lt;br&gt;
 を使用しています。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;bundle install&lt;/code&gt;と&lt;code&gt;./bin/rake db:create&lt;/code&gt;を忘れずに。&lt;/p&gt;
@@ -561,8 +749,8 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;viewをカスタマイズするために生成したので、
-&lt;code&gt;config/initializers/devise.rb&lt;/code&gt;にて
+&lt;p&gt;viewをカスタマイズするために生成したので、&lt;br&gt;
+&lt;code&gt;config/initializers/devise.rb&lt;/code&gt;にて&lt;br&gt;
 &lt;code&gt;config.scoped_views = true&lt;/code&gt;としておきます。&lt;/p&gt;
 
 &lt;h3&gt;ノートモデルを作る&lt;/h3&gt;
@@ -584,7 +772,7 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;abilityを設定したら、
+&lt;p&gt;abilityを設定したら、&lt;br&gt;
 &lt;code&gt;app/controllers/notes_controller.rb&lt;/code&gt;に&lt;code&gt;load_and_authorize_resource&lt;/code&gt;を追加して、アクセスコントロールします。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NotesController&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;ApplicationController&lt;/span&gt;
   &lt;span class="n"&gt;load_and_authorize_resource&lt;/span&gt;
@@ -653,8 +841,8 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;ほぼデフォルトのままですが、
-&lt;code&gt;index&lt;/code&gt;では自分が作成したノートだけを返すように, 
+&lt;p&gt;ほぼデフォルトのままですが、&lt;br&gt;
+&lt;code&gt;index&lt;/code&gt;では自分が作成したノートだけを返すように, &lt;br&gt;
 &lt;code&gt;create&lt;/code&gt;ではノートと作成者が関連付くように変更しています。&lt;/p&gt;
 
 &lt;h3&gt;見た目を調整&lt;/h3&gt;
@@ -697,11 +885,11 @@ JavaScript Runtime        Node.js (V8)
         ログイン
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/config/initializers/simple_form.rb"&gt;simple_formのsemantic-ui対応&lt;/a&gt;
-や
+&lt;p&gt;&lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/config/initializers/simple_form.rb"&gt;simple_formのsemantic-ui対応&lt;/a&gt;&lt;br&gt;
+や&lt;br&gt;
 &lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/helpers/semantic_ui_helper.rb"&gt;フラッシュメッセージ用helper&lt;/a&gt;, &lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/assets/javascripts/semantic_ui_helper.js.coffee"&gt;メッセージ削除用js&lt;/a&gt;等はオマケ要素なのでgithubを参照してください。&lt;/p&gt;
 
-&lt;p&gt;画面はこんな感じになりました。
+&lt;p&gt;画面はこんな感じになりました。&lt;br&gt;
 &lt;img alt="main" width="1075" height="485" src="/images/2014-09-13-devise_authentication_token/main.png" /&gt;&lt;/p&gt;
 
 &lt;h3&gt;アクセストークン発行画面&lt;/h3&gt;
@@ -757,8 +945,8 @@ JavaScript Runtime        Node.js (V8)
 
 &lt;p&gt;&lt;code&gt;config/routes.rb&lt;/code&gt;に&lt;code&gt;resource :authentication_token, only: [:update, :destroy]&lt;/code&gt;を追加します。&lt;/p&gt;
 
-&lt;p&gt;ユーザーが自分でアクセストークンを発行できるように、
-ユーザーの設定画面&lt;code&gt;app/views/users/registrations/edit.html.haml&lt;/code&gt;に
+&lt;p&gt;ユーザーが自分でアクセストークンを発行できるように、&lt;br&gt;
+ユーザーの設定画面&lt;code&gt;app/views/users/registrations/edit.html.haml&lt;/code&gt;に&lt;br&gt;
 アクセストークン発行ボタンをつけます。&lt;/p&gt;
 &lt;pre class="highlight haml"&gt;&lt;code&gt;&lt;span class="nt"&gt;%h2&lt;/span&gt;
   Edit &lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="n"&gt;resource_name&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;to_s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;humanize&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;
@@ -794,7 +982,7 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;link_to&lt;/span&gt; &lt;span class="s2"&gt;"Back"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:back&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;アクセストークン発行ボタンは&lt;code&gt;remote&lt;/code&gt;設定にしたので、
+&lt;p&gt;アクセストークン発行ボタンは&lt;code&gt;remote&lt;/code&gt;設定にしたので、&lt;br&gt;
 押下したときの動作を&lt;code&gt;app/assets/javascripts/authentication_token.js.coffee&lt;/code&gt;で定義します。&lt;/p&gt;
 &lt;pre class="highlight coffeescript"&gt;&lt;code&gt;&lt;span class="nx"&gt;$&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;
   &lt;span class="nx"&gt;$&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'#generate_authentication_token'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -812,7 +1000,7 @@ JavaScript Runtime        Node.js (V8)
 
 &lt;h3&gt;アクセストークンによる認証&lt;/h3&gt;
 
-&lt;p&gt;トークンの発行が出来るようになったので、
+&lt;p&gt;トークンの発行が出来るようになったので、&lt;br&gt;
 続いてトークンによる認証の機構を追加します。&lt;/p&gt;
 
 &lt;p&gt;今回は&lt;code&gt;app/controllers/application_controller.rb&lt;/code&gt;に追加します。&lt;/p&gt;
@@ -841,14 +1029,14 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;これで、リクエストパラメーターに&lt;code&gt;email&lt;/code&gt;と&lt;code&gt;token&lt;/code&gt;が含まれていた場合に、
+&lt;p&gt;これで、リクエストパラメーターに&lt;code&gt;email&lt;/code&gt;と&lt;code&gt;token&lt;/code&gt;が含まれていた場合に、&lt;br&gt;
 トークンによってユーザーを認証出来るようになりました。&lt;/p&gt;
 
 &lt;h3&gt;deviseのjson API対応&lt;/h3&gt;
 
-&lt;p&gt;ここまででトークンによる認証は実装しましたが、
+&lt;p&gt;ここまででトークンによる認証は実装しましたが、&lt;br&gt;
 このままだとwebでユーザー登録 &amp;amp; トークン発行後にしかAPIが利用できません。&lt;br&gt;
-そこでユーザー登録もAPIで利用できるようにするために
+そこでユーザー登録もAPIで利用できるようにするために&lt;br&gt;
 &lt;code&gt;config/application.rb&lt;/code&gt;でdeviseがjsonのリクエストにも対応できるように設定します。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;DeviseApiUse&lt;/span&gt;
   &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Application&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;
@@ -863,18 +1051,18 @@ JavaScript Runtime        Node.js (V8)
 &lt;p&gt;なお、&lt;a href="http://edgeguides.rubyonrails.org/4_2_release_notes.html"&gt;rails 4.2 release notes&lt;/a&gt;にクラスレベルの&lt;code&gt;respond_to&lt;/code&gt;は削除されたので、&lt;a href="https://github.com/plataformatec/responders"&gt;responders&lt;/a&gt;を追加してね、とあるので今後少し注意かもしれません。&lt;/p&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;respond_with and the corresponding class-level respond_to have been moved to the responders gem.
+&lt;p&gt;respond_with and the corresponding class-level respond_to have been moved to the responders gem.&lt;br&gt;
 To use the following, add gem &amp;lsquo;responders&amp;rsquo;, &amp;rsquo;~&amp;gt; 2.0&amp;rsquo; to your Gemfile:&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;APIでのログイン時、アクセストークンが無い場合に生成して返すように、ログインの動作を拡張します。&lt;/p&gt;
 
 &lt;p&gt;これでユーザー登録もAPIで利用可能になりました。&lt;br&gt;
-APIでのログイン時、ユーザー情報のJSONを返すのですが、
-ユーザーがトークンを発行していない場合は改めてトークン発行APIを叩く必要があります。　　
+APIでのログイン時、ユーザー情報のJSONを返すのですが、&lt;br&gt;
+ユーザーがトークンを発行していない場合は改めてトークン発行APIを叩く必要があります。　　&lt;br&gt;
 そこで、APIでのログイン時のみ、「トークンが発行されていない場合は作成する」ように拡張します。&lt;/p&gt;
 
-&lt;p&gt;deviseのコントローラーを拡張するので、
+&lt;p&gt;deviseのコントローラーを拡張するので、&lt;br&gt;
 &lt;code&gt;config/routes.rb&lt;/code&gt;でdeviseのルーティングをカスタマイズし、独自コントローラーに向くようにします。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;routes&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;draw&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
   &lt;span class="n"&gt;resources&lt;/span&gt; &lt;span class="ss"&gt;:notes&lt;/span&gt;
@@ -895,7 +1083,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;Devise::SessionsController&lt;/code&gt;の&lt;code&gt;create&lt;/code&gt;にはブロックを渡せるので、
+&lt;p&gt;&lt;code&gt;Devise::SessionsController&lt;/code&gt;の&lt;code&gt;create&lt;/code&gt;にはブロックを渡せるので、&lt;br&gt;
 それによってAPIでのログイン時にトークンが無い場合には発行してからレスポンスを返すようにしています。&lt;/p&gt;
 
 &lt;h3&gt;APIのリクエストを試してみる&lt;/h3&gt;
@@ -999,13 +1187,13 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、
   &lt;span class="n"&gt;ft&lt;/span&gt; = &lt;span class="n"&gt;fetch&lt;/span&gt; --&lt;span class="n"&gt;prune&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;よく使うコマンドはエイリアスを設定するとタイプ数を減少させることが出来ます。  &lt;/p&gt;
+&lt;p&gt;よく使うコマンドはエイリアスを設定するとタイプ数を減少させることが出来ます。&lt;/p&gt;
 
-&lt;p&gt;ブランチを表示する&lt;code&gt;branch&lt;/code&gt;コマンドでは
-&lt;code&gt;-a&lt;/code&gt;オプションでリモートも含めたすべてのブランチを、
+&lt;p&gt;ブランチを表示する&lt;code&gt;branch&lt;/code&gt;コマンドでは&lt;br&gt;
+&lt;code&gt;-a&lt;/code&gt;オプションでリモートも含めたすべてのブランチを、&lt;br&gt;
 &lt;code&gt;-v&lt;/code&gt;オプションでコミットメッセージを含めた情報を表示させています。&lt;/p&gt;
 
-&lt;p&gt;フェッチコマンド&lt;code&gt;fetch&lt;/code&gt;では
+&lt;p&gt;フェッチコマンド&lt;code&gt;fetch&lt;/code&gt;では&lt;br&gt;
 &lt;code&gt;--prune&lt;/code&gt;オプションを指定し、自動的にリモートで削除されているブランチを削除するようにしています。&lt;/p&gt;
 
 &lt;h3&gt;簡易undo&lt;/h3&gt;
@@ -1013,7 +1201,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、
   &lt;span class="n"&gt;uncommit&lt;/span&gt; = &lt;span class="n"&gt;reset&lt;/span&gt; &lt;span class="n"&gt;HEAD&lt;/span&gt;^
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;reset&lt;/code&gt;コマンドではオプションの&lt;code&gt;--soft&lt;/code&gt;, &lt;code&gt;--hard&lt;/code&gt;, &lt;code&gt;--mixed&lt;/code&gt;の使い分けにより、
+&lt;p&gt;&lt;code&gt;reset&lt;/code&gt;コマンドではオプションの&lt;code&gt;--soft&lt;/code&gt;, &lt;code&gt;--hard&lt;/code&gt;, &lt;code&gt;--mixed&lt;/code&gt;の使い分けにより、&lt;br&gt;
 HEAD, インデックス, ワーキングツリーがそれぞれどうなるか気にしなければなりません。&lt;br&gt;
 好みの動作でよく使うものをエイリアスで登録しています。&lt;/p&gt;
 
@@ -1030,7 +1218,7 @@ HEAD, インデックス, ワーキングツリーがそれぞれどうなるか
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;使用言語は環境に合わせたgitignoreを適宜用意するのは面倒なものです。&lt;br&gt;
-そんなときは&lt;a href="https://github.com/github/gitignore"&gt;githubがまとめているgitignore&lt;/a&gt;を参考にするのもよいですが、
+そんなときは&lt;a href="https://github.com/github/gitignore"&gt;githubがまとめているgitignore&lt;/a&gt;を参考にするのもよいですが、&lt;br&gt;
 コマンドからgitignoreを生成できるようにしておくとより簡単になります。&lt;/p&gt;
 
 &lt;p&gt;そこで&lt;a href="http://www.gitignore.io/"&gt;gitignore.io&lt;/a&gt;というサービスを利用し、コマンドからgitignoreを生成できるようにしています。&lt;br&gt;
@@ -1125,7 +1313,7 @@ config/secrets.yml
     </author>
     <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
 
-&lt;p&gt;dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、
+&lt;p&gt;dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、&lt;br&gt;
 構成も落ち着いてきたのでまとめます。&lt;/p&gt;
 
 &lt;h3&gt;お試しバージョン&lt;/h3&gt;
@@ -1202,7 +1390,7 @@ CMD bash -l -c &lt;span class="s1"&gt;'bundle exec rails s'&lt;/span&gt;
 &lt;p&gt;毎回rubyをビルドし直すのが時間がかかるので、rubyが入ったコンテナのリポジトリを分離し、&lt;br&gt;
 ruby, node等を用意したコンテナ + railsリポジトリ + railsが動作するコンテナ の3リポジトリ構成にしてみました。&lt;br&gt;
 つまり先ほどのDockerfileを半分に分割する感じです。&lt;br&gt;
-さらにrailsのセットアップ部分で&lt;code&gt;bash -l -c&lt;/code&gt;とかつけるのもイケてないと感じたので、
+さらにrailsのセットアップ部分で&lt;code&gt;bash -l -c&lt;/code&gt;とかつけるのもイケてないと感じたので、&lt;br&gt;
 セットアップのスクリプトを分離しても見ました。&lt;/p&gt;
 
 &lt;h4&gt;railsを動作させるコンテナのDockerfile&lt;/h4&gt;
@@ -1263,7 +1451,7 @@ bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake assets:precompile &lt;span 
 &lt;h3&gt;現在の構成&lt;/h3&gt;
 
 &lt;p&gt;そもそもDockerでrbenvいらないじゃん + railsリポジトリの中にDockerfileがあった方がいいねってことで、&lt;br&gt;
-ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。  &lt;/p&gt;
+ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。&lt;/p&gt;
 
 &lt;h4&gt;ベースとなるコンテナのDockerfile&lt;/h4&gt;
 &lt;pre class="highlight shell"&gt;&lt;code&gt;FROM dockerfile/ubuntu
@@ -1338,14 +1526,14 @@ ENTRYPOINT &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"/usr/bin/
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;ポイントはrailsアプリ全体をADDする前に、&lt;code&gt;Gemfile&lt;/code&gt;と&lt;code&gt;Gemcile.lock&lt;/code&gt;だけをADDして
+&lt;p&gt;ポイントはrailsアプリ全体をADDする前に、&lt;code&gt;Gemfile&lt;/code&gt;と&lt;code&gt;Gemcile.lock&lt;/code&gt;だけをADDして&lt;br&gt;
 &lt;code&gt;bundle install&lt;/code&gt;している箇所です。&lt;br&gt;
 これによって、Gemfileに更新があった場合のみ&lt;code&gt;bundle install&lt;/code&gt;が実行されるようになります。&lt;/p&gt;
 
 &lt;h4&gt;.dockerignore&lt;/h4&gt;
 
 &lt;p&gt;実はこの構成にした直後、「ローカルで&lt;code&gt;docker build&lt;/code&gt;したときに&lt;code&gt;vendor/bundle&lt;/code&gt;以下にインストールされたgemのファイル群までADDされて無駄」、「Dockerfileの中で&lt;code&gt;.bundle/config&lt;/code&gt;を消さないと設定を引き継いでしまう」などの不満点もあり、&lt;br&gt;
-gitignoreファイルみたいに除外指定したいなーと思っていたら、
+gitignoreファイルみたいに除外指定したいなーと思っていたら、&lt;br&gt;
 &lt;a href="http://blog.docker.com/2014/07/announcing-docker-1-1/"&gt;docker 1.1.0&lt;/a&gt;でdockerignoreファイルに対応されたのでその不満も解消しました。&lt;/p&gt;
 &lt;pre class="highlight plaintext"&gt;&lt;code&gt;### Rails ###
 public/assets/*
@@ -1367,7 +1555,7 @@ vendor/bundle
 &lt;p&gt;railsリポジトリにDockerfileを同梱した方が簡単だったというのが感想です。&lt;br&gt;
 dockerの開発も活発で、ほしいなーと思った機能が早速docker 1.1.0に含まれていたのには感心しました。&lt;/p&gt;
 
-&lt;p&gt;今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、
+&lt;p&gt;今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、&lt;br&gt;
 本来はDBコンテナは分離した方がいいですね。&lt;/p&gt;
 </content>
   </entry>
@@ -1383,15 +1571,15 @@ dockerの開発も活発で、ほしいなーと思った機能が早速docker 1
     <content type="html">&lt;h3&gt;Docker 1.0リリース&lt;/h3&gt;
 
 &lt;p&gt;&lt;a href="http://blog.docker.com/2014/06/its-here-docker-1-0/"&gt;Docker 1.0&lt;/a&gt;が正式にリリースされました。&lt;br&gt;
-&amp;ldquo;Docker&amp;quot;は本体となるDocker Engine, 自動デプロイや自動ビルドおよびDockerイメージを共有するDocker Hubなどの
+&amp;ldquo;Docker&amp;quot;は本体となるDocker Engine, 自動デプロイや自動ビルドおよびDockerイメージを共有するDocker Hubなどの&lt;br&gt;
 プラットフォームの総称ということになりました。&lt;/p&gt;
 
-&lt;p&gt;今回のリリースにおいて「エンタープライズでの活用に耐え得るものになった」とも述べられており、
+&lt;p&gt;今回のリリースにおいて「エンタープライズでの活用に耐え得るものになった」とも述べられており、&lt;br&gt;
 今後益々の活用が増えると予想されます。&lt;/p&gt;
 
 &lt;h3&gt;MacにおけるDocker 1.0 へのアップグレード&lt;/h3&gt;
 
-&lt;p&gt;&amp;rdquo;&lt;a href="/article/2014/02/10/docker-on-mac"&gt;Macに正式対応したdocker ver 0.8 のセットアップ&lt;/a&gt;&amp;ldquo;では、ver 0.8 のセットアップを行いましたが、
+&lt;p&gt;&amp;rdquo;&lt;a href="/article/2014/02/10/docker-on-mac"&gt;Macに正式対応したdocker ver 0.8 のセットアップ&lt;/a&gt;&amp;ldquo;では、ver 0.8 のセットアップを行いましたが、&lt;br&gt;
 1.0のリリースに合わせてセットアップの方法が若干変更されています。&lt;/p&gt;
 
 &lt;ul&gt;
@@ -1414,7 +1602,7 @@ brew install vagrant
 
 &lt;h4&gt;boot2docker をインストール&lt;/h4&gt;
 
-&lt;p&gt;ver 1.0は&lt;a href="https://github.com/caskroom/homebrew-cask"&gt;homebrew-cask&lt;/a&gt;で管理されているため、
+&lt;p&gt;ver 1.0は&lt;a href="https://github.com/caskroom/homebrew-cask"&gt;homebrew-cask&lt;/a&gt;で管理されているため、&lt;br&gt;
 &lt;code&gt;brew cask install&lt;/code&gt;コマンドを用います。&lt;/p&gt;
 &lt;pre class="highlight plaintext"&gt;&lt;code&gt;brew cask install boot2docker
 &lt;/code&gt;&lt;/pre&gt;
@@ -1429,7 +1617,7 @@ brew install vagrant
 
 &lt;h4&gt;boot2dockerコマンドでのアップグレード&lt;/h4&gt;
 
-&lt;p&gt;以前のバージョンをアンインストールし、
+&lt;p&gt;以前のバージョンをアンインストールし、&lt;br&gt;
 &lt;code&gt;boot2docker download&lt;/code&gt;コマンドで最新のISOイメージを取得し、更新を行います。&lt;/p&gt;
 &lt;pre class="highlight plaintext"&gt;&lt;code&gt;boot2docker delete
 boot2docker download
@@ -1448,182 +1636,6 @@ Server API version: 1.12
 Go version (server): go1.2.1
 Git commit (server): 63fe64c
 &lt;/code&gt;&lt;/pre&gt;
-</content>
-  </entry>
-  <entry>
-    <title>CoreDataQueryでCRUDを実装する [RubyMotion]</title>
-    <link rel="alternate" href="/article/2014/04/10/rubymotion-cdq-crud/"/>
-    <id>/article/2014/04/10/rubymotion-cdq-crud/</id>
-    <published>2014-04-10T16:47:00+09:00</published>
-    <updated>2014-04-10T16:47:00+09:00</updated>
-    <author>
-      <name>Article Author</name>
-    </author>
-    <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
-
-&lt;p&gt;前回、&amp;quot;&lt;a href="/article/2014/04/09/rubymotion-core-data-query"&gt;CoreDataQueryでデータを保存する&lt;/a&gt;&amp;ldquo;では、
-CoreDataQueryを用いてデータを保存してみました。&lt;br&gt;
-今回はコンソールからではなく、アプリ上で一覧、保存、更新、削除が出来るように実装してみます。&lt;/p&gt;
-
-&lt;h3&gt;準備&lt;/h3&gt;
-
-&lt;p&gt;アプリの基本は&lt;a href="/article/2014/04/09/rubymotion-core-data-query"&gt;前回&lt;/a&gt;のものを使います。&lt;br&gt;
-今回はフォーム画面もあるため、画面構築を簡易にするために&lt;a href="https://github.com/clayallsopp/formotion"&gt;formotion&lt;/a&gt;と、
-&lt;a href="https://github.com/clearsightstudio/ProMotion"&gt;ProMotion&lt;/a&gt;とformotionを組み合わせる
-&lt;a href="https://github.com/rheoli/ProMotion-formotion"&gt;ProMotion-formotion&lt;/a&gt;を追加しました。&lt;br&gt;
-ProMotion-formotionを使う場合、現在はProMotion, formotionともにgitにあるコードを指定する必要があります。&lt;/p&gt;
-
-&lt;h4&gt;&lt;code&gt;Gemfile&lt;/code&gt;&lt;/h4&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;source&lt;/span&gt; &lt;span class="s1"&gt;'https://rubygems.org'&lt;/span&gt;
-
-&lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s1"&gt;'ProMotion'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;git: &lt;/span&gt;&lt;span class="s1"&gt;'https://github.com/clearsightstudio/ProMotion.git'&lt;/span&gt;
-&lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s1"&gt;'formotion'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;git: &lt;/span&gt;&lt;span class="s1"&gt;'https://github.com/clayallsopp/formotion.git'&lt;/span&gt;
-&lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s1"&gt;'ProMotion-formotion'&lt;/span&gt;
-&lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s1"&gt;'cdq'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;bundle install&lt;/code&gt;および&lt;code&gt;cdq init&lt;/code&gt;を済ませ、&lt;/p&gt;
-&lt;pre class="highlight plaintext"&gt;&lt;code&gt;bundle install --path vendor/bundle
-bundle exec cdq init
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;スキーマ定義とモデル作成も行います。&lt;/p&gt;
-
-&lt;h4&gt;&lt;code&gt;schemas/0001_initial.rb&lt;/code&gt;&lt;/h4&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;schema&lt;/span&gt; &lt;span class="s2"&gt;"0001 initial"&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-
-  &lt;span class="n"&gt;entity&lt;/span&gt; &lt;span class="s2"&gt;"Item"&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="n"&gt;string&lt;/span&gt; &lt;span class="ss"&gt;:body&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;&lt;code&gt;app/models/item.rb&lt;/code&gt;&lt;/h4&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Item&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;CDQManagedObject&lt;/span&gt;
-
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;app_delegate.rb&lt;/code&gt;は前回と変わりありません。&lt;/p&gt;
-
-&lt;h4&gt;&lt;code&gt;app/app_delegate.rb&lt;/code&gt;&lt;/h4&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AppDelegate&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;PM&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Delegate&lt;/span&gt;
-  &lt;span class="kp"&gt;include&lt;/span&gt; &lt;span class="no"&gt;CDQ&lt;/span&gt;
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;on_load&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;options&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;cdq&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;setup&lt;/span&gt;
-    &lt;span class="nb"&gt;open&lt;/span&gt; &lt;span class="no"&gt;ItemsScreen&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;nav_bar: &lt;/span&gt;&lt;span class="kp"&gt;true&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3&gt;画面作成&lt;/h3&gt;
-
-&lt;p&gt;メインの画面を作っていきましょう。&lt;/p&gt;
-
-&lt;h4&gt;&lt;code&gt;app/screens/items_screen.rb&lt;/code&gt;&lt;/h4&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ItemsScreen&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;PM&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;TableScreen&lt;/span&gt;
-  &lt;span class="n"&gt;title&lt;/span&gt; &lt;span class="s2"&gt;"Items"&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;load_item&lt;/span&gt;
-    &lt;span class="no"&gt;PM&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;logger&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;debug&lt;/span&gt; &lt;span class="s2"&gt;"load_item"&lt;/span&gt;
-    &lt;span class="vi"&gt;@items&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
-      &lt;span class="p"&gt;{&lt;/span&gt;
-        &lt;span class="ss"&gt;cells: &lt;/span&gt;&lt;span class="no"&gt;Item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;map&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
-          &lt;span class="p"&gt;{&lt;/span&gt;
-            &lt;span class="ss"&gt;title:         &lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;body&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-            &lt;span class="ss"&gt;action:        :tapped_item&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-            &lt;span class="ss"&gt;arguments:     &lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-            &lt;span class="ss"&gt;editing_style: :delete&lt;/span&gt;
-          &lt;span class="p"&gt;}&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;
-      &lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="p"&gt;]&lt;/span&gt;
-    &lt;span class="n"&gt;update_table_data&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;on_load&lt;/span&gt;
-    &lt;span class="n"&gt;set_nav_bar_button&lt;/span&gt; &lt;span class="ss"&gt;:right&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;title: &lt;/span&gt;&lt;span class="s2"&gt;"Add"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;action: :open_item_form_screen&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;open_item_form_screen&lt;/span&gt;
-    &lt;span class="nb"&gt;open&lt;/span&gt; &lt;span class="no"&gt;ItemFormScreen&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;nav_bar: &lt;/span&gt;&lt;span class="kp"&gt;true&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="ss"&gt;modal: &lt;/span&gt;&lt;span class="kp"&gt;true&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;on_appear&lt;/span&gt;
-    &lt;span class="n"&gt;load_item&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;table_data&lt;/span&gt;
-    &lt;span class="vi"&gt;@items&lt;/span&gt; &lt;span class="o"&gt;||=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;tapped_item&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nb"&gt;open&lt;/span&gt; &lt;span class="no"&gt;ItemFormScreen&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;item: &lt;/span&gt;&lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;nav_bar: &lt;/span&gt;&lt;span class="kp"&gt;true&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;on_cell_deleted&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cell&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;cell&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:arguments&lt;/span&gt;&lt;span class="p"&gt;].&lt;/span&gt;&lt;span class="nf"&gt;destroy&lt;/span&gt;
-    &lt;span class="n"&gt;cdq&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;save&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;&lt;code&gt;app/screens/item_form_screen.rb&lt;/code&gt;&lt;/h4&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ItemFormScreen&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;PM&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;FormotionScreen&lt;/span&gt;
-  &lt;span class="n"&gt;title&lt;/span&gt; &lt;span class="s2"&gt;"Item"&lt;/span&gt;
-
-  &lt;span class="kp"&gt;attr_accessor&lt;/span&gt; &lt;span class="ss"&gt;:item&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;on_load&lt;/span&gt;
-    &lt;span class="n"&gt;nav_bar_title&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nil?&lt;/span&gt; &lt;span class="p"&gt;?&lt;/span&gt; &lt;span class="s1"&gt;'Save'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s1"&gt;'Update'&lt;/span&gt;
-    &lt;span class="n"&gt;set_nav_bar_button&lt;/span&gt; &lt;span class="ss"&gt;:right&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;title: &lt;/span&gt;&lt;span class="n"&gt;nav_bar_title&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;action: :save_item&lt;/span&gt;
-    &lt;span class="n"&gt;set_nav_bar_button&lt;/span&gt; &lt;span class="ss"&gt;:left&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;  &lt;span class="ss"&gt;title: &lt;/span&gt;&lt;span class="s1"&gt;'Cancel'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;      &lt;span class="ss"&gt;action: :cancel&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;save_item&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nil?&lt;/span&gt;
-      &lt;span class="no"&gt;Item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;form&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;render&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;else&lt;/span&gt;
-      &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;body&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;form&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;render&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:body&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="n"&gt;cdq&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;save&lt;/span&gt;
-    &lt;span class="n"&gt;close&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;cancel&lt;/span&gt;
-    &lt;span class="n"&gt;close&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;table_data&lt;/span&gt;
-    &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nil?&lt;/span&gt; &lt;span class="p"&gt;?&lt;/span&gt; &lt;span class="s2"&gt;""&lt;/span&gt; &lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;body&lt;/span&gt;
-    &lt;span class="p"&gt;{&lt;/span&gt;
-      &lt;span class="ss"&gt;sections: &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
-        &lt;span class="p"&gt;{&lt;/span&gt;
-          &lt;span class="ss"&gt;title: &lt;/span&gt;&lt;span class="s2"&gt;"Item"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-          &lt;span class="ss"&gt;rows: &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;
-            &lt;span class="p"&gt;{&lt;/span&gt;
-              &lt;span class="ss"&gt;title:       &lt;/span&gt;&lt;span class="s2"&gt;"Body"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-              &lt;span class="ss"&gt;key:         :body&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-              &lt;span class="ss"&gt;type:        :string&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-              &lt;span class="ss"&gt;placeholder: &lt;/span&gt;&lt;span class="s2"&gt;"text here"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-              &lt;span class="ss"&gt;value:       &lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt;
-            &lt;span class="p"&gt;}&lt;/span&gt;
-          &lt;span class="p"&gt;]&lt;/span&gt;
-        &lt;span class="p"&gt;}&lt;/span&gt;
-      &lt;span class="p"&gt;]&lt;/span&gt;
-    &lt;span class="p"&gt;}&lt;/span&gt;
-
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これで、一覧、作成、更新、削除がアプリ内で出来るようになりました。&lt;br&gt;
-一覧画面でスワイプすると削除リンクが出現し、”Add&amp;quot;ボタンで新規作成画面に、
-そして各項目のタップで編集が出来るようになっています 。&lt;/p&gt;
-
-&lt;p&gt;&lt;img alt="screen" width="800" height="1632" src="/images/2014-04-10-rubymotion-cdq-crud/screen.png" /&gt;&lt;/p&gt;
 </content>
   </entry>
 </feed>

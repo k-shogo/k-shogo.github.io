@@ -65,8 +65,8 @@
 <section><header><h3>背景</h3></header>
 
 <p><a href="http://skeljs.org">skel.js</a>はレスポンシブなWebサイトを構築する為の軽量(19KB)なフロントエンドフレームワークです。<br>
-jQueryなどの他のスクリプトに依存することなくグリッドシステムを利用でき、
-表示サイズごとのbreakpointの設定も簡単です。
+jQueryなどの他のスクリプトに依存することなくグリッドシステムを利用でき、<br>
+表示サイズごとのbreakpointの設定も簡単です。<br>
 また、reset cssやbox-modelなどの有用なCSSのショートカットも用意されています。</p>
 
 </section><section><header><h3>準備</h3></header>
@@ -81,7 +81,7 @@ jQueryなどの他のスクリプトに依存することなくグリッドシ�
 <pre class="highlight plaintext"><code>gem 'middleman'
 </code></pre>
 
-<p><code>middleman</code>をインストール。
+<p><code>middleman</code>をインストール。<br>
 そしてmiddlemanプロジェクトを初期化します。</p>
 <pre class="highlight plaintext"><code>bundle install --path vendor/bundle
 bundle exec middleman init .
@@ -112,12 +112,12 @@ Run `bundle install` to install missing gems.
 
 </section><section><header><h3>skel.jsのインストール</h3></header>
 
-<p><a href="http://skeljs.org/download">skel.jsをダウンロード</a>し、
+<p><a href="http://skeljs.org/download">skel.jsをダウンロード</a>し、<br>
 javascriptディレクトリに配置するだけでインストールは完了です。</p>
 
 </section><section><header><h3>skel.jsの設定</h3></header>
 
-<p>今回はcoffee scriptで設定を記述してみます。
+<p>今回はcoffee scriptで設定を記述してみます。<br>
 javascriptディレクトリに<code>skel.config.coffee</code>というファイルを作成します。</p>
 
 <h4><code>skel.config.coffee</code></h4>
@@ -145,15 +145,15 @@ javascriptディレクトリに<code>skel.config.coffee</code>というファイ
 </code></pre>
 
 <p><code>breakpoints</code>は任意のブレイクポイントの名前と、それに対してのオプションを指定することが出来ます。<br>
-ここでは<code>wide</code>, <code>narrow</code>, <code>mobile</code>と3つのブレイクポイントを作り、
+ここでは<code>wide</code>, <code>narrow</code>, <code>mobile</code>と3つのブレイクポイントを作り、<br>
 それぞれに切り替えの条件を指定しています。</p>
 
 <p><code>prefix</code>はCSSをskel.jsから動的に読み込む場合に指定します。（デフォルトは&ldquo;style&quot;であり、無効にするにはnullを指定します）<br>
-これは<code>breakpoints</code>と連動していて、
+これは<code>breakpoints</code>と連動していて、<br>
 たとえば<code>mobile</code>時では<code>/assets/stylesheets/style.css</code>と<code>/assets/stylesheets/style-mobile.css</code>が読み込まれます。<br>
 もちろん個別のstylesheetsの読み込みを抑制することも可能です。</p>
 
-<p><code>resetCSS</code>オプションを有効にすることで、
+<p><code>resetCSS</code>オプションを有効にすることで、<br>
 skel.jsにビルトインされているReset CSSが自動的に読み込まれます。<br>
 他にも<code>normalizeCSS</code>も用意されています。</p>
 
@@ -161,7 +161,7 @@ skel.jsにビルトインされているReset CSSが自動的に読み込まれ�
 
 </section><section><header><h3>使いかた</h3></header>
 
-<p>設定ファイルとskel.jsをまとめて読み込むために
+<p>設定ファイルとskel.jsをまとめて読み込むために<br>
 <code>all.coffee</code>を作成し、</p>
 
 <h4><code>all.coffee</code></h4>
@@ -186,25 +186,25 @@ skel.jsにビルトインされているReset CSSが自動的に読み込まれ�
       <span class="p">=</span> <span class="k">yield</span>
 </code></pre>
 
-<p>CSSはskel.jsから動的に読み込みますが、
+<p>CSSはskel.jsから動的に読み込みますが、<br>
 jsが無効化されている場合に備えてnoscriptの中にjsが無効化されている場合に読み込みむCSSを指定します。</p>
 
-<p>グリッドシステムを使う場合には
-<code>&lt;div class=&quot;row&quot;&gt;</code>の内部に<code>&lt;div class=&quot;4u&quot;&gt;</code>などと&quot;数字+u&quot;のクラスを作成するだけで、
-カラム数12のグリッドに配置されます。  </p>
+<p>グリッドシステムを使う場合には<br>
+<code>&lt;div class=&quot;row&quot;&gt;</code>の内部に<code>&lt;div class=&quot;4u&quot;&gt;</code>などと&quot;数字+u&quot;のクラスを作成するだけで、<br>
+カラム数12のグリッドに配置されます。</p>
 
-<p>後は<code>.row</code>, <code>.4u</code>とそのまま用いてもよし、
+<p>後は<code>.row</code>, <code>.4u</code>とそのまま用いてもよし、<br>
 それらのクラスを元に自分でCSS拡張してもよしです。</p>
 
 </section><section><header><h3>まとめ</h3></header>
 
-<p><a href="http://getbootstrap.com">bootstrap</a>などを用いると、
-グリッドシステムの他にボタンをはじめとした様々なパーツをすぐに利用することが出来ます。
-プログラマがとりあえず体裁を整えるために使うのは有効ですが、
+<p><a href="http://getbootstrap.com">bootstrap</a>などを用いると、<br>
+グリッドシステムの他にボタンをはじめとした様々なパーツをすぐに利用することが出来ます。<br>
+プログラマがとりあえず体裁を整えるために使うのは有効ですが、<br>
 デザインが画一的になってしまう欠点もあります。<br>
 しかもbootstrapを元にデザインを変更しようとするのも手間がかかります。</p>
 
-<p>デザインは自前で構築する場合に
+<p>デザインは自前で構築する場合に<br>
 そのベースとしてレスポンシブルなデザインに対応した軽量フレームワークであるskel.jsを有効に活用できそうです。</p>
 </section>
 </article>

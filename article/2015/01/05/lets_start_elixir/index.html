@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>君もelixirを始めてみないか | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='' name='keywords'>
+<meta content='' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>君もelixirを始めてみないか</h2>
+<span class='byline'>
+</span>
+</header>
+<section><header><h3>elixirって何？</h3></header>
+
+<p><a href="http://elixir-lang.org">elixir</a> (エリクサー)は<a href="http://www.erlang.org">Erlang</a>で作られた言語なんだ。<br>
+最初はCoffeeScriptとJavaScriptみたいな関係なのかって思ってくれれば良い。<br>
+Erlangの上に作られているから、elixirの特徴を語るにはまずErlangについて述べる必要がある。</p>
+
+<p>Erlangは1986年にJoe Armstrong, Robert Virding, Mike Williams の3人によって最初のバージョンが作られた。<br>
+元々は通信機器メーカーのEricsson内部の独自言語だったけれど、1998年にオープンソースとしてリリースされた。<br>
+Erlangの特徴をぎゅっとまとめると、並行性と信頼性そしてホットスワップだ。<br>
+Erlangの開発は Joe Armstrong 博士が電話交換制御用ソフトウェアを構築するために、<br>
+Prologをベースに並行プロセスやエラー処理の仕組みを追加したことに端を発している。<br>
+並行性と信頼性、ホットスワップの特徴は通信事業者向けの分散アプリケーションの開発に必要だったんだ。</p>
+
+<p>elixirはBEAMと呼ばれるErlangの仮想環境で動作するから、Erlangの並行性と信頼性の特徴を受け継いでいる。<br>
+そして拡張機能としてマクロを使ったメタプログラミング等も扱うことが出来るんだ。</p>
+
+<p>elixirよりまず、Erlangの知名度も高くは無いよね。<br>
+でも案外身近なところで使われてたりするんだ。<br>
+Twitterでは<a href="https://www.ejabberd.im">ejabberd</a>というJabber/XMPP実装が使われている（今現在もそうかは分からないけど）ようだし、<br>
+<a href="https://www.erlang-solutions.com/about/news/whatsapp-engineers-talk-about-scaling-450-million-users-erlang-erlang-factory-sf-bay-6-7">WhatsAppもErlangを使用しているみたいだ</a>。<br>
+Erlangは何億人とユーザーを抱えるような大規模なシステムでかなりの実績を積んでいる。<br>
+プロセッサのマルチコア化が進む現在、並行性と信頼性を備えるErlangが活躍できる場面が多くなっていくんじゃないかなって思わないかい？<br>
+Matzも注目する言語なんて記事もあるよ。</p>
+
+<ul>
+<li><a href="http://magazine.rubyist.net/?0017-Legwork">Rubyist Magazine - Rubyist のための他言語探訪 【第 10 回】 Erlang</a></li>
+<li><a href="http://www.atmarkit.co.jp/news/200704/27/erlang.html">twitterブームの陰で注目を集める“Erlang” － ＠IT</a></li>
+<li><a href="http://techon.nikkeibp.co.jp/article/TOPCOL/20070710/135665/">組み込みから生まれた言語Erlangの時代が来る - 日経エレクトロニクス - 日経テクノロジーオンライン</a></li>
+</ul>
+
+<p>そんなに言うならelixirじゃなくて素のErlangで良いじゃんって思うかもしれないね。<br>
+答える代わりに質問だ、上の記事は2007の物なんだけど、Erlangって今流行ってる？<br>
+ちょっとこの記事を見て欲しい<br>
+<a href="http://www.infoq.com/jp/news/2012/01/Katz-CouchDB-Couchbase-Server">Damien Katz氏がApache CouchDBから離反し、Couchbase Server開発を継続</a><br>
+CouchDBがコードの大半をErlangからC/C++するって内容だ。<br>
+Damien Katz氏はインタビューの中で流行ってない原因を述べている。</p>
+
+<blockquote>
+<p>Erlangは素晴らしい言語です。信頼性が高く、信頼できるしっかりとしたシステムを簡単に構築できます。しかし、エコシステムがとても小さいです。なので、ツールや性能に対する投資は他の一般的な言語とは比べようもないくらい少ないです。私はErlangにもっと人気の言語になって欲しいと思います。ErlangがJavaよりも速くならない理由はどこにもありません。しかし、その奇妙な構文が人々を遠ざけ、普及と商用投資を妨げています。でも私はErlangが好きです。性能が重要なコンポーネントでの利用は少なくしますが、今後も致命的に重要なコンポーネントに使うつもりです。</p>
+</blockquote>
+
+<p>そう、流行らないのは取っつきにくいからだ。<br>
+であれば、取っつきやすければ Erlang のパワーを享受できるようになるね。<br>
+そういう考えで始まったプロジェクトには<a href="http://reia-lang.org/">Reia Programming Language</a>という物もある、しかし残念ながらReiaの開発は停止してしまっている。<br>
+Reiaの後に登場し、後継のプロジェクトに指名され、2014年9月18日にv1.0.0がリリースされたのがelixirなんだ。</p>
+
+</section><section><header><h3>開発環境は整ってるの？</h3></header>
+
+<p>何が取っつきやすくなったかって、それはもちろん文法なんだけど、<br>
+今や言語そのものが良くたって開発環境が良くないと流行らないよね。<br>
+だから文法の前に開発の環境について紹介しておくね。</p>
+
+<p>まずは <code>Mix</code> だ。<br>
+<code>Mix</code> は ruby だと <code>rake</code> と <code>bundler</code> を合わせたようなものなんだ。<br>
+rubyのプロジェクト開始は <code>bundle init</code> して、<code>Gemfile</code> を編集して、<code>bundle install</code>するよね。</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>mkdir ruby_app
+<span class="gp">$ </span><span class="nb">cd </span>ruby_app
+<span class="gp">$ </span>bundle init
+<span class="gp">$ </span>vim Gemfile
+</code></pre>
+<pre class="highlight ruby"><code><span class="n">source</span> <span class="s2">"https://rubygems.org"</span>
+
+<span class="n">gem</span> <span class="s2">"rails"</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="gp">$ </span>bundle install
+</code></pre>
+
+<p><code>elixir</code> の <code>mix</code> の場合は <code>mix new elixir_app</code> して <code>mix.exs</code> の <code>deps</code> を編集して、<code>mix deps.get</code> だ。<br>
+ここでは <code>deps</code> に <a href="https://github.com/elixir-lang/ecto">elixir-lang/ecto</a> というライブラリを追加している。</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>mix new elixir_app
+<span class="gp">$ </span><span class="nb">cd </span>elixir_app
+<span class="gp">$ </span>vim mix.exs
+</code></pre>
+<pre class="highlight elixir"><code><span class="k">defmodule</span> <span class="no">ElixirApp</span><span class="o">.</span><span class="no">Mixfile</span> <span class="k">do</span>
+  <span class="kn">use</span> <span class="no">Mix</span><span class="o">.</span><span class="no">Project</span>
+
+  <span class="k">def</span> <span class="n">project</span> <span class="k">do</span>
+    <span class="p">[</span><span class="ss">app:</span> <span class="ss">:elixir_app</span><span class="p">,</span>
+     <span class="ss">version:</span> <span class="sd">"</span><span class="s2">0.0.1"</span><span class="p">,</span>
+     <span class="ss">elixir:</span> <span class="sd">"</span><span class="s2">~&gt; 1.0"</span><span class="p">,</span>
+     <span class="ss">deps:</span> <span class="n">deps</span><span class="p">]</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Configuration for the OTP application</span>
+  <span class="c1">#</span>
+  <span class="c1"># Type `mix help compile.app` for more information</span>
+  <span class="k">def</span> <span class="n">application</span> <span class="k">do</span>
+    <span class="p">[</span><span class="ss">applications:</span> <span class="p">[</span><span class="ss">:logger</span><span class="p">]]</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Dependencies can be Hex packages:</span>
+  <span class="c1">#</span>
+  <span class="c1">#   {:mydep, "~&gt; 0.3.0"}</span>
+  <span class="c1">#</span>
+  <span class="c1"># Or git/path repositories:</span>
+  <span class="c1">#</span>
+  <span class="c1">#   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}</span>
+  <span class="c1">#</span>
+  <span class="c1"># Type `mix help deps` for more examples and options</span>
+  <span class="k">defp</span> <span class="n">deps</span> <span class="k">do</span>
+    <span class="p">[</span>
+      <span class="p">{</span><span class="ss">:ecto</span><span class="p">,</span> <span class="sd">"</span><span class="s2">~&gt; 0.4"</span><span class="p">}</span>
+    <span class="p">]</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="gp">$ </span>mix deps.get
+</code></pre>
+
+<p>rubyでの<a href="https://rubygems.org/">RubyGems.org</a>に対応するライブラリのホスティングは<a href="https://hex.pm/">Hex</a>という物があるし、<br>
+依存関係には <a href="https://github.com/">GitHub</a> のリポジトリを指定することも出来る。</p>
+
+<p>インタラクティブシェルは <code>irb</code> に相当する <code>iex</code> が用意されているし、テストも標準で <code>ExUnit</code> という物がある。<br>
+さらに、是非紹介しておきたいのが Elixir Release Manager <a href="https://github.com/bitwalker/exrm">bitwalker/exrm</a>だ。<br>
+詳しい使い方は後に回すけれど、exrm はリリース用のビルドを行うことが出来るし、さらにダウンタイムなしのアップグレードやダウングレードを簡単にしてくれる。</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">機能</th>
+<th style="text-align: left">ruby</th>
+<th style="text-align: left">elixir</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">ビルドツール</td>
+<td style="text-align: left">rake</td>
+<td style="text-align: left">mix</td>
+</tr>
+<tr>
+<td style="text-align: left">ライブラリ管理</td>
+<td style="text-align: left">bundle</td>
+<td style="text-align: left">mix</td>
+</tr>
+<tr>
+<td style="text-align: left">標準リポジトリ</td>
+<td style="text-align: left">RubyGems.org</td>
+<td style="text-align: left">Hex</td>
+</tr>
+<tr>
+<td style="text-align: left">インタラクティブシェル</td>
+<td style="text-align: left">irb</td>
+<td style="text-align: left">iex</td>
+</tr>
+<tr>
+<td style="text-align: left">テスト</td>
+<td style="text-align: left">minitest</td>
+<td style="text-align: left">ExUnit</td>
+</tr>
+</tbody></table>
+
+</section><section><header><h3>とりあえずコードを見てみる</h3></header>
+
+<p>文法を詳しく説明する前に、少しコードを見てみよう。<br>
+Ruby だと全てがオブジェクトだから、メソッドの返値のオブジェクトにあるメソッドを次々呼び出すことでメソッドチェーン出来るよね。</p>
+<pre class="highlight ruby"><code><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">].</span><span class="nf">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="p">}.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span> <span class="n">e</span> <span class="o">*</span> <span class="mi">10</span> <span class="p">}</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+</code></pre>
+
+<p>elixirはオブジェクト指向じゃなく関数型だから、データから関数を呼ぶわけじゃ無いからメソッドチェーンは出来ない。<br>
+<code>fn e -&gt; e &lt; 4 end</code> とかは ruby の <code>lambda</code> みたいな物だよ。</p>
+<pre class="highlight elixir"><code><span class="n">list</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="m">4</span> <span class="k">end</span><span class="p">)</span>
+<span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">*</span> <span class="m">10</span> <span class="k">end</span><span class="p">)</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+</code></pre>
+
+<p>メソッドチェーンできないのは面倒くさいなと思うかもしれないけど、実は同じような感覚で記述することも出来る。</p>
+
+<p>ポイントは elixir では操作対象は必ず関数の第一引数になるという点だ。<br>
+さらに、「関数の結果を受けて、次の関数の第一引数へ渡す」ための<code>|&gt;</code>記法も用意されている。<br>
+この<code>Kernel.|&gt;/2</code>を使って先ほどのコードを書き直すと</p>
+<pre class="highlight elixir"><code><span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="m">4</span> <span class="k">end</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">*</span> <span class="m">10</span> <span class="k">end</span><span class="p">)</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+</code></pre>
+
+<p>さらに無名関数を<code>&amp;</code>(<code>Kernel.SpecialForms.&amp;/1</code>) で省略できるから、慣れると圧縮して書く事も出来るよ。</p>
+<pre class="highlight elixir"><code><span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="nv">&amp;1</span> <span class="o">&lt;</span> <span class="m">4</span><span class="p">))</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="nv">&amp;1</span> <span class="o">*</span> <span class="m">10</span><span class="p">))</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+</code></pre>
+
+</section><section><header><h3>まだ追記していくよ</h3></header>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/12/16/rails-tips/">早く知っておけば良かったrailsの技</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>
