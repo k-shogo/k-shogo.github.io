@@ -35,8 +35,7 @@ Prologをベースに並行プロセスやエラー処理の仕組みを追加�
 
 &lt;p&gt;elixirよりまず、Erlangの知名度も高くは無いよね。&lt;br&gt;
 でも案外身近なところで使われてたりするんだ。&lt;br&gt;
-Twitterでは&lt;a href="https://www.ejabberd.im"&gt;ejabberd&lt;/a&gt;というJabber/XMPP実装が使われている（今現在もそうかは分からないけど）ようだし、&lt;br&gt;
-&lt;a href="https://www.erlang-solutions.com/about/news/whatsapp-engineers-talk-about-scaling-450-million-users-erlang-erlang-factory-sf-bay-6-7"&gt;WhatsAppもErlangを使用しているみたいだ&lt;/a&gt;。&lt;br&gt;
+Twitterでは&lt;a href="https://www.ejabberd.im"&gt;ejabberd&lt;/a&gt;というJabber/XMPP実装が使われている（今現在もそうかは分からないけど）ようだし、&lt;a href="https://www.erlang-solutions.com/about/news/whatsapp-engineers-talk-about-scaling-450-million-users-erlang-erlang-factory-sf-bay-6-7"&gt;WhatsAppもErlangを使用しているみたいだ&lt;/a&gt;。&lt;br&gt;
 Erlangは何億人とユーザーを抱えるような大規模なシステムでかなりの実績を積んでいる。&lt;br&gt;
 プロセッサのマルチコア化が進む現在、並行性と信頼性を備えるErlangが活躍できる場面が多くなっていくんじゃないかなって思わないかい？&lt;br&gt;
 Matzも注目する言語なんて記事もあるよ。&lt;/p&gt;
@@ -49,9 +48,7 @@ Matzも注目する言語なんて記事もあるよ。&lt;/p&gt;
 
 &lt;p&gt;そんなに言うならelixirじゃなくて素のErlangで良いじゃんって思うかもしれないね。&lt;br&gt;
 答える代わりに質問だ、上の記事は2007の物なんだけど、Erlangって今流行ってる？&lt;br&gt;
-ちょっとこの記事を見て欲しい&lt;br&gt;
-&lt;a href="http://www.infoq.com/jp/news/2012/01/Katz-CouchDB-Couchbase-Server"&gt;Damien Katz氏がApache CouchDBから離反し、Couchbase Server開発を継続&lt;/a&gt;&lt;br&gt;
-CouchDBがコードの大半をErlangからC/C++するって内容だ。&lt;br&gt;
+ちょっとこの記事を見て欲しい&amp;quot;&lt;a href="http://www.infoq.com/jp/news/2012/01/Katz-CouchDB-Couchbase-Server"&gt;Damien Katz氏がApache CouchDBから離反し、Couchbase Server開発を継続&lt;/a&gt;&amp;ldquo;CouchDBがコードの大半をErlangからC/C++するって内容だ。&lt;br&gt;
 Damien Katz氏はインタビューの中で流行ってない原因を述べている。&lt;/p&gt;
 
 &lt;blockquote&gt;
