@@ -56,6 +56,7 @@
 <header>
 <h2>君もelixirを始めてみないか</h2>
 <span class='byline'>
+<a href="/article/tags/elixir/">elixir</a>
 </span>
 </header>
 <section><header><h3>elixirって何？</h3></header>
@@ -105,7 +106,8 @@ Reiaの後に登場し、後継のプロジェクトに指名され、2014年9�
 
 <p>何が取っつきやすくなったかって、それはもちろん文法なんだけど、<br>
 今や言語そのものが良くたって開発環境が良くないと流行らないよね。<br>
-だから文法の前に開発の環境について紹介しておくね。</p>
+だから文法の前に開発の環境について紹介しておくね。<br>
+僕は普段はrubyを使っているから、rubyの環境と対比させて紹介するね。</p>
 
 <p>まずは <code>Mix</code> だ。<br>
 <code>Mix</code> は ruby だと <code>rake</code> と <code>bundler</code> を合わせたようなものなんだ。<br>
@@ -205,31 +207,210 @@ rubyのプロジェクト開始は <code>bundle init</code> して、<code>Gemfi
 </tr>
 </tbody></table>
 
-</section><section><header><h3>とりあえずコードを見てみる</h3></header>
+<p>エディターのサポートは、vim(<a href="https://github.com/elixir-lang/vim-elixir">vim elixir-lang/vim-elixir</a>)と emacs(<a href="https://github.com/elixir-lang/emacs-elixir">elixir-lang/emacs-elixir</a>)とAtom(<a href="https://github.com/lucasmazza/language-elixir">lucasmazza/language-elixir</a>)があるから大丈夫かな？（他にもgeditとTextmateも用意されているよ）</p>
 
-<p>文法を詳しく説明する前に、少しコードを見てみよう。<br>
-Ruby だと全てがオブジェクトだから、メソッドの返値のオブジェクトにあるメソッドを次々呼び出すことでメソッドチェーン出来るよね。</p>
-<pre class="highlight ruby"><code><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">].</span><span class="nf">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="p">}.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">e</span><span class="o">|</span> <span class="n">e</span> <span class="o">*</span> <span class="mi">10</span> <span class="p">}</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+</section><section><header><h3>はじめてみよう</h3></header>
+
+<p>始めて見るにはまずelixirをインストールしないとね。<br>
+もしMacを使っていて、すでに<code>brew</code>を使っているのであればとても簡単</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>brew update
+<span class="gp">$ </span>brew install elixir
 </code></pre>
 
-<p>elixirはオブジェクト指向じゃなく関数型だから、データから関数を呼ぶわけじゃ無いからメソッドチェーンは出来ない。<br>
-<code>fn e -&gt; e &lt; 4 end</code> とかは ruby の <code>lambda</code> みたいな物だよ。</p>
-<pre class="highlight elixir"><code><span class="n">list</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span>
-<span class="n">filtered</span> <span class="o">=</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="m">4</span> <span class="k">end</span><span class="p">)</span>
-<span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">filtered</span><span class="p">,</span> <span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">*</span> <span class="m">10</span> <span class="k">end</span><span class="p">)</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+<p>Ubuntu を使っているなら、リポジトリを追加して<code>apg-get</code>で入る</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb <span class="o">&amp;&amp;</span> sudo dpkg -i erlang-solutions_1.0_all.deb
+<span class="gp">$ </span>sudo apt-get update
+<span class="gp">$ </span>sudo apt-get install elixir
 </code></pre>
 
-<p>メソッドチェーンできないのは面倒くさいなと思うかもしれないけど、実は同じような感覚で記述することも出来る。</p>
+<p>Windowsの場合は<a href="http://s3.hex.pm/elixir-websetup.exe">インストーラー</a>が用意されているよ。</p>
 
-<p>ポイントは elixir では操作対象は必ず関数の第一引数になるという点だ。<br>
-さらに、「関数の結果を受けて、次の関数の第一引数へ渡す」ための<code>|&gt;</code>記法も用意されている。<br>
-この<code>Kernel.|&gt;/2</code>を使って先ほどのコードを書き直すと</p>
-<pre class="highlight elixir"><code><span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="m">4</span> <span class="k">end</span><span class="p">)</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">fn</span> <span class="n">e</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="o">*</span> <span class="m">10</span> <span class="k">end</span><span class="p">)</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+<p>これで基本的にはErlangも一緒に入っている。<br>
+早速使い始めてみよう。<code>iex</code>コマンドでインタラクティブシェルが立ち上がる</p>
+<pre class="highlight elixir"><code><span class="no">Erlang</span><span class="o">/</span><span class="no">OTP</span> <span class="m">17</span> <span class="p">[</span><span class="n">erts</span><span class="o">-</span><span class="m">6.3</span><span class="p">]</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="p">[</span><span class="m">64</span><span class="o">-</span><span class="n">bit</span><span class="p">]</span> <span class="p">[</span><span class="ss">smp:</span><span class="m">4</span><span class="p">:</span><span class="m">4</span><span class="p">]</span> <span class="p">[</span><span class="n">async</span><span class="o">-</span><span class="ss">threads:</span><span class="m">10</span><span class="p">]</span> <span class="p">[</span><span class="n">hipe</span><span class="p">]</span> <span class="p">[</span><span class="n">kernel</span><span class="o">-</span><span class="ss">poll:</span><span class="no">false</span><span class="p">]</span> <span class="p">[</span><span class="n">dtrace</span><span class="p">]</span>
+
+<span class="no">Interactive</span> <span class="no">Elixir</span> <span class="p">(</span><span class="m">1.0</span><span class="o">.</span><span class="m">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">press</span> <span class="no">Ctrl</span><span class="o">+</span><span class="no">C</span> <span class="n">to</span> <span class="k">exit</span> <span class="p">(</span><span class="n">type</span> <span class="n">h</span><span class="p">()</span> <span class="no">ENTER</span> <span class="n">for</span> <span class="n">help</span><span class="p">)</span>
+<span class="n">iex</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="o">&gt;</span>
 </code></pre>
 
-<p>さらに無名関数を<code>&amp;</code>(<code>Kernel.SpecialForms.&amp;/1</code>) で省略できるから、慣れると圧縮して書く事も出来るよ。</p>
-<pre class="highlight elixir"><code><span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="nv">&amp;1</span> <span class="o">&lt;</span> <span class="m">4</span><span class="p">))</span> <span class="o">|&gt;</span> <span class="no">Enum</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="nv">&amp;1</span> <span class="o">*</span> <span class="m">10</span><span class="p">))</span> <span class="c1"># =&gt; [10, 20, 30]</span>
+<p>終了したいときは<code>Ctrl+C</code>して<code>(a)bort</code>の<code>a</code>をタイプしてエンターだ。</p>
+
+<p>実はErlang(<code>erl</code>で起動するよ)だと式の最後に<code>.</code>ピリオドを付けなきゃならない</p>
+<pre class="highlight erlang"><code><span class="nv">Erlang</span><span class="o">/</span><span class="nv">OTP</span> <span class="mi">17</span> <span class="p">[</span><span class="n">erts</span><span class="o">-</span><span class="mi">6</span><span class="p">.</span><span class="mi">3</span><span class="p">]</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="p">[</span><span class="mi">64</span><span class="o">-</span><span class="n">bit</span><span class="p">]</span> <span class="p">[</span><span class="nn">smp</span><span class="p">:</span><span class="mi">4</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="p">[</span><span class="n">async</span><span class="o">-</span><span class="nn">threads</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="p">[</span><span class="n">hipe</span><span class="p">]</span> <span class="p">[</span><span class="n">kernel</span><span class="o">-</span><span class="nn">poll</span><span class="p">:</span><span class="n">false</span><span class="p">]</span> <span class="p">[</span><span class="n">dtrace</span><span class="p">]</span>
+
+<span class="nv">Eshell</span> <span class="nv">V6</span><span class="p">.</span><span class="mi">3</span>  <span class="p">(</span><span class="n">abort</span> <span class="n">with</span> <span class="err">^</span><span class="nv">G</span><span class="p">)</span>
+<span class="mi">1</span><span class="o">&gt;</span> <span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="p">.</span>
+<span class="mi">3</span>
 </code></pre>
+
+<p>でもelixirならピリオドはいらない、そのまま<code>1+2</code>とタイプしてエンターで計算できる。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span><span class="o">+</span><span class="m">2</span>
+<span class="m">3</span>
+</code></pre>
+
+<p>このまま進む前に、elixirのインストールによって入った他のコマンドも紹介しておこう。<br>
+<code>elixir</code>と<code>elixirc</code>だ。<br>
+<code>elixir</code>コマンドはelixirスクリプトを実行する物だ。<br>
+<code>ruby hoge.rb</code>みたいな感じで、<code>elixir hoge.exs</code>と使用する。<br>
+<code>elixirc</code>はコンパイル用のコマンドで、<code>elixirc hoge.ex</code>とするとコンパイルされた<code>.beam</code>ファイルが生成される。<br>
+ファイルの拡張子を<code>.exs</code>と<code>.ex</code>を登場させたけれど、<br>
+<code>.exs</code>はコンパイルしないで実行するスクリプトファイル、<br>
+<code>.ex</code>はコンパイルするファイルに付けるのが習慣なんだ。</p>
+
+<p>他には今後よく使う表記について説明しておこう。<br>
+elixirでは関数は&quot;モジュール名&rdquo;, &ldquo;関数名&rdquo;, &ldquo;アリティ&quot;（つまり引数の個数）によって一意に定まる。<br>
+だから関数を表現するときに <code>モジュール.関数/アリティ</code>といった具合に表記する。<br>
+例えば `IO.puts/1&rsquo; とかね。<br>
+これはiexからドキュメントを見るときにも使うよ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">h</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">puts</span><span class="o">/</span><span class="m">1</span><span class="p">)</span>
+
+                <span class="k">def</span> <span class="n">puts</span><span class="p">(</span><span class="n">device</span> <span class="p">\\</span> <span class="ss">:erlang</span><span class="o">.</span><span class="n">group_leader</span><span class="p">(),</span> <span class="n">item</span><span class="p">)</span>
+
+<span class="no">Writes</span> <span class="n">the</span> <span class="n">argument</span> <span class="n">to</span> <span class="n">the</span> <span class="n">device</span><span class="p">,</span> <span class="n">similar</span> <span class="n">to</span> <span class="n">write</span><span class="o">/</span><span class="m">2</span><span class="p">,</span> <span class="n">but</span> <span class="n">adds</span> <span class="n">a</span> <span class="n">newline</span> <span class="n">at</span>
+<span class="n">the</span> <span class="k">end</span><span class="o">.</span> <span class="no">The</span> <span class="n">argument</span> <span class="n">is</span> <span class="n">expected</span> <span class="n">to</span> <span class="n">be</span> <span class="n">a</span> <span class="n">chardata</span><span class="o">.</span>
+</code></pre>
+
+</section><section><header><h3>まずは基本的な型だ</h3></header>
+
+<h4>整数、浮動小数、文字列</h4>
+
+<p>基本的な型を確認してみよう</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span><span class="o">+</span><span class="m">2</span>
+<span class="m">3</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span><span class="o">+</span><span class="m">2.0</span>
+<span class="m">3.0</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">string"</span>
+<span class="sd">"</span><span class="s2">string"</span>
+</code></pre>
+
+<p>整数、浮動小数点、文字列が使えることが分かった。<br>
+整数と浮動小数点の計算ではエラーにならずに自動的に型の変換もしてくれる。<br>
+ちなみにelixirの浮動小数点は64ビットの倍精度だ。<br>
+四則演算は当然出来るんだけど、ちょっと注意なのが<code>/</code>による除算だ。<br>
+irbで<code>10 / 3</code>とやれば<code>3</code>が出力されるけど、iexなら浮動小数点で返る。<br>
+整数の商が欲しければ<code>div</code>関数が用意されている。<br>
+rubyと同じで自明なカッコは省略も出来る。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">10</span> <span class="o">/</span> <span class="m">3</span>
+<span class="m">3.3333333333333335</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">div</span><span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
+<span class="m">3</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">div</span> <span class="m">10</span><span class="p">,</span> <span class="m">3</span>
+<span class="m">3</span>
+</code></pre>
+
+<p>二進数、八進数、十六進数、そして指数表記もサポートしている。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">0b11111011111</span>
+<span class="m">2015</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="err">0</span><span class="n">o77</span>
+<span class="m">63</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">0xff</span>
+<span class="m">255</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">1.0e-10</span>
+<span class="m">1.0e-10</span>
+</code></pre>
+
+<h4>真偽値</h4>
+
+<p>真偽値は<code>true</code>,<code>false</code>だ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="no">true</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">false</span>
+<span class="no">false</span>
+</code></pre>
+
+<p>ここまで紹介してきた型は<code>is_integer/1</code>, <code>is_float/1</code>, <code>is_number/1</code>, <code>is_boolean/1</code> で判定できるよ。<br>
+<code>is_number/1</code>は整数もしくは浮動小数点の場合に<code>true</code>だね。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_number</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_number</span><span class="p">(</span><span class="m">1.0</span><span class="p">)</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_number</span><span class="p">(</span><span class="no">true</span><span class="p">)</span>
+<span class="no">false</span>
+</code></pre>
+
+<h4>アトム</h4>
+
+<p>次はアトムだ。アトムは<code>:</code>から始まるもので、rubyだとシンボルって呼ばれているね。<br>
+真偽値の<code>true</code>, <code>false</code>は実はアトムなんだ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="no">true</span> <span class="o">==</span> <span class="ss">:true</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_atom</span><span class="p">(</span><span class="no">false</span><span class="p">)</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_boolean</span><span class="p">(</span><span class="ss">:false</span><span class="p">)</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_atom</span><span class="p">(</span><span class="ss">:hoge</span><span class="p">)</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_boolean</span><span class="p">(</span><span class="ss">:hoge</span><span class="p">)</span>
+<span class="no">false</span>
+</code></pre>
+
+<h4>文字列の式展開 / 引用符による違い</h4>
+
+<p>文字列は二重引用符で括って使う。<br>
+rubyと同様に<code>#{}</code>によって式を展開することも出来る。<br>
+単一引用符を使おうとすると、少し驚く結果となるだろう。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">1 + 2 = </span><span class="si">#{</span><span class="m">1</span><span class="o">+</span><span class="m">2</span><span class="si">}</span><span class="s2">"</span>
+<span class="sd">"</span><span class="s2">1 + 2 = 3"</span>
+<span class="n">iex</span> <span class="s1">'日本語'</span>
+<span class="p">[</span><span class="m">26085</span><span class="p">,</span> <span class="m">26412</span><span class="p">,</span> <span class="m">35486</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">日本語"</span>
+<span class="sd">"</span><span class="s2">日本語"</span>
+</code></pre>
+
+<p>これは文字列と文字のリストの違いが原因なんだ。</p>
+
+<h4>リストとタプル</h4>
+
+<p>単一引用符を使ったときに現れたものはリストなんだ。<br>
+リストは<code>[]</code>を使って表現する。リストには何でも入れられる</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="no">true</span><span class="p">,</span> <span class="ss">:atom</span><span class="p">,</span> <span class="sd">"</span><span class="s2">string"</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">]]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="no">true</span><span class="p">,</span> <span class="ss">:atom</span><span class="p">,</span> <span class="sd">"</span><span class="s2">string"</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">]]</span>
+</code></pre>
+
+<p>リストと似ているタプルという物もある。<br>
+タプルもリストと同じように何でも入れられる</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="no">true</span><span class="p">,</span> <span class="ss">:atom</span><span class="p">,</span> <span class="sd">"</span><span class="s2">string"</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">],</span> <span class="p">{</span><span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span><span class="p">}}</span>
+<span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="no">true</span><span class="p">,</span> <span class="ss">:atom</span><span class="p">,</span> <span class="sd">"</span><span class="s2">string"</span><span class="p">,</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">],</span> <span class="p">{</span><span class="ss">:x</span><span class="p">,</span> <span class="ss">:y</span><span class="p">}}</span>
+</code></pre>
+
+<p>似ているけれど、中身は違う。<br>
+それはリストは中身が連結リスト（Linked list）であるのに対し、タプルは要素を連続したメモリ上に保存している点だ。<br>
+タプルは連続したメモリ上に要素を持っているから、インデックスによる要素の取得や、要素数の取得は高速に出来る。<br>
+対してリストは連結リストであるため、要素を順にたどる必要があり、タプルよりは低速になってしまう。<br>
+リストの方が使い勝手が良い場合は要素を更新したり追加する時だ。<br>
+elixrのデータ型は変更不可能なため、タプルの要素の更新はタプル全体をコピーしてから行う必要がある。<br>
+リストの場合は途中の連結を変更するだけなので、タプルより簡単だ。<br>
+リストとタプル、似てはいるけれど、適切に使い分けた方が良い。<br>
+つまり変更されないような場合はタプル、変更される場合はリストといった具合だ。</p>
+
+<p>リストとタプルについての操作も見てみよう。<br>
+リストは<code>++/2</code>, <code>--/2</code>で連結や、差し引いたりが出来るし、<code>hd/1</code>, <code>tl/1</code>でリストの先頭とそれ以外の取得が出来る（LISPのcar, cdrみたいだね）。<br>
+長さの取得は<code>length/1</code>を使う</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span> <span class="o">++</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span> <span class="o">--</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">hd</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+<span class="m">1</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">tl</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">]</span>
+<span class="p">[</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">5</span><span class="p">]</span>
+<span class="n">length</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+<span class="m">3</span>
+</code></pre>
+
+<p>タプルのインデックスによる要素取得、サイズ取得、要素の変更はそれぞれ<code>elem/2</code>, <code>tuple_size/1</code>, <code>put_elem/3</code>を使う。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">elem</span><span class="p">({</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">},</span> <span class="m">1</span><span class="p">)</span>
+<span class="m">2</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">tuple_size</span><span class="p">({</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">})</span>
+<span class="m">3</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">put_elem</span><span class="p">({</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">},</span><span class="m">2</span><span class="p">,</span><span class="m">4</span><span class="p">)</span>
+<span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">4</span><span class="p">}</span>
+</code></pre>
+
+<p>リストの要素数取得が<code>length</code>で、タプルの要素数取得が<code>size</code>なのはちゃんと理由があるんだ。<br>
+elixirではデータ構造が持っている要素数を数える場合、<br>
+値があらかじめ計算されている場合は関数名に<code>size</code>を、明示的に計算が必要なものは関数名に<code>length</code>が使われている。<br>
+自分で関数を作る場合にも気をつけてみよう。</p>
 
 </section><section><header><h3>まだ追記していくよ</h3></header>
 </section>
