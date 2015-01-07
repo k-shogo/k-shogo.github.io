@@ -230,7 +230,7 @@ rubyのプロジェクト開始は <code>bundle init</code> して、<code>Gemfi
 <pre class="highlight elixir"><code><span class="no">Erlang</span><span class="o">/</span><span class="no">OTP</span> <span class="m">17</span> <span class="p">[</span><span class="n">erts</span><span class="o">-</span><span class="m">6.3</span><span class="p">]</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="p">[</span><span class="m">64</span><span class="o">-</span><span class="n">bit</span><span class="p">]</span> <span class="p">[</span><span class="ss">smp:</span><span class="m">4</span><span class="p">:</span><span class="m">4</span><span class="p">]</span> <span class="p">[</span><span class="n">async</span><span class="o">-</span><span class="ss">threads:</span><span class="m">10</span><span class="p">]</span> <span class="p">[</span><span class="n">hipe</span><span class="p">]</span> <span class="p">[</span><span class="n">kernel</span><span class="o">-</span><span class="ss">poll:</span><span class="no">false</span><span class="p">]</span> <span class="p">[</span><span class="n">dtrace</span><span class="p">]</span>
 
 <span class="no">Interactive</span> <span class="no">Elixir</span> <span class="p">(</span><span class="m">1.0</span><span class="o">.</span><span class="m">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">press</span> <span class="no">Ctrl</span><span class="o">+</span><span class="no">C</span> <span class="n">to</span> <span class="k">exit</span> <span class="p">(</span><span class="n">type</span> <span class="n">h</span><span class="p">()</span> <span class="no">ENTER</span> <span class="n">for</span> <span class="n">help</span><span class="p">)</span>
-<span class="n">iex</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="n">iex</span><span class="o">&gt;</span>
 </code></pre>
 
 <p>終了したいときは<code>Ctrl+C</code>して<code>(a)bort</code>の<code>a</code>をタイプしてエンターだ。</p>
@@ -260,9 +260,9 @@ rubyのプロジェクト開始は <code>bundle init</code> して、<code>Gemfi
 <p>他には今後よく使う表記について説明しておこう。<br>
 elixirでは関数は&quot;モジュール名&rdquo;, &ldquo;関数名&rdquo;, &ldquo;アリティ&quot;（つまり引数の個数）によって一意に定まる。<br>
 だから関数を表現するときに <code>モジュール.関数/アリティ</code>といった具合に表記する。<br>
-例えば `IO.puts/1&rsquo; とかね。<br>
+例えば<code>IO.puts/1</code>とかね。<br>
 これはiexからドキュメントを見るときにも使うよ。</p>
-<pre class="highlight elixir"><code><span class="n">iex</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">h</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">puts</span><span class="o">/</span><span class="m">1</span><span class="p">)</span>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">h</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">puts</span><span class="o">/</span><span class="m">1</span><span class="p">)</span>
 
                 <span class="k">def</span> <span class="n">puts</span><span class="p">(</span><span class="n">device</span> <span class="p">\\</span> <span class="ss">:erlang</span><span class="o">.</span><span class="n">group_leader</span><span class="p">(),</span> <span class="n">item</span><span class="p">)</span>
 
@@ -281,10 +281,14 @@ elixirでは関数は&quot;モジュール名&rdquo;, &ldquo;関数名&rdquo;, &
 <span class="m">3.0</span>
 <span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">string"</span>
 <span class="sd">"</span><span class="s2">string"</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">+</span> <span class="sd">"</span><span class="s2">string"</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">ArithmeticError</span><span class="p">)</span> <span class="n">bad</span> <span class="n">argument</span> <span class="ow">in</span> <span class="n">arithmetic</span> <span class="n">expression</span>
+    <span class="ss">:erlang</span><span class="o">.+</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="sd">"</span><span class="s2">string"</span><span class="p">)</span>
 </code></pre>
 
 <p>整数、浮動小数点、文字列が使えることが分かった。<br>
 整数と浮動小数点の計算ではエラーにならずに自動的に型の変換もしてくれる。<br>
+暗黙に変換できな場合はもちろんエラーになる。<br>
 ちなみにelixirの浮動小数点は64ビットの倍精度だ。<br>
 四則演算は当然出来るんだけど、ちょっと注意なのが<code>/</code>による除算だ。<br>
 irbで<code>10 / 3</code>とやれば<code>3</code>が出力されるけど、iexなら浮動小数点で返る。<br>
@@ -318,6 +322,48 @@ rubyと同じで自明なカッコは省略も出来る。</p>
 <span class="no">false</span>
 </code></pre>
 
+<p>真偽値では無いけれど<code>nil</code>も用意されている</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="no">nil</span>
+<span class="no">nil</span>
+</code></pre>
+
+<p>論理演算は<code>and</code>,<code>or</code>,<code>not</code>だ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="no">true</span> <span class="ow">and</span> <span class="no">false</span>
+<span class="no">false</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">true</span> <span class="ow">or</span> <span class="no">false</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="ow">not</span> <span class="no">false</span>
+<span class="no">true</span>
+</code></pre>
+
+<p>論理演算には<code>&amp;&amp;</code>,<code>||</code>,<code>!</code>も用意されている。<br>
+違いは真偽値だけ受け付けるか、任意の型を受け付けるかだ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="ow">and</span> <span class="no">true</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="n">argument</span> <span class="ss">error:</span> <span class="m">1</span>
+
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="no">true</span>
+<span class="no">true</span>
+</code></pre>
+
+<p><code>&amp;&amp;</code>,<code>||</code>,<code>!</code>の場合、<code>false</code>と<code>nil</code>以外を真として評価する。<br>
+rubyと一緒だね。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="ow">not</span> <span class="m">1</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="n">argument</span> <span class="n">error</span>
+    <span class="ss">:erlang</span><span class="o">.</span><span class="ow">not</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">!</span> <span class="m">1</span>
+<span class="no">false</span>
+</code></pre>
+
+<p><code>or</code>, <code>and</code>, <code>||</code>, <code>&amp;&amp;</code>は短絡演算子、つまり左辺が条件を満たさない場合は右辺は評価されない。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">RuntimeError</span><span class="p">)</span> <span class="n">undefined</span> <span class="ss">function:</span> <span class="n">x</span><span class="o">/</span><span class="m">0</span>
+
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">true</span> <span class="ow">or</span> <span class="n">x</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">true</span> <span class="o">||</span> <span class="n">x</span>
+<span class="no">true</span>
+</code></pre>
+
 <p>ここまで紹介してきた型は<code>is_integer/1</code>, <code>is_float/1</code>, <code>is_number/1</code>, <code>is_boolean/1</code> で判定できるよ。<br>
 <code>is_number/1</code>は整数もしくは浮動小数点の場合に<code>true</code>だね。</p>
 <pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">is_number</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
@@ -347,9 +393,15 @@ rubyと同じで自明なカッコは省略も出来る。</p>
 <h4>文字列の式展開 / 引用符による違い</h4>
 
 <p>文字列は二重引用符で括って使う。<br>
+文字列の結合は<code>+</code>ではなく<code>&lt;&gt;</code>だ。<br>
 rubyと同様に<code>#{}</code>によって式を展開することも出来る。<br>
 単一引用符を使おうとすると、少し驚く結果となるだろう。</p>
-<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">1 + 2 = </span><span class="si">#{</span><span class="m">1</span><span class="o">+</span><span class="m">2</span><span class="si">}</span><span class="s2">"</span>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">foo"</span> <span class="o">+</span> <span class="sd">"</span><span class="s2">bar"</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">ArithmeticError</span><span class="p">)</span> <span class="n">bad</span> <span class="n">argument</span> <span class="ow">in</span> <span class="n">arithmetic</span> <span class="n">expression</span>
+    <span class="ss">:erlang</span><span class="o">.+</span><span class="p">(</span><span class="sd">"</span><span class="s2">foo"</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">)</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">foo"</span> <span class="o">&lt;&gt;</span> <span class="sd">"</span><span class="s2">bar"</span>
+<span class="sd">"</span><span class="s2">foobar"</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="sd">"</span><span class="s2">1 + 2 = </span><span class="si">#{</span><span class="m">1</span><span class="o">+</span><span class="m">2</span><span class="si">}</span><span class="s2">"</span>
 <span class="sd">"</span><span class="s2">1 + 2 = 3"</span>
 <span class="n">iex</span> <span class="s1">'日本語'</span>
 <span class="p">[</span><span class="m">26085</span><span class="p">,</span> <span class="m">26412</span><span class="p">,</span> <span class="m">35486</span><span class="p">]</span>
@@ -412,7 +464,200 @@ elixirではデータ構造が持っている要素数を数える場合、<br>
 値があらかじめ計算されている場合は関数名に<code>size</code>を、明示的に計算が必要なものは関数名に<code>length</code>が使われている。<br>
 自分で関数を作る場合にも気をつけてみよう。</p>
 
+<h4>比較演算</h4>
+
+<p>比較演算子には<code>==</code>，<code>!=</code>，<code>===</code>，<code>!==</code>，<code>&lt;=</code>，<code>&gt;=</code>，<code>&lt;</code>, <code>&gt;</code>が用意されている。<br>
+基本的には想像通りの動作をする。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">==</span> <span class="m">1</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">!=</span> <span class="m">1</span>
+<span class="no">false</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">2</span> <span class="o">&lt;=</span> <span class="m">2</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">2</span> <span class="o">&lt;</span> <span class="m">2</span>
+<span class="no">false</span>
+</code></pre>
+
+<p><code>==</code>と<code>===</code>の違いは<code>===</code>の方が整数と浮動小数点数を厳密に比較する点だ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">==</span> <span class="m">1.0</span>
+<span class="no">true</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">===</span> <span class="m">1.0</span>
+<span class="no">false</span>
+</code></pre>
+
+<p>おもしろいのは異なる型の比較が出来る点だ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">&lt;</span> <span class="ss">:x</span>
+<span class="no">true</span>
+</code></pre>
+
+<p>これは利便性のためで、以下のような型の比較ルールが用意されている。</p>
+<pre class="highlight plaintext"><code>number &lt; atom &lt; reference &lt; functions &lt; port &lt; pid &lt; tuple &lt; maps &lt; list &lt; bitstring
+</code></pre>
+
+</section><section><header><h3>パターンマッチング</h3></header>
+
+<p>今までのコードの中で、プログラムではよく使うのに、あえて登場させなかった演算子がある。<code>=</code>だ。<br>
+使うのは簡単</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="m">1</span>
+<span class="m">1</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="m">1</span>
+</code></pre>
+
+<p>結果も至極当然に見える。でも、次の例はどうだろうか</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">1</span> <span class="o">=</span> <span class="n">x</span>
+<span class="m">1</span>
+</code></pre>
+
+<p>もしこれを<code>irb</code>で動かしていればシンタックスエラーだ。</p>
+<pre class="highlight ruby"><code><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">=&gt;</span> <span class="mi">1</span>
+<span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span> <span class="mi">1</span> <span class="o">=</span> <span class="n">x</span>
+<span class="no">SyntaxError</span><span class="p">:</span> <span class="p">(</span><span class="n">irb</span><span class="p">):</span><span class="mi">3</span><span class="p">:</span> <span class="n">syntax</span> <span class="n">error</span><span class="p">,</span> <span class="n">unexpected</span> <span class="s1">'='</span><span class="p">,</span> <span class="n">expecting</span> <span class="k">end</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">input</span>
+<span class="mi">1</span> <span class="o">=</span> <span class="n">x</span>
+   <span class="o">^</span>
+</code></pre>
+
+<p>でもelixirでは<code>1 = x</code>はエラーにはならなかった。<br>
+実はelixirの（もしくはErlangの）<code>=</code>は代入の演算子ではなく、パターンマッチングを行うマッチ演算子なんだ。<br>
+<code>1 = x</code>はパターンマッチングとして成立しているからエラーにはならない。<br>
+<code>2 = x</code>はマッチしないからエラーとなる。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="m">2</span> <span class="o">=</span> <span class="n">x</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="m">1</span>
+</code></pre>
+
+<p>マッチ演算子の左辺に変数があり、パターンマッチングが成立すれば変数に割り当てがされる。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="m">2</span>
+<span class="m">2</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="m">2</span>
+</code></pre>
+
+<p>当然じゃ無いか、これなら代入と同じだと思うかもしれない、でもErlangよりはとっつきやすい。<br>
+もしErlangで同じ事を実行したなら</p>
+
+<p>注: Erlangの変数は大文字で始まる（Prologみたいだね）、そして式の最後にはピリオドがいる</p>
+<pre class="highlight erlang"><code><span class="nv">Eshell</span> <span class="nv">V6</span><span class="p">.</span><span class="mi">3</span>  <span class="p">(</span><span class="n">abort</span> <span class="n">with</span> <span class="err">^</span><span class="nv">G</span><span class="p">)</span>
+<span class="o">&gt;</span> <span class="nv">X</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span>
+<span class="mi">1</span>
+<span class="o">&gt;</span> <span class="nv">X</span><span class="p">.</span>
+<span class="mi">1</span>
+<span class="o">&gt;</span> <span class="mi">1</span> <span class="o">=</span> <span class="nv">X</span><span class="p">.</span>
+<span class="mi">1</span>
+<span class="o">&gt;</span> <span class="mi">2</span> <span class="o">=</span> <span class="nv">X</span><span class="p">.</span>
+<span class="o">**</span> <span class="n">exception</span> <span class="nn">error</span><span class="p">:</span> <span class="n">no</span> <span class="n">match</span> <span class="k">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="n">value</span> <span class="mi">1</span>
+<span class="o">&gt;</span> <span class="nv">X</span> <span class="o">=</span> <span class="mi">2</span><span class="p">.</span>
+<span class="o">**</span> <span class="n">exception</span> <span class="nn">error</span><span class="p">:</span> <span class="n">no</span> <span class="n">match</span> <span class="k">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="n">value</span> <span class="mi">2</span>
+<span class="o">&gt;</span> <span class="nv">X</span><span class="p">.</span>
+<span class="mi">1</span>
+</code></pre>
+
+<p>そうErlangでは<code>X = 2</code>でもエラーとなる。<br>
+全ての変数はイミュータブルであり、代入は1回だけに限られている。<br>
+不便に思えるかもしれないけれど、関数型言語の考えを使うなら便利にもなる。<br>
+elixirではピン演算子<code>^</code>によって再束縛をコントロールすることが出来る。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="o">^</span><span class="n">x</span> <span class="o">=</span> <span class="m">3</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="m">3</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="m">2</span>
+</code></pre>
+
+<p>徐々にパターンマッチングが代入と異なる点に踏み込んでみよう。<br>
+マッチ演算子はリストやタプルの構造でも使うことが出来る。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="ss">:hoge</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">}</span>
+<span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="ss">:hoge</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="m">1</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">y</span>
+<span class="ss">:hoge</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">z</span>
+<span class="sd">"</span><span class="s2">bar"</span>
+</code></pre>
+
+<p>これだけだと一気に代入したのと変わらないように見えるけれど、左辺に変数以外があったらどうなるだろう。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="ss">:name</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:name</span><span class="p">,</span> <span class="sd">"</span><span class="s2">taro"</span><span class="p">}</span>
+<span class="p">{</span><span class="ss">:name</span><span class="p">,</span> <span class="sd">"</span><span class="s2">taro"</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="sd">"</span><span class="s2">taro"</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="ss">:name</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:age</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="p">{</span><span class="ss">:age</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+</code></pre>
+
+<p>この例だとタプルの先頭要素が<code>:name</code>の時のみ、変数<code>x</code>に割り当てが出来ると言うことだ。<br>
+左辺に同じ変数を複数回使ったなら、同じものに束縛できなければパターンマッチングは成功しない。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">}</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+</code></pre>
+
+<p>ピン演算子<code>^</code>は以前に束縛した値とのマッチングを表現できる。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="m">1</span>
+<span class="m">1</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="p">{</span><span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="o">^</span><span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="o">^</span><span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">}</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="p">{</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="o">^</span><span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="p">{</span><span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="m">2</span>
+</code></pre>
+
+<p>パターンマッチングにおいて特殊な変数に<code>_</code>がある。<br>
+これは簡単に言えばなんでもいいってことだ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">}</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">{</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">}</span>
+<span class="p">{</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="m">3</span>
+</code></pre>
+
+<h4>リストのパターンマッチング</h4>
+
+<p>タプルと同じようにリストだってパターンマッチング出来る。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="ss">:hoge</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="ss">:hoge</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">]</span>
+</code></pre>
+
+<p>リストの中身は連結リストだという話をしたよね、だから「先頭要素」と「続くリスト」というマッチングも出来る。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">head</span> <span class="o">|</span> <span class="n">tail</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="ss">:hoge</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="ss">:hoge</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">head</span>
+<span class="m">1</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">tail</span>
+<span class="p">[</span><span class="ss">:hoge</span><span class="p">,</span> <span class="sd">"</span><span class="s2">bar"</span><span class="p">]</span>
+</code></pre>
+
+<p><code>[head | tail]</code>と指定したなら、先頭も続きも無い空のリストとはマッチングしない</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">head</span> <span class="o">|</span> <span class="n">tail</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">tail</span>
+<span class="p">[]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">head</span> <span class="o">|</span> <span class="n">tail</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="p">[]</span>
+</code></pre>
+
+<p><code>[head | tail]</code>の書き方は実はマッチング以外にもリストそのものの表記としても使うことができる。<br>
+簡単な例は先頭への要素の追加だ。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="m">0</span> <span class="o">|</span> <span class="n">list</span><span class="p">]</span>
+<span class="p">[</span><span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">]</span>
+</code></pre>
+
+<p><code>[1 | [2]]</code>と<code>[1 | 2]</code>は意味が違ってしまうから気をつけよう</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="m">1</span> <span class="o">|</span> <span class="p">[</span><span class="m">2</span><span class="p">]]</span>
+<span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">[</span><span class="m">1</span> <span class="o">|</span> <span class="m">2</span><span class="p">]</span>
+<span class="p">[</span><span class="m">1</span> <span class="o">|</span> <span class="m">2</span><span class="p">]</span>
+</code></pre>
+
 </section><section><header><h3>まだ追記していくよ</h3></header>
+<pre class="highlight elixir"><code></code></pre>
 </section>
 </article>
 </div>

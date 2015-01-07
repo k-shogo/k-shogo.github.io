@@ -188,7 +188,7 @@ rubyのプロジェクト開始は &lt;code&gt;bundle init&lt;/code&gt; して�
 &lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="no"&gt;Erlang&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="no"&gt;OTP&lt;/span&gt; &lt;span class="m"&gt;17&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;erts&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="m"&gt;6.3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;bit&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;smp:&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;async&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="ss"&gt;threads:&lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;hipe&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;kernel&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="ss"&gt;poll:&lt;/span&gt;&lt;span class="no"&gt;false&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;dtrace&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
 
 &lt;span class="no"&gt;Interactive&lt;/span&gt; &lt;span class="no"&gt;Elixir&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;press&lt;/span&gt; &lt;span class="no"&gt;Ctrl&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="k"&gt;exit&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="no"&gt;ENTER&lt;/span&gt; &lt;span class="n"&gt;for&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;終了したいときは&lt;code&gt;Ctrl+C&lt;/code&gt;して&lt;code&gt;(a)bort&lt;/code&gt;の&lt;code&gt;a&lt;/code&gt;をタイプしてエンターだ。&lt;/p&gt;
@@ -218,9 +218,9 @@ rubyのプロジェクト開始は &lt;code&gt;bundle init&lt;/code&gt; して�
 &lt;p&gt;他には今後よく使う表記について説明しておこう。&lt;br&gt;
 elixirでは関数は&amp;quot;モジュール名&amp;rdquo;, &amp;ldquo;関数名&amp;rdquo;, &amp;ldquo;アリティ&amp;quot;（つまり引数の個数）によって一意に定まる。&lt;br&gt;
 だから関数を表現するときに &lt;code&gt;モジュール.関数/アリティ&lt;/code&gt;といった具合に表記する。&lt;br&gt;
-例えば `IO.puts/1&amp;rsquo; とかね。&lt;br&gt;
+例えば&lt;code&gt;IO.puts/1&lt;/code&gt;とかね。&lt;br&gt;
 これはiexからドキュメントを見るときにも使うよ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;IO&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;puts&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;IO&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;puts&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
                 &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="n"&gt;puts&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;device&lt;/span&gt; &lt;span class="p"&gt;\\&lt;/span&gt; &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;group_leader&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
@@ -239,10 +239,14 @@ elixirでは関数は&amp;quot;モジュール名&amp;rdquo;, &amp;ldquo;関数�
 &lt;span class="m"&gt;3.0&lt;/span&gt;
 &lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;
 &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArithmeticError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;bad&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arithmetic&lt;/span&gt; &lt;span class="n"&gt;expression&lt;/span&gt;
+    &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.+&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;整数、浮動小数点、文字列が使えることが分かった。&lt;br&gt;
 整数と浮動小数点の計算ではエラーにならずに自動的に型の変換もしてくれる。&lt;br&gt;
+暗黙に変換できな場合はもちろんエラーになる。&lt;br&gt;
 ちなみにelixirの浮動小数点は64ビットの倍精度だ。&lt;br&gt;
 四則演算は当然出来るんだけど、ちょっと注意なのが&lt;code&gt;/&lt;/code&gt;による除算だ。&lt;br&gt;
 irbで&lt;code&gt;10 / 3&lt;/code&gt;とやれば&lt;code&gt;3&lt;/code&gt;が出力されるけど、iexなら浮動小数点で返る。&lt;br&gt;
@@ -276,6 +280,48 @@ rubyと同じで自明なカッコは省略も出来る。&lt;/p&gt;
 &lt;span class="no"&gt;false&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;真偽値では無いけれど&lt;code&gt;nil&lt;/code&gt;も用意されている&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt;
+&lt;span class="no"&gt;nil&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;論理演算は&lt;code&gt;and&lt;/code&gt;,&lt;code&gt;or&lt;/code&gt;,&lt;code&gt;not&lt;/code&gt;だ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="no"&gt;false&lt;/span&gt;
+&lt;span class="no"&gt;false&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="no"&gt;false&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="no"&gt;false&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;論理演算には&lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;,&lt;code&gt;||&lt;/code&gt;,&lt;code&gt;!&lt;/code&gt;も用意されている。&lt;br&gt;
+違いは真偽値だけ受け付けるか、任意の型を受け付けるかだ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArgumentError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="ss"&gt;error:&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;,&lt;code&gt;||&lt;/code&gt;,&lt;code&gt;!&lt;/code&gt;の場合、&lt;code&gt;false&lt;/code&gt;と&lt;code&gt;nil&lt;/code&gt;以外を真として評価する。&lt;br&gt;
+rubyと一緒だね。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArgumentError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;
+    &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;!&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="no"&gt;false&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;or&lt;/code&gt;, &lt;code&gt;and&lt;/code&gt;, &lt;code&gt;||&lt;/code&gt;, &lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;は短絡演算子、つまり左辺が条件を満たさない場合は右辺は評価されない。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;RuntimeError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;undefined&lt;/span&gt; &lt;span class="ss"&gt;function:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
+
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;p&gt;ここまで紹介してきた型は&lt;code&gt;is_integer/1&lt;/code&gt;, &lt;code&gt;is_float/1&lt;/code&gt;, &lt;code&gt;is_number/1&lt;/code&gt;, &lt;code&gt;is_boolean/1&lt;/code&gt; で判定できるよ。&lt;br&gt;
 &lt;code&gt;is_number/1&lt;/code&gt;は整数もしくは浮動小数点の場合に&lt;code&gt;true&lt;/code&gt;だね。&lt;/p&gt;
 &lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_number&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -305,9 +351,15 @@ rubyと同じで自明なカッコは省略も出来る。&lt;/p&gt;
 &lt;h4&gt;文字列の式展開 / 引用符による違い&lt;/h4&gt;
 
 &lt;p&gt;文字列は二重引用符で括って使う。&lt;br&gt;
+文字列の結合は&lt;code&gt;+&lt;/code&gt;ではなく&lt;code&gt;&amp;lt;&amp;gt;&lt;/code&gt;だ。&lt;br&gt;
 rubyと同様に&lt;code&gt;#{}&lt;/code&gt;によって式を展開することも出来る。&lt;br&gt;
 単一引用符を使おうとすると、少し驚く結果となるだろう。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;1 + 2 = &lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foo"&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArithmeticError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;bad&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arithmetic&lt;/span&gt; &lt;span class="n"&gt;expression&lt;/span&gt;
+    &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.+&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foo"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foo"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;
+&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foobar"&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;1 + 2 = &lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;
 &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;1 + 2 = 3"&lt;/span&gt;
 &lt;span class="n"&gt;iex&lt;/span&gt; &lt;span class="s1"&gt;'日本語'&lt;/span&gt;
 &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;26085&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;26412&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;35486&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
@@ -370,7 +422,200 @@ elixirではデータ構造が持っている要素数を数える場合、&lt;b
 値があらかじめ計算されている場合は関数名に&lt;code&gt;size&lt;/code&gt;を、明示的に計算が必要なものは関数名に&lt;code&gt;length&lt;/code&gt;が使われている。&lt;br&gt;
 自分で関数を作る場合にも気をつけてみよう。&lt;/p&gt;
 
+&lt;h4&gt;比較演算&lt;/h4&gt;
+
+&lt;p&gt;比較演算子には&lt;code&gt;==&lt;/code&gt;，&lt;code&gt;!=&lt;/code&gt;，&lt;code&gt;===&lt;/code&gt;，&lt;code&gt;!==&lt;/code&gt;，&lt;code&gt;&amp;lt;=&lt;/code&gt;，&lt;code&gt;&amp;gt;=&lt;/code&gt;，&lt;code&gt;&amp;lt;&lt;/code&gt;, &lt;code&gt;&amp;gt;&lt;/code&gt;が用意されている。&lt;br&gt;
+基本的には想像通りの動作をする。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="no"&gt;false&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;
+&lt;span class="no"&gt;false&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;==&lt;/code&gt;と&lt;code&gt;===&lt;/code&gt;の違いは&lt;code&gt;===&lt;/code&gt;の方が整数と浮動小数点数を厳密に比較する点だ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1.0&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;===&lt;/span&gt; &lt;span class="m"&gt;1.0&lt;/span&gt;
+&lt;span class="no"&gt;false&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;おもしろいのは異なる型の比較が出来る点だ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="ss"&gt;:x&lt;/span&gt;
+&lt;span class="no"&gt;true&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これは利便性のためで、以下のような型の比較ルールが用意されている。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;number &amp;lt; atom &amp;lt; reference &amp;lt; functions &amp;lt; port &amp;lt; pid &amp;lt; tuple &amp;lt; maps &amp;lt; list &amp;lt; bitstring
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;パターンマッチング&lt;/h3&gt;
+
+&lt;p&gt;今までのコードの中で、プログラムではよく使うのに、あえて登場させなかった演算子がある。&lt;code&gt;=&lt;/code&gt;だ。&lt;br&gt;
+使うのは簡単&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;結果も至極当然に見える。でも、次の例はどうだろうか&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;もしこれを&lt;code&gt;irb&lt;/code&gt;で動かしていればシンタックスエラーだ。&lt;/p&gt;
+&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;irb&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;irb&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="no"&gt;SyntaxError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;irb&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;syntax&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;unexpected&lt;/span&gt; &lt;span class="s1"&gt;'='&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;expecting&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;of&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;input&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+   &lt;span class="o"&gt;^&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;でもelixirでは&lt;code&gt;1 = x&lt;/code&gt;はエラーにはならなかった。&lt;br&gt;
+実はelixirの（もしくはErlangの）&lt;code&gt;=&lt;/code&gt;は代入の演算子ではなく、パターンマッチングを行うマッチ演算子なんだ。&lt;br&gt;
+&lt;code&gt;1 = x&lt;/code&gt;はパターンマッチングとして成立しているからエラーにはならない。&lt;br&gt;
+&lt;code&gt;2 = x&lt;/code&gt;はマッチしないからエラーとなる。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;マッチ演算子の左辺に変数があり、パターンマッチングが成立すれば変数に割り当てがされる。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当然じゃ無いか、これなら代入と同じだと思うかもしれない、でもErlangよりはとっつきやすい。&lt;br&gt;
+もしErlangで同じ事を実行したなら&lt;/p&gt;
+
+&lt;p&gt;注: Erlangの変数は大文字で始まる（Prologみたいだね）、そして式の最後にはピリオドがいる&lt;/p&gt;
+&lt;pre class="highlight erlang"&gt;&lt;code&gt;&lt;span class="nv"&gt;Eshell&lt;/span&gt; &lt;span class="nv"&gt;V6&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;abort&lt;/span&gt; &lt;span class="n"&gt;with&lt;/span&gt; &lt;span class="err"&gt;^&lt;/span&gt;&lt;span class="nv"&gt;G&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;exception&lt;/span&gt; &lt;span class="nn"&gt;error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="k"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;exception&lt;/span&gt; &lt;span class="nn"&gt;error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="k"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
+&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
+&lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;そうErlangでは&lt;code&gt;X = 2&lt;/code&gt;でもエラーとなる。&lt;br&gt;
+全ての変数はイミュータブルであり、代入は1回だけに限られている。&lt;br&gt;
+不便に思えるかもしれないけれど、関数型言語の考えを使うなら便利にもなる。&lt;br&gt;
+elixirではピン演算子&lt;code&gt;^&lt;/code&gt;によって再束縛をコントロールすることが出来る。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;徐々にパターンマッチングが代入と異なる点に踏み込んでみよう。&lt;br&gt;
+マッチ演算子はリストやタプルの構造でも使うことが出来る。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;
+&lt;span class="ss"&gt;:hoge&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;
+&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;これだけだと一気に代入したのと変わらないように見えるけれど、左辺に変数以外があったらどうなるだろう。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;taro"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;taro"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;taro"&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:age&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:age&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;この例だとタプルの先頭要素が&lt;code&gt;:name&lt;/code&gt;の時のみ、変数&lt;code&gt;x&lt;/code&gt;に割り当てが出来ると言うことだ。&lt;br&gt;
+左辺に同じ変数を複数回使ったなら、同じものに束縛できなければパターンマッチングは成功しない。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ピン演算子&lt;code&gt;^&lt;/code&gt;は以前に束縛した値とのマッチングを表現できる。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="m"&gt;2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;パターンマッチングにおいて特殊な変数に&lt;code&gt;_&lt;/code&gt;がある。&lt;br&gt;
+これは簡単に言えばなんでもいいってことだ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
+&lt;span class="m"&gt;3&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;リストのパターンマッチング&lt;/h4&gt;
+
+&lt;p&gt;タプルと同じようにリストだってパターンマッチング出来る。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;リストの中身は連結リストだという話をしたよね、だから「先頭要素」と「続くリスト」というマッチングも出来る。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;head&lt;/span&gt;
+&lt;span class="m"&gt;1&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;[head | tail]&lt;/code&gt;と指定したなら、先頭も続きも無い空のリストとはマッチングしない&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;
+&lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;[head | tail]&lt;/code&gt;の書き方は実はマッチング以外にもリストそのものの表記としても使うことができる。&lt;br&gt;
+簡単な例は先頭への要素の追加だ。&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;list&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;[1 | [2]]&lt;/code&gt;と&lt;code&gt;[1 | 2]&lt;/code&gt;は意味が違ってしまうから気をつけよう&lt;/p&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;h3&gt;まだ追記していくよ&lt;/h3&gt;
+&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;
 </content>
   </entry>
   <entry>
