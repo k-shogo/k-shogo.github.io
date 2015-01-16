@@ -4,618 +4,216 @@
   <id>http://k-shogo.github.io/</id>
   <link href="http://k-shogo.github.io/"/>
   <link href="http://k-shogo.github.io/feed.xml" rel="self"/>
-  <updated>2015-01-05T17:56:00+09:00</updated>
+  <updated>2015-01-16T16:41:00+09:00</updated>
   <author>
     <name>k-shogo</name>
   </author>
   <entry>
-    <title>君もelixirを始めてみないか</title>
-    <link rel="alternate" href="/article/2015/01/05/lets_start_elixir/"/>
-    <id>/article/2015/01/05/lets_start_elixir/</id>
-    <published>2015-01-05T17:56:00+09:00</published>
-    <updated>2015-01-05T17:56:00+09:00</updated>
+    <title>Docker(pool)を用いたプレビュー環境を検証する</title>
+    <link rel="alternate" href="/article/2015/01/16/rails-on-pool/"/>
+    <id>/article/2015/01/16/rails-on-pool/</id>
+    <published>2015-01-16T16:41:00+09:00</published>
+    <updated>2015-01-16T16:41:00+09:00</updated>
     <author>
       <name>Article Author</name>
     </author>
-    <content type="html">&lt;h3&gt;elixirって何？&lt;/h3&gt;
+    <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
 
-&lt;p&gt;&lt;a href="http://elixir-lang.org"&gt;elixir&lt;/a&gt; (エリクサー)は&lt;a href="http://www.erlang.org"&gt;Erlang&lt;/a&gt;で作られた言語なんだ。&lt;br&gt;
-最初はCoffeeScriptとJavaScriptみたいな関係なのかって思ってくれれば良い。&lt;br&gt;
-Erlangの上に作られているから、elixirの特徴を語るにはまずErlangについて述べる必要がある。&lt;/p&gt;
+&lt;p&gt;この記事では&lt;a href="https://github.com/mookjp/pool"&gt;mook/pool&lt;/a&gt;を使ってdockerでプレビュー環境を作ろうという趣旨のものです。&lt;br&gt;
+docker周辺では技術開発が盛んで、利用シーンも多岐にわたるようになりました。&lt;br&gt;
+プロダクション環境での利用、開発時の開発者の環境統一、テストの実行などと行った具合です。&lt;br&gt;
+今回はdockerを用いたプレビュー環境の可能性を検証します。&lt;/p&gt;
 
-&lt;p&gt;Erlangは1986年にJoe Armstrong, Robert Virding, Mike Williams の3人によって最初のバージョンが作られた。&lt;br&gt;
-元々は通信機器メーカーのEricsson内部の独自言語だったけれど、1998年にオープンソースとしてリリースされた。&lt;br&gt;
-Erlangの特徴をぎゅっとまとめると、並行性と信頼性そしてホットスワップだ。&lt;br&gt;
-Erlangの開発は Joe Armstrong 博士が電話交換制御用ソフトウェアを構築するために、&lt;br&gt;
-Prologをベースに並行プロセスやエラー処理の仕組みを追加したことに端を発している。&lt;br&gt;
-並行性と信頼性、ホットスワップの特徴は通信事業者向けの分散アプリケーションの開発に必要だったんだ。&lt;/p&gt;
+&lt;p&gt;私は普段railsのアプリケーションを開発しています。&lt;br&gt;
+railsアプリ開発だけに注目しても、ユーザーが触れるwebの側面もありますし、APIの提供もあります。&lt;br&gt;
+さらには、rails開発者は開発の拠点が地理的に分散しています。&lt;br&gt;
+もちろんrails開発者以外にもiPhone/Android開発、デザイナー、ディレクターとチームには様々なメンバーが集まっています。&lt;br&gt;
+docker登場以来、チーム開発でどのように有効利用できるかを模索してきました。&lt;br&gt;
+その中でも期待していたのはプレビューの環境です。&lt;/p&gt;
 
-&lt;p&gt;elixirはBEAMと呼ばれるErlangの仮想環境で動作するから、Erlangの並行性と信頼性の特徴を受け継いでいる。&lt;br&gt;
-そして拡張機能としてマクロを使ったメタプログラミング等も扱うことが出来るんだ。&lt;/p&gt;
+&lt;p&gt;チームとして何を問題意識として持っていたのか言うと、例えば複数の新機能開発が同時に進行していた場合の確認です。&lt;br&gt;
+もちろんテストコードによって一定の信頼は担保できますが、デザインや画面遷移なども確認したいわけです。&lt;br&gt;
+APIの提供となれば、モバイルアプリ開発チームは実際に接続して確認したいという要望もあります。&lt;br&gt;
+rails開発者同士のレビューならば&lt;code&gt;git checkout&lt;/code&gt;してブランチを切り替えてローカルで確認できます。&lt;br&gt;
+モバイルアプリ開発者の場合でも、もちろんgitの操作はできます。&lt;br&gt;
+しかし&lt;code&gt;rake db:migrate&lt;/code&gt;してその他rakeタスクを実行して&amp;hellip;といったrailsの操作や作法を強要することは避けたいです。&lt;br&gt;
+rails/モバイルアプリエンジニア間のハードルに関しては、ローカルでdockerを用いることで、一定の問題解決を図ることが出来ます。&lt;br&gt;
+共通知識としてdockerの操作を覚えることで、railsアプリの更新時には&lt;code&gt;git checkout&lt;/code&gt;して&lt;code&gt;docker build&lt;/code&gt;, &lt;code&gt;docker run&lt;/code&gt;すれば動作するようにすれば良いのです。&lt;br&gt;
+ですがこの方法はエンジニアには通用してもデザイナーや、ましてやディレクター（Windows環境ならなおさら）にこれを要求することは難易度が高いです。&lt;br&gt;
+チームにはインテグレーションやステージングと呼ばれるサーバー環境ももちろん構築してあります。&lt;br&gt;
+これらの環境はAWS OpsWorksで構築してあるため、ブランチを切り替えてデプロイし直すということは可能です、&lt;br&gt;
+しかしリリース用の検証を行うことが主目的であり、ディレクターや複数のステークホルダーが同時に異なる機能を確認したいときには対応が困難です。（ブランチを切り替えてデプロイする毎に確認作業が必要になるため）&lt;br&gt;
+このような問題を解決するべく、つまりrails開発者以外でも簡単に機能毎のブランチを切り替えて確認できるような環境の構築が望まれていました。&lt;br&gt;
+今回はプレビュー環境を構築する為に&lt;a href="https://github.com/mookjp/pool"&gt;mook/pool&lt;/a&gt;を使い、これを検証してみます。&lt;/p&gt;
 
-&lt;p&gt;elixirよりまず、Erlangの知名度も高くは無いよね。&lt;br&gt;
-でも案外身近なところで使われてたりするんだ。&lt;br&gt;
-Twitterでは&lt;a href="https://www.ejabberd.im"&gt;ejabberd&lt;/a&gt;というJabber/XMPP実装が使われている（今現在もそうかは分からないけど）ようだし、&lt;a href="https://www.erlang-solutions.com/about/news/whatsapp-engineers-talk-about-scaling-450-million-users-erlang-erlang-factory-sf-bay-6-7"&gt;WhatsAppもErlangを使用しているみたいだ&lt;/a&gt;。&lt;br&gt;
-Erlangは何億人とユーザーを抱えるような大規模なシステムでかなりの実績を積んでいる。&lt;br&gt;
-プロセッサのマルチコア化が進む現在、並行性と信頼性を備えるErlangが活躍できる場面が多くなっていくんじゃないかなって思わないかい？&lt;br&gt;
-Matzも注目する言語なんて記事もあるよ。&lt;/p&gt;
+&lt;h3&gt;poolとは&lt;/h3&gt;
 
-&lt;ul&gt;
-&lt;li&gt;&lt;a href="http://magazine.rubyist.net/?0017-Legwork"&gt;Rubyist Magazine - Rubyist のための他言語探訪 【第 10 回】 Erlang&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://www.atmarkit.co.jp/news/200704/27/erlang.html"&gt;twitterブームの陰で注目を集める“Erlang” － ＠IT&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href="http://techon.nikkeibp.co.jp/article/TOPCOL/20070710/135665/"&gt;組み込みから生まれた言語Erlangの時代が来る - 日経エレクトロニクス - 日経テクノロジーオンライン&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;poolはシンプルな紹介をすればリバースプロキシです。&lt;br&gt;
+コア部分はmod_mrubyで開発されており、アクセスに応じて動的にdockerアプリケーションのビルド、起動、そしてリクエストのフォーワードを行ってくれます。&lt;/p&gt;
 
-&lt;p&gt;そんなに言うならelixirじゃなくて素のErlangで良いじゃんって思うかもしれないね。&lt;br&gt;
-答える代わりに質問だ、上の記事は2007の物なんだけど、Erlangって今流行ってる？&lt;br&gt;
-ちょっとこの記事を見て欲しい&amp;quot;&lt;a href="http://www.infoq.com/jp/news/2012/01/Katz-CouchDB-Couchbase-Server"&gt;Damien Katz氏がApache CouchDBから離反し、Couchbase Server開発を継続&lt;/a&gt;&amp;ldquo;CouchDBがコードの大半をErlangからC/C++するって内容だ。&lt;br&gt;
-Damien Katz氏はインタビューの中で流行ってない原因を述べている。&lt;/p&gt;
+&lt;p&gt;たとえば&lt;code&gt;http://master.pool.dev&lt;/code&gt;なら&lt;code&gt;master&lt;/code&gt;ブランチの、&lt;code&gt;http://feauture.pool.dev&lt;/code&gt;なら&lt;code&gt;feauture&lt;/code&gt;ブランチのソースを取得してビルドを行ってくれます。&lt;br&gt;
+サブドメイン部分にはブランチ名の他にもコミットIDやタグを指定することも可能です。&lt;/p&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;Erlangは素晴らしい言語です。信頼性が高く、信頼できるしっかりとしたシステムを簡単に構築できます。しかし、エコシステムがとても小さいです。なので、ツールや性能に対する投資は他の一般的な言語とは比べようもないくらい少ないです。私はErlangにもっと人気の言語になって欲しいと思います。ErlangがJavaよりも速くならない理由はどこにもありません。しかし、その奇妙な構文が人々を遠ざけ、普及と商用投資を妨げています。でも私はErlangが好きです。性能が重要なコンポーネントでの利用は少なくしますが、今後も致命的に重要なコンポーネントに使うつもりです。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;内部実装については、作者様自身の解説「&lt;a href="http://qiita.com/mookjp/items/ed5961589428238d610b"&gt;mod_mrubyとDockerを使ってプレビュー環境を作成するプロキシサーバを作った&lt;/a&gt;」があるので参考になります。&lt;/p&gt;
 
-&lt;p&gt;そう、流行らないのは取っつきにくいからだ。&lt;br&gt;
-であれば、取っつきやすければ Erlang のパワーを享受できるようになるね。&lt;br&gt;
-そういう考えで始まったプロジェクトには&lt;a href="http://reia-lang.org/"&gt;Reia Programming Language&lt;/a&gt;という物もある、しかし残念ながらReiaの開発は停止してしまっている。&lt;br&gt;
-Reiaの後に登場し、後継のプロジェクトに指名され、2014年9月18日にv1.0.0がリリースされたのがelixirなんだ。&lt;/p&gt;
+&lt;h1&gt;セットアップ&lt;/h1&gt;
 
-&lt;h3&gt;開発環境は整ってるの？&lt;/h3&gt;
-
-&lt;p&gt;何が取っつきやすくなったかって、それはもちろん文法なんだけど、&lt;br&gt;
-今や言語そのものが良くたって開発環境が良くないと流行らないよね。&lt;br&gt;
-だから文法の前に開発の環境について紹介しておくね。&lt;br&gt;
-僕は普段はrubyを使っているから、rubyの環境と対比させて紹介するね。&lt;/p&gt;
-
-&lt;p&gt;まずは &lt;code&gt;Mix&lt;/code&gt; だ。&lt;br&gt;
-&lt;code&gt;Mix&lt;/code&gt; は ruby だと &lt;code&gt;rake&lt;/code&gt; と &lt;code&gt;bundler&lt;/code&gt; を合わせたようなものなんだ。&lt;br&gt;
-rubyのプロジェクト開始は &lt;code&gt;bundle init&lt;/code&gt; して、&lt;code&gt;Gemfile&lt;/code&gt; を編集して、&lt;code&gt;bundle install&lt;/code&gt;するよね。&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mkdir ruby_app
-&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;cd &lt;/span&gt;ruby_app
-&lt;span class="gp"&gt;$ &lt;/span&gt;bundle init
-&lt;span class="gp"&gt;$ &lt;/span&gt;vim Gemfile
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;source&lt;/span&gt; &lt;span class="s2"&gt;"https://rubygems.org"&lt;/span&gt;
-
-&lt;span class="n"&gt;gem&lt;/span&gt; &lt;span class="s2"&gt;"rails"&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;bundle install
+&lt;p&gt;ローカルで試すためにはvagrantが必要です。&lt;br&gt;
+vagrantのDNSプラグインも必要になるので用意しておきます。&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;vagrant plugin install vagrant-dns
+vagrant dns --install
+vagrant dns --start
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;elixir&lt;/code&gt; の &lt;code&gt;mix&lt;/code&gt; の場合は &lt;code&gt;mix new elixir_app&lt;/code&gt; して &lt;code&gt;mix.exs&lt;/code&gt; の &lt;code&gt;deps&lt;/code&gt; を編集して、&lt;code&gt;mix deps.get&lt;/code&gt; だ。&lt;br&gt;
-ここでは &lt;code&gt;deps&lt;/code&gt; に &lt;a href="https://github.com/elixir-lang/ecto"&gt;elixir-lang/ecto&lt;/a&gt; というライブラリを追加している。&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mix new elixir_app
-&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;cd &lt;/span&gt;elixir_app
-&lt;span class="gp"&gt;$ &lt;/span&gt;vim mix.exs
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="k"&gt;defmodule&lt;/span&gt; &lt;span class="no"&gt;ElixirApp&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="no"&gt;Mixfile&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-  &lt;span class="kn"&gt;use&lt;/span&gt; &lt;span class="no"&gt;Mix&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="no"&gt;Project&lt;/span&gt;
-
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="n"&gt;project&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;app:&lt;/span&gt; &lt;span class="ss"&gt;:elixir_app&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-     &lt;span class="ss"&gt;version:&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;0.0.1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-     &lt;span class="ss"&gt;elixir:&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;~&amp;gt; 1.0"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-     &lt;span class="ss"&gt;deps:&lt;/span&gt; &lt;span class="n"&gt;deps&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="c1"&gt;# Configuration for the OTP application&lt;/span&gt;
-  &lt;span class="c1"&gt;#&lt;/span&gt;
-  &lt;span class="c1"&gt;# Type `mix help compile.app` for more information&lt;/span&gt;
-  &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="n"&gt;application&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;applications:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:logger&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-
-  &lt;span class="c1"&gt;# Dependencies can be Hex packages:&lt;/span&gt;
-  &lt;span class="c1"&gt;#&lt;/span&gt;
-  &lt;span class="c1"&gt;#   {:mydep, "~&amp;gt; 0.3.0"}&lt;/span&gt;
-  &lt;span class="c1"&gt;#&lt;/span&gt;
-  &lt;span class="c1"&gt;# Or git/path repositories:&lt;/span&gt;
-  &lt;span class="c1"&gt;#&lt;/span&gt;
-  &lt;span class="c1"&gt;#   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}&lt;/span&gt;
-  &lt;span class="c1"&gt;#&lt;/span&gt;
-  &lt;span class="c1"&gt;# Type `mix help deps` for more examples and options&lt;/span&gt;
-  &lt;span class="k"&gt;defp&lt;/span&gt; &lt;span class="n"&gt;deps&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
-    &lt;span class="p"&gt;[&lt;/span&gt;
-      &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:ecto&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;~&amp;gt; 0.4"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-    &lt;span class="p"&gt;]&lt;/span&gt;
-  &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mix deps.get
+&lt;p&gt;後は&lt;code&gt;git clone https://github.com/mookjp/pool.git&lt;/code&gt;して設定を済ませて&lt;code&gt;vagrant up&lt;/code&gt;するだけです。&lt;br&gt;
+設定は最低限デプロイ対象となるリポジトリを指定しておきます。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;s.args &amp;lt;&amp;lt; "https://github.com/k-shogo/mini_doc.git"
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;rubyでの&lt;a href="https://rubygems.org/"&gt;RubyGems.org&lt;/a&gt;に対応するライブラリのホスティングは&lt;a href="https://hex.pm/"&gt;Hex&lt;/a&gt;という物があるし、&lt;br&gt;
-依存関係には &lt;a href="https://github.com/"&gt;GitHub&lt;/a&gt; のリポジトリを指定することも出来る。&lt;/p&gt;
+&lt;p&gt;初回はvagrant boxの用意や、pool自体のビルドも必要なので気長に待ちます。&lt;br&gt;
+準備が完了すれば&lt;code&gt;http://master.pool.dev&lt;/code&gt;にアクセスすれば、設定したリポジトリからクローンし、リポジトリ内部のDockerfileに応じてビルドを行ってくれます。&lt;/p&gt;
 
-&lt;p&gt;インタラクティブシェルは &lt;code&gt;irb&lt;/code&gt; に相当する &lt;code&gt;iex&lt;/code&gt; が用意されているし、テストも標準で &lt;code&gt;ExUnit&lt;/code&gt; という物がある。&lt;br&gt;
-さらに、是非紹介しておきたいのが Elixir Release Manager &lt;a href="https://github.com/bitwalker/exrm"&gt;bitwalker/exrm&lt;/a&gt;だ。&lt;br&gt;
-詳しい使い方は後に回すけれど、exrm はリリース用のビルドを行うことが出来るし、さらにダウンタイムなしのアップグレードやダウングレードを簡単にしてくれる。&lt;/p&gt;
+&lt;p&gt;公式リポジトリには&lt;a href="https://github.com/mookjp/pool#aws-ec2-instances"&gt;AWS EC2へのインストール方法&lt;/a&gt;も記載されています。&lt;/p&gt;
 
-&lt;table&gt;&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style="text-align: left"&gt;機能&lt;/th&gt;
-&lt;th style="text-align: left"&gt;ruby&lt;/th&gt;
-&lt;th style="text-align: left"&gt;elixir&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style="text-align: left"&gt;ビルドツール&lt;/td&gt;
-&lt;td style="text-align: left"&gt;rake&lt;/td&gt;
-&lt;td style="text-align: left"&gt;mix&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="text-align: left"&gt;ライブラリ管理&lt;/td&gt;
-&lt;td style="text-align: left"&gt;bundle&lt;/td&gt;
-&lt;td style="text-align: left"&gt;mix&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="text-align: left"&gt;標準リポジトリ&lt;/td&gt;
-&lt;td style="text-align: left"&gt;RubyGems.org&lt;/td&gt;
-&lt;td style="text-align: left"&gt;Hex&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="text-align: left"&gt;インタラクティブシェル&lt;/td&gt;
-&lt;td style="text-align: left"&gt;irb&lt;/td&gt;
-&lt;td style="text-align: left"&gt;iex&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style="text-align: left"&gt;テスト&lt;/td&gt;
-&lt;td style="text-align: left"&gt;minitest&lt;/td&gt;
-&lt;td style="text-align: left"&gt;ExUnit&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;&lt;/table&gt;
+&lt;h3&gt;railsアプリ側の準備&lt;/h3&gt;
 
-&lt;p&gt;エディターのサポートは、vim(&lt;a href="https://github.com/elixir-lang/vim-elixir"&gt;vim elixir-lang/vim-elixir&lt;/a&gt;)と emacs(&lt;a href="https://github.com/elixir-lang/emacs-elixir"&gt;elixir-lang/emacs-elixir&lt;/a&gt;)とAtom(&lt;a href="https://github.com/lucasmazza/language-elixir"&gt;lucasmazza/language-elixir&lt;/a&gt;)があるから大丈夫かな？（他にもgeditとTextmateも用意されているよ）&lt;/p&gt;
+&lt;p&gt;poolの環境構築が済んだので、pool上でrailsアプリケーションを動作させてみます。&lt;br&gt;
+検証用のリポジトリは&lt;a href="https://github.com/k-shogo/mini_doc"&gt;k-shogo/mini_doc&lt;/a&gt;に用意してあります。&lt;br&gt;
+railsをdockerで動作させたい場合の構成については、以前に「&lt;a href="http://qiita.com/k-shogo/items/592e243f9763d0c3b10a"&gt;railsをdockerで動かしたい場合の構成はどうするべきか&lt;/a&gt;」にまとめました。&lt;br&gt;
+投稿時（2014/07/08）よりも環境の整備が進んでおり、dockerには&lt;a href="http://blog.docker.com/2014/09/docker-hub-official-repos-announcing-language-stacks/"&gt;公式のLANGUAGE STACKS&lt;/a&gt;という物が登場しました。&lt;br&gt;
+&lt;a href="https://registry.hub.docker.com/_/rails/"&gt;railsのstack&lt;/a&gt;も用意されており、&lt;a href="https://github.com/docker-library/rails/blob/940d1a7d0fc11d32aed4eb3b2cb22f62f65c6814/onbuild/Dockerfile"&gt;onbuildがサポートされたDockerfile&lt;/a&gt;が用意されているので、&lt;br&gt;
+最小限の用意ならDockerfileに&lt;code&gt;FROM rails:onbuild&lt;/code&gt;と書くだけでも良いのですが、&lt;br&gt;
+細かくコントロールしたかったので&lt;a href="https://registry.hub.docker.com/_/ruby/"&gt;公式のrubyイメージ&lt;/a&gt;をFROMにして始めます。&lt;/p&gt;
 
-&lt;h3&gt;はじめてみよう&lt;/h3&gt;
+&lt;p&gt;一つ目のポイントとして、DBについてはどうするか。&lt;br&gt;
+プロダクション環境ではmysqlなりpostgresqlやAmazon RDSを使うのですが、プレビュー環境において複数コンテナの起動や、外部のDBに接続することは面倒が増えるだけです。&lt;br&gt;
+データベースを共用するよりもむしろコンテナ毎に独立している方が都合が良いのでsqliteを用いることにします。&lt;br&gt;
+&lt;code&gt;bundler&lt;/code&gt;によって依存するgemを管理するrailsでは、&lt;code&gt;Gemfile&lt;/code&gt;にgroupを記述することで対処します。&lt;/p&gt;
 
-&lt;p&gt;始めて見るにはまずelixirをインストールしないとね。&lt;br&gt;
-もしMacを使っていて、すでに&lt;code&gt;brew&lt;/code&gt;を使っているのであればとても簡単&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;brew update
-&lt;span class="gp"&gt;$ &lt;/span&gt;brew install elixir
+&lt;p&gt;例えばプレビューだけsqliteで、その他でMySQLを使い場合の&lt;code&gt;Gemfile&lt;/code&gt;です。&lt;br&gt;
+このようにした場合、ローカルでの開発時には&lt;code&gt;bundle install --without preview&lt;/code&gt;しておけばプレビュー用のgemは開発環境にはインストールされません。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;group :preview do
+  gem 'sqlite3'
+end
+
+group :development, :test, :production do
+  gem 'mysql2'
+end
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Ubuntu を使っているなら、リポジトリを追加して&lt;code&gt;apg-get&lt;/code&gt;で入る&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; sudo dpkg -i erlang-solutions_1.0_all.deb
-&lt;span class="gp"&gt;$ &lt;/span&gt;sudo apt-get update
-&lt;span class="gp"&gt;$ &lt;/span&gt;sudo apt-get install elixir
+&lt;p&gt;railsでは環境自体も複数定義しておくことが可能なので、今回はプレビュー用の環境定義ファイルを用意します。&lt;br&gt;
+独自の環境定義は&lt;code&gt;config/environments/&lt;/code&gt;以下に&lt;code&gt;preview.rb&lt;/code&gt;作成するだけです。&lt;br&gt;
+DBはプロダクションとは異なる構成にしましたが、その他はプロダクションと近くしたいところです。&lt;br&gt;
+&lt;code&gt;eager_load&lt;/code&gt;を有効化し、アセットもプリコンパイルして動作を確認しましょう。&lt;br&gt;
+ただ、アセットファイルの配信についてはDBと同じく、フロントに立てるnginx等を別に用意したくないので、railsサーバー自身が静的ファイルを配信出来るように&lt;code&gt;serve_static_files&lt;/code&gt;の有効化を行っておきます。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;Rails.application.configure do
+  config.cache_classes = true
+  # eager_load を有効化
+  config.eager_load = true
+  config.consider_all_requests_local       = false
+  config.action_controller.perform_caching = true
+  # 静的ファイルを直接配信する
+  config.serve_static_files = true
+  config.assets.js_compressor = :uglifier
+  config.assets.compile = false
+  config.assets.digest = true
+  config.log_level = :debug
+  config.i18n.fallbacks = true
+  config.active_support.deprecation = :notify
+  config.log_formatter = ::Logger::Formatter.new
+  config.active_record.dump_schema_after_migration = false
+end
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Windowsの場合は&lt;a href="http://s3.hex.pm/elixir-websetup.exe"&gt;インストーラー&lt;/a&gt;が用意されているよ。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Dockerfile&lt;/code&gt;は以下のようにしています。&lt;br&gt;
+公式LANGUAGE STACKSのrubyをベースに、sqliteとアセットのコンパイルに必要なnodeをインストールしています。&lt;br&gt;
+先に&lt;code&gt;Gemfile&lt;/code&gt;, &lt;code&gt;Gemfile.lock&lt;/code&gt;をコピーしているのは、&lt;code&gt;Gemfile&lt;/code&gt;に変更が無い場合に&lt;code&gt;bundle install&lt;/code&gt;をスキップして高速化を図る工夫です。&lt;br&gt;
+&lt;code&gt;Dockerfile&lt;/code&gt;の中での&lt;code&gt;bundle install&lt;/code&gt;では、開発やプロダクション固有のgemをインストールしないようにしてあります。&lt;br&gt;
+poolではコンテナと80番ポートを接続するので、&lt;code&gt;EXPOSE 80&lt;/code&gt;を指定してあります。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;FROM ruby:2.2.0
 
-&lt;p&gt;これで基本的にはErlangも一緒に入っている。&lt;br&gt;
-早速使い始めてみよう。&lt;code&gt;iex&lt;/code&gt;コマンドでインタラクティブシェルが立ち上がる&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="no"&gt;Erlang&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="no"&gt;OTP&lt;/span&gt; &lt;span class="m"&gt;17&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;erts&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="m"&gt;6.3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;64&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;bit&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;smp:&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;async&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="ss"&gt;threads:&lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;hipe&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;kernel&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="ss"&gt;poll:&lt;/span&gt;&lt;span class="no"&gt;false&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;dtrace&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+RUN apt-get update &amp;amp;&amp;amp; apt-get install -y nodejs sqlite3 --no-install-recommends &amp;amp;&amp;amp; rm -rf /var/lib/apt/lists/*
 
-&lt;span class="no"&gt;Interactive&lt;/span&gt; &lt;span class="no"&gt;Elixir&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1.0&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;press&lt;/span&gt; &lt;span class="no"&gt;Ctrl&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="no"&gt;C&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="k"&gt;exit&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;type&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="no"&gt;ENTER&lt;/span&gt; &lt;span class="n"&gt;for&lt;/span&gt; &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY Gemfile /usr/src/app/
+COPY Gemfile.lock /usr/src/app/
+RUN bundle install -j4 --without development test production
+
+ADD . /usr/src/app
+
+ENV RAILS_ENV preview
+RUN bundle exec rake db:create &amp;amp;&amp;amp; \
+    bundle exec rake db:migrate &amp;amp;&amp;amp; \
+    bundle exec rake db:seed_fu &amp;amp;&amp;amp; \
+    bundle exec rake assets:precompile
+
+EXPOSE 80
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "80"]
+
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;終了したいときは&lt;code&gt;Ctrl+C&lt;/code&gt;して&lt;code&gt;(a)bort&lt;/code&gt;の&lt;code&gt;a&lt;/code&gt;をタイプしてエンターだ。&lt;/p&gt;
+&lt;p&gt;プレビュー用途なので、ある程度確認用のデータが欲しくなります。&lt;br&gt;
+railsにはシードデータを記述する&lt;code&gt;db/seeds.rb&lt;/code&gt;がデフォルトで用意されていますが、何度も&lt;code&gt;rake db:seed&lt;/code&gt;すると重複して登録されてしまったりするため、今回は&lt;a href="https://github.com/mbleigh/seed-fu"&gt;mbleigh/seed-fu&lt;/a&gt;を用いてデータの投入を行っています。&lt;br&gt;
+この&lt;code&gt;seed-fu&lt;/code&gt;を利用すると、データの投入や環境毎の定義を分割することを容易にしてくれます。&lt;/p&gt;
 
-&lt;p&gt;実はErlang(&lt;code&gt;erl&lt;/code&gt;で起動するよ)だと式の最後に&lt;code&gt;.&lt;/code&gt;ピリオドを付けなきゃならない&lt;/p&gt;
-&lt;pre class="highlight erlang"&gt;&lt;code&gt;&lt;span class="nv"&gt;Erlang&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nv"&gt;OTP&lt;/span&gt; &lt;span class="mi"&gt;17&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;erts&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;bit&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nn"&gt;smp&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;async&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nn"&gt;threads&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;hipe&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;kernel&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="nn"&gt;poll&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;false&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;dtrace&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;p&gt;&lt;code&gt;.dockerignore&lt;/code&gt;もちゃんと用意しておきましょう。&lt;br&gt;
+ローカルでビルドするときなど、余分なファイルをADDしなくなるので、時間の短縮やビルド時のキャッシュに役立ちます。&lt;br&gt;
+例えばログファイルがADD対象になっている場合、アプリケーションのコードに変更が無くても、&lt;code&gt;development.log&lt;/code&gt;に変化があるだけでキャッシュが使われなくなってしまいます。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;### Rails ###
+public/assets/*
 
-&lt;span class="nv"&gt;Eshell&lt;/span&gt; &lt;span class="nv"&gt;V6&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;abort&lt;/span&gt; &lt;span class="n"&gt;with&lt;/span&gt; &lt;span class="err"&gt;^&lt;/span&gt;&lt;span class="nv"&gt;G&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="mi"&gt;3&lt;/span&gt;
+## Environment normalisation:
+.bundle
+vendor/bundle
+.git
+
+## db
+db/*.sqlite3
+
+## log
+log
+tmp
+
+## OSX
+.DS_Store
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;でもelixirならピリオドはいらない、そのまま&lt;code&gt;1+2&lt;/code&gt;とタイプしてエンターで計算できる。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;span class="m"&gt;3&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;poolを使ってみてのまとめと今後の課題&lt;/h3&gt;
 
-&lt;p&gt;このまま進む前に、elixirのインストールによって入った他のコマンドも紹介しておこう。&lt;br&gt;
-&lt;code&gt;elixir&lt;/code&gt;と&lt;code&gt;elixirc&lt;/code&gt;だ。&lt;br&gt;
-&lt;code&gt;elixir&lt;/code&gt;コマンドはelixirスクリプトを実行する物だ。&lt;br&gt;
-&lt;code&gt;ruby hoge.rb&lt;/code&gt;みたいな感じで、&lt;code&gt;elixir hoge.exs&lt;/code&gt;と使用する。&lt;br&gt;
-&lt;code&gt;elixirc&lt;/code&gt;はコンパイル用のコマンドで、&lt;code&gt;elixirc hoge.ex&lt;/code&gt;とするとコンパイルされた&lt;code&gt;.beam&lt;/code&gt;ファイルが生成される。&lt;br&gt;
-ファイルの拡張子を&lt;code&gt;.exs&lt;/code&gt;と&lt;code&gt;.ex&lt;/code&gt;を登場させたけれど、&lt;br&gt;
-&lt;code&gt;.exs&lt;/code&gt;はコンパイルしないで実行するスクリプトファイル、&lt;br&gt;
-&lt;code&gt;.ex&lt;/code&gt;はコンパイルするファイルに付けるのが習慣なんだ。&lt;/p&gt;
+&lt;p&gt;poolのセットアップと、railsアプリ側の準備さえしてしまえば、ブラウザからのアクセスによってコンテナのビルドから行ってくれるのはお手軽です。&lt;br&gt;
+開発環境をローカルに持っていないディレクターには例えば「&lt;code&gt;http://design_fix.pool.dev&lt;/code&gt;にアクセスしれもらえば新しいデザインを直接確認できますよ」と教えさえすれば良いのです。&lt;br&gt;
+（pool側で初回ビルドの場合時間がかかるので、一度自分でアクセスしてビルドしてから教えるのが良し）&lt;br&gt;
+複数の変更作業が同時に走っていても、プレビューで対応できるのは無駄な待ち時間が発生しなくてグッドです。&lt;/p&gt;
 
-&lt;p&gt;他には今後よく使う表記について説明しておこう。&lt;br&gt;
-elixirでは関数は&amp;quot;モジュール名&amp;rdquo;, &amp;ldquo;関数名&amp;rdquo;, &amp;ldquo;アリティ&amp;quot;（つまり引数の個数）によって一意に定まる。&lt;br&gt;
-だから関数を表現するときに &lt;code&gt;モジュール.関数/アリティ&lt;/code&gt;といった具合に表記する。&lt;br&gt;
-例えば&lt;code&gt;IO.puts/1&lt;/code&gt;とかね。&lt;br&gt;
-これはiexからドキュメントを見るときにも使うよ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;h&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;IO&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;puts&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;p&gt;次に課題について。&lt;br&gt;
+第一には「やっぱりDBはMySQLで確認したい！」とか「redis, memcache, elasticsearch, solrをrailsアプリから利用したいんだけど」「バックグランドで動作するワーカーも動作させたい(resqueとかsidekiqとか)」の場合にどうするかについて。&lt;br&gt;
+「poolをfigを使って複数コンテナ動作するように拡張する」というのも一つの選択肢でアリだと考えました。&lt;br&gt;
+ですが個人的にはとりあえず単一コンテナで動作できるように&lt;code&gt;Dockerfile&lt;/code&gt;を用意する事がpool wayなのかなと思っています。&lt;br&gt;
+今回はプロダクション環境で使いたいわけでは無く、プレビューの環境なので、単一コンテナで完全に分離できた方が都合が良いからです。&lt;br&gt;
+&lt;code&gt;Dockerfile&lt;/code&gt;の記述は増えますが、プロダクション環境で無い限り1コンテナ1プロセスを前提とした運用は面倒を増やしかねません。&lt;br&gt;
+複数プロセスの起動についてはrailsの場合は&lt;a href="https://github.com/ddollar/foreman"&gt;ddollar/foreman&lt;/a&gt;で対応が楽かな。（検証アプリに導入したら追記します）&lt;/p&gt;
 
-                &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="n"&gt;puts&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;device&lt;/span&gt; &lt;span class="p"&gt;\\&lt;/span&gt; &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;group_leader&lt;/span&gt;&lt;span class="p"&gt;(),&lt;/span&gt; &lt;span class="n"&gt;item&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;p&gt;第二には&lt;code&gt;Dockerfile&lt;/code&gt;ビルド時の挙動について。&lt;br&gt;
+今回の&lt;code&gt;Dockerfile&lt;/code&gt;の例では、&lt;code&gt;Gemfile&lt;/code&gt;及び&lt;code&gt;Gemfile.lock&lt;/code&gt;をアプリケーション本体のコードより先にADDすることにより、&lt;code&gt;bundle install&lt;/code&gt;の結果をキャッシュする手法が組み込まれています。&lt;br&gt;
+しかし、&lt;code&gt;Gemfile&lt;/code&gt;の中身に変更が無かったとしても、タイムスタンプが変更された場合、dockerはタイムスタンプを含めたメタデータで管理しているためにビルドしたキャッシュが効きません。&lt;br&gt;
+これはpool利用時にのみ発生する物ではありません。&lt;code&gt;Gemfile&lt;/code&gt;に対して&lt;code&gt;touch&lt;/code&gt;してみるとビルドのキャッシュが使用されないことを簡単に確認できます。&lt;br&gt;
+Jenkinsでdockerをビルドする場合などもこの問題に当たるので、そのような場合は&lt;code&gt;Gemfile&lt;/code&gt;と&lt;code&gt;Gemfile.lock&lt;/code&gt;に&lt;code&gt;touch -t&lt;/code&gt;でタイムスタンプを常に一定にすることで回避するテクニックが存在します。&lt;br&gt;
+&lt;code&gt;Gemfile&lt;/code&gt;と&lt;code&gt;Gemfile.lock&lt;/code&gt;のタイムスタンプを常に同じ値にしたとしても、内容が更新されている場合はメタデータが変わっているので問題はありません。&lt;br&gt;
+ADDをなるべくキャッシュさせたい場合に&lt;code&gt;touch&lt;/code&gt;を使うのですが、poolではその選択肢をとることが出来ません。&lt;br&gt;
+これには「リポジトリに&lt;code&gt;before_build.sh&lt;/code&gt;があれば実行する」などの拡張をpoolに施すと効率化を図れるかもしれません。&lt;/p&gt;
 
-&lt;span class="no"&gt;Writes&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;device&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;similar&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;write&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;but&lt;/span&gt; &lt;span class="n"&gt;adds&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;newline&lt;/span&gt; &lt;span class="n"&gt;at&lt;/span&gt;
-&lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="no"&gt;The&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="n"&gt;is&lt;/span&gt; &lt;span class="n"&gt;expected&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;be&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;chardata&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;第三にはリポジトリの取り扱いとアクセスコントロールについて。&lt;br&gt;
+プレビュー環境の閲覧の制限について、つまりユーザーからpoolへのアクセスはAWSならセキュリティグループで対応することが出来ます。&lt;br&gt;
+しかし、poolからアプリのリポジトリへのアクセスはどうでしょうか。&lt;br&gt;
+アプリのリポジトリはいつもGitHubで公開できるわけではありません。&lt;br&gt;
+Bitbucketを使っていたり、プライベートなgitサーバーを構築している所も多いでしょう。&lt;br&gt;
+アプリ本体のリポジトリだけでなく、Gemfile内部に独自のgemを指定している場合もあります。&lt;br&gt;
+この場合のssh鍵や認証ユーザーの取り扱いに関してはさらなる検証が必要だと感じました。実際にpoolをAWS EC2等に設置して検証して見たいです。&lt;/p&gt;
 
-&lt;h3&gt;まずは基本的な型だ&lt;/h3&gt;
-
-&lt;h4&gt;整数、浮動小数、文字列&lt;/h4&gt;
-
-&lt;p&gt;基本的な型を確認してみよう&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;span class="m"&gt;3&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="m"&gt;2.0&lt;/span&gt;
-&lt;span class="m"&gt;3.0&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;
-&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArithmeticError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;bad&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arithmetic&lt;/span&gt; &lt;span class="n"&gt;expression&lt;/span&gt;
-    &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.+&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;整数、浮動小数点、文字列が使えることが分かった。&lt;br&gt;
-整数と浮動小数点の計算ではエラーにならずに自動的に型の変換もしてくれる。&lt;br&gt;
-暗黙に変換できな場合はもちろんエラーになる。&lt;br&gt;
-ちなみにelixirの浮動小数点は64ビットの倍精度だ。&lt;br&gt;
-四則演算は当然出来るんだけど、ちょっと注意なのが&lt;code&gt;/&lt;/code&gt;による除算だ。&lt;br&gt;
-irbで&lt;code&gt;10 / 3&lt;/code&gt;とやれば&lt;code&gt;3&lt;/code&gt;が出力されるけど、iexなら浮動小数点で返る。&lt;br&gt;
-整数の商が欲しければ&lt;code&gt;div&lt;/code&gt;関数が用意されている。&lt;br&gt;
-rubyと同じで自明なカッコは省略も出来る。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
-&lt;span class="m"&gt;3.3333333333333335&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;div&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="m"&gt;3&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;div&lt;/span&gt; &lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
-&lt;span class="m"&gt;3&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;二進数、八進数、十六進数、そして指数表記もサポートしている。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;0b11111011111&lt;/span&gt;
-&lt;span class="m"&gt;2015&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;&lt;span class="n"&gt;o77&lt;/span&gt;
-&lt;span class="m"&gt;63&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;0xff&lt;/span&gt;
-&lt;span class="m"&gt;255&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1.0e-10&lt;/span&gt;
-&lt;span class="m"&gt;1.0e-10&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;真偽値&lt;/h4&gt;
-
-&lt;p&gt;真偽値は&lt;code&gt;true&lt;/code&gt;,&lt;code&gt;false&lt;/code&gt;だ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;false&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;真偽値では無いけれど&lt;code&gt;nil&lt;/code&gt;も用意されている&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt;
-&lt;span class="no"&gt;nil&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;論理演算は&lt;code&gt;and&lt;/code&gt;,&lt;code&gt;or&lt;/code&gt;,&lt;code&gt;not&lt;/code&gt;だ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="no"&gt;false&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="no"&gt;false&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="no"&gt;false&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;論理演算には&lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;,&lt;code&gt;||&lt;/code&gt;,&lt;code&gt;!&lt;/code&gt;も用意されている。&lt;br&gt;
-違いは真偽値だけ受け付けるか、任意の型を受け付けるかだ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArgumentError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="ss"&gt;error:&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;,&lt;code&gt;||&lt;/code&gt;,&lt;code&gt;!&lt;/code&gt;の場合、&lt;code&gt;false&lt;/code&gt;と&lt;code&gt;nil&lt;/code&gt;以外を真として評価する。&lt;br&gt;
-rubyと一緒だね。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArgumentError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;
-    &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="ow"&gt;not&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;!&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;or&lt;/code&gt;, &lt;code&gt;and&lt;/code&gt;, &lt;code&gt;||&lt;/code&gt;, &lt;code&gt;&amp;amp;&amp;amp;&lt;/code&gt;は短絡演算子、つまり左辺が条件を満たさない場合は右辺は評価されない。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;RuntimeError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;undefined&lt;/span&gt; &lt;span class="ss"&gt;function:&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;
-
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;ここまで紹介してきた型は&lt;code&gt;is_integer/1&lt;/code&gt;, &lt;code&gt;is_float/1&lt;/code&gt;, &lt;code&gt;is_number/1&lt;/code&gt;, &lt;code&gt;is_boolean/1&lt;/code&gt; で判定できるよ。&lt;br&gt;
-&lt;code&gt;is_number/1&lt;/code&gt;は整数もしくは浮動小数点の場合に&lt;code&gt;true&lt;/code&gt;だね。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_number&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_number&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="m"&gt;1.0&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_number&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;true&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;アトム&lt;/h4&gt;
-
-&lt;p&gt;次はアトムだ。アトムは&lt;code&gt;:&lt;/code&gt;から始まるもので、rubyだとシンボルって呼ばれているね。&lt;br&gt;
-真偽値の&lt;code&gt;true&lt;/code&gt;, &lt;code&gt;false&lt;/code&gt;は実はアトムなんだ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="ss"&gt;:true&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_atom&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;false&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_boolean&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:false&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_atom&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;is_boolean&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;文字列の式展開 / 引用符による違い&lt;/h4&gt;
-
-&lt;p&gt;文字列は二重引用符で括って使う。&lt;br&gt;
-文字列の結合は&lt;code&gt;+&lt;/code&gt;ではなく&lt;code&gt;&amp;lt;&amp;gt;&lt;/code&gt;だ。&lt;br&gt;
-rubyと同様に&lt;code&gt;#{}&lt;/code&gt;によって式を展開することも出来る。&lt;br&gt;
-単一引用符を使おうとすると、少し驚く結果となるだろう。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foo"&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;ArithmeticError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;bad&lt;/span&gt; &lt;span class="n"&gt;argument&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;arithmetic&lt;/span&gt; &lt;span class="n"&gt;expression&lt;/span&gt;
-    &lt;span class="ss"&gt;:erlang&lt;/span&gt;&lt;span class="o"&gt;.+&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foo"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foo"&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;
-&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;foobar"&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;1 + 2 = &lt;/span&gt;&lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;
-&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;1 + 2 = 3"&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt; &lt;span class="s1"&gt;'日本語'&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;26085&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;26412&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;35486&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;日本語"&lt;/span&gt;
-&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;日本語"&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これは文字列と文字のリストの違いが原因なんだ。&lt;/p&gt;
-
-&lt;h4&gt;リストとタプル&lt;/h4&gt;
-
-&lt;p&gt;単一引用符を使ったときに現れたものはリストなんだ。&lt;br&gt;
-リストは&lt;code&gt;[]&lt;/code&gt;を使って表現する。リストには何でも入れられる&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:atom&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:atom&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;リストと似ているタプルという物もある。&lt;br&gt;
-タプルもリストと同じように何でも入れられる&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:atom&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:y&lt;/span&gt;&lt;span class="p"&gt;}}&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="no"&gt;true&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:atom&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;string"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:y&lt;/span&gt;&lt;span class="p"&gt;}}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;似ているけれど、中身は違う。&lt;br&gt;
-それはリストは中身が連結リスト（Linked list）であるのに対し、タプルは要素を連続したメモリ上に保存している点だ。&lt;br&gt;
-タプルは連続したメモリ上に要素を持っているから、インデックスによる要素の取得や、要素数の取得は高速に出来る。&lt;br&gt;
-対してリストは連結リストであるため、要素を順にたどる必要があり、タプルよりは低速になってしまう。&lt;br&gt;
-リストの方が使い勝手が良い場合は要素を更新したり追加する時だ。&lt;br&gt;
-elixrのデータ型は変更不可能なため、タプルの要素の更新はタプル全体をコピーしてから行う必要がある。&lt;br&gt;
-リストの場合は途中の連結を変更するだけなので、タプルより簡単だ。&lt;br&gt;
-リストとタプル、似てはいるけれど、適切に使い分けた方が良い。&lt;br&gt;
-つまり変更されないような場合はタプル、変更される場合はリストといった具合だ。&lt;/p&gt;
-
-&lt;p&gt;リストとタプルについての操作も見てみよう。&lt;br&gt;
-リストは&lt;code&gt;++/2&lt;/code&gt;, &lt;code&gt;--/2&lt;/code&gt;で連結や、差し引いたりが出来るし、&lt;code&gt;hd/1&lt;/code&gt;, &lt;code&gt;tl/1&lt;/code&gt;でリストの先頭とそれ以外の取得が出来る（LISPのcar, cdrみたいだね）。&lt;br&gt;
-長さの取得は&lt;code&gt;length/1&lt;/code&gt;を使う&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;hd&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;tl&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;5&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;length&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="m"&gt;3&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;タプルのインデックスによる要素取得、サイズ取得、要素の変更はそれぞれ&lt;code&gt;elem/2&lt;/code&gt;, &lt;code&gt;tuple_size/1&lt;/code&gt;, &lt;code&gt;put_elem/3&lt;/code&gt;を使う。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;elem&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;tuple_size&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
-&lt;span class="m"&gt;3&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;put_elem&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;リストの要素数取得が&lt;code&gt;length&lt;/code&gt;で、タプルの要素数取得が&lt;code&gt;size&lt;/code&gt;なのはちゃんと理由があるんだ。&lt;br&gt;
-elixirではデータ構造が持っている要素数を数える場合、&lt;br&gt;
-値があらかじめ計算されている場合は関数名に&lt;code&gt;size&lt;/code&gt;を、明示的に計算が必要なものは関数名に&lt;code&gt;length&lt;/code&gt;が使われている。&lt;br&gt;
-自分で関数を作る場合にも気をつけてみよう。&lt;/p&gt;
-
-&lt;h4&gt;比較演算&lt;/h4&gt;
-
-&lt;p&gt;比較演算子には&lt;code&gt;==&lt;/code&gt;，&lt;code&gt;!=&lt;/code&gt;，&lt;code&gt;===&lt;/code&gt;，&lt;code&gt;!==&lt;/code&gt;，&lt;code&gt;&amp;lt;=&lt;/code&gt;，&lt;code&gt;&amp;gt;=&lt;/code&gt;，&lt;code&gt;&amp;lt;&lt;/code&gt;, &lt;code&gt;&amp;gt;&lt;/code&gt;が用意されている。&lt;br&gt;
-基本的には想像通りの動作をする。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;=&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;==&lt;/code&gt;と&lt;code&gt;===&lt;/code&gt;の違いは&lt;code&gt;===&lt;/code&gt;の方が整数と浮動小数点数を厳密に比較する点だ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="m"&gt;1.0&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;===&lt;/span&gt; &lt;span class="m"&gt;1.0&lt;/span&gt;
-&lt;span class="no"&gt;false&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;おもしろいのは異なる型の比較が出来る点だ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="ss"&gt;:x&lt;/span&gt;
-&lt;span class="no"&gt;true&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これは利便性のためで、以下のような型の比較ルールが用意されている。&lt;/p&gt;
-&lt;pre class="highlight plaintext"&gt;&lt;code&gt;number &amp;lt; atom &amp;lt; reference &amp;lt; functions &amp;lt; port &amp;lt; pid &amp;lt; tuple &amp;lt; maps &amp;lt; list &amp;lt; bitstring
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3&gt;パターンマッチング&lt;/h3&gt;
-
-&lt;p&gt;今までのコードの中で、プログラムではよく使うのに、あえて登場させなかった演算子がある。&lt;code&gt;=&lt;/code&gt;だ。&lt;br&gt;
-使うのは簡単&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;結果も至極当然に見える。でも、次の例はどうだろうか&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;もしこれを&lt;code&gt;irb&lt;/code&gt;で動かしていればシンタックスエラーだ。&lt;/p&gt;
-&lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;irb&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;irb&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="no"&gt;SyntaxError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;irb&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;syntax&lt;/span&gt; &lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;unexpected&lt;/span&gt; &lt;span class="s1"&gt;'='&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;expecting&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;of&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;input&lt;/span&gt;
-&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-   &lt;span class="o"&gt;^&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;でもelixirでは&lt;code&gt;1 = x&lt;/code&gt;はエラーにはならなかった。&lt;br&gt;
-実はelixirの（もしくはErlangの）&lt;code&gt;=&lt;/code&gt;は代入の演算子ではなく、パターンマッチングを行うマッチ演算子なんだ。&lt;br&gt;
-&lt;code&gt;1 = x&lt;/code&gt;はパターンマッチングとして成立しているからエラーにはならない。&lt;br&gt;
-&lt;code&gt;2 = x&lt;/code&gt;はマッチしないからエラーとなる。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;マッチ演算子の左辺に変数があり、パターンマッチングが成立すれば変数に割り当てがされる。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;
-&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;当然じゃ無いか、これなら代入と同じだと思うかもしれない、でもErlangよりはとっつきやすい。&lt;br&gt;
-もしErlangで同じ事を実行したなら&lt;/p&gt;
-
-&lt;p&gt;注: Erlangの変数は大文字で始まる（Prologみたいだね）、そして式の最後にはピリオドがいる&lt;/p&gt;
-&lt;pre class="highlight erlang"&gt;&lt;code&gt;&lt;span class="nv"&gt;Eshell&lt;/span&gt; &lt;span class="nv"&gt;V6&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;  &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;abort&lt;/span&gt; &lt;span class="n"&gt;with&lt;/span&gt; &lt;span class="err"&gt;^&lt;/span&gt;&lt;span class="nv"&gt;G&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;exception&lt;/span&gt; &lt;span class="nn"&gt;error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="k"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="n"&gt;exception&lt;/span&gt; &lt;span class="nn"&gt;error&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="k"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;
-&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nv"&gt;X&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;
-&lt;span class="mi"&gt;1&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;そうErlangでは&lt;code&gt;X = 2&lt;/code&gt;でもエラーとなる。&lt;br&gt;
-全ての変数はイミュータブルであり、代入は1回だけに限られている。&lt;br&gt;
-不便に思えるかもしれないけれど、関数型言語の考えを使うなら便利にもなる。&lt;br&gt;
-elixirではピン演算子&lt;code&gt;^&lt;/code&gt;によって再束縛をコントロールすることが出来る。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;徐々にパターンマッチングが代入と異なる点に踏み込んでみよう。&lt;br&gt;
-マッチ演算子はリストやタプルの構造でも使うことが出来る。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;
-&lt;span class="ss"&gt;:hoge&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;
-&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;これだけだと一気に代入したのと変わらないように見えるけれど、左辺に変数以外があったらどうなるだろう。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;taro"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;taro"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;taro"&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:age&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="ss"&gt;:age&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;この例だとタプルの先頭要素が&lt;code&gt;:name&lt;/code&gt;の時のみ、変数&lt;code&gt;x&lt;/code&gt;に割り当てが出来ると言うことだ。&lt;br&gt;
-左辺に同じ変数を複数回使ったなら、同じものに束縛できなければパターンマッチングは成功しない。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;ピン演算子&lt;code&gt;^&lt;/code&gt;は以前に束縛した値とのマッチングを表現できる。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;^&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="m"&gt;2&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;パターンマッチングにおいて特殊な変数に&lt;code&gt;_&lt;/code&gt;がある。&lt;br&gt;
-これは簡単に言えばなんでもいいってことだ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;
-&lt;span class="m"&gt;3&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;リストのパターンマッチング&lt;/h4&gt;
-
-&lt;p&gt;タプルと同じようにリストだってパターンマッチング出来る。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;z&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;リストの中身は連結リストだという話をしたよね、だから「先頭要素」と「続くリスト」というマッチングも出来る。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;head&lt;/span&gt;
-&lt;span class="m"&gt;1&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:hoge&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sd"&gt;"&lt;/span&gt;&lt;span class="s2"&gt;bar"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;[head | tail]&lt;/code&gt;と指定したなら、先頭も続きも無い空のリストとはマッチングしない&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;
-&lt;span class="p"&gt;[]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;head&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;tail&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
-&lt;span class="o"&gt;**&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="no"&gt;MatchError&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;match&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="n"&gt;right&lt;/span&gt; &lt;span class="n"&gt;hand&lt;/span&gt; &lt;span class="n"&gt;side&lt;/span&gt; &lt;span class="ss"&gt;value:&lt;/span&gt; &lt;span class="p"&gt;[]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;[head | tail]&lt;/code&gt;の書き方は実はマッチング以外にもリストそのものの表記としても使うことができる。&lt;br&gt;
-簡単な例は先頭への要素の追加だ。&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;list&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="n"&gt;list&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;3&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;[1 | [2]]&lt;/code&gt;と&lt;code&gt;[1 | 2]&lt;/code&gt;は意味が違ってしまうから気をつけよう&lt;/p&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="n"&gt;iex&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt; &lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3&gt;まだ追記していくよ&lt;/h3&gt;
-&lt;pre class="highlight elixir"&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;課題と感じるところはある物の、poolの「アドレスによって動的にコンテナのビルド、起動を行う」というアイデアは強力です。&lt;br&gt;
+チーム開発において有効活用できる場面は多いと思います。&lt;/p&gt;
 </content>
   </entry>
   <entry>

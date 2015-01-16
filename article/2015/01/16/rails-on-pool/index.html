@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+<title>Docker(pool)を用いたプレビュー環境を検証する | dev.wan.co</title>
+<meta charset='utf-8'>
+<meta content='rails, docler, pool' name='keywords'>
+<meta content='poolを使ってdockerでプレビュー環境を作ろう' name='description'>
+<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600' rel='stylesheet' type='text/css'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+  ga('create', 'UA-43663109-1', 'k-shogo.github.io');
+  ga('send', 'pageview');
+</script>
+
+<!--[if lte IE 8]> <script src="js/html5shiv.js"></script> <![endif]-->
+<script src="/js/all.js" type="text/javascript"></script>
+<link href="/css/main.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<noscript>
+<link href="/css/skel-noscript.css" rel="stylesheet" type="text/css" /><link href="/css/style.css" rel="stylesheet" type="text/css" /><link href="/css/style-desktop.css" rel="stylesheet" type="text/css" /><link href="/css/style-noscript.css" rel="stylesheet" type="text/css" />
+</noscript>
+<!--[if lte IE 8]> <link rel="stylesheet" href="css/ie8.css" /> <![endif]-->
+<!-- Header -->
+<div id='header'>
+<!-- Inner -->
+<div class='inner'>
+<header>
+<h1>
+<div id='logo'><a href="/">Dev.Wan.Co</a></div>
+</h1>
+</header>
+</div>
+<!-- Nav -->
+<nav id='nav'>
+<ul>
+<li>
+<a href="/">Home</a>
+</li>
+<li>
+<a href="/feed.xml">RSS Feed</a>
+</li>
+</ul>
+</nav>
+</div>
+<!-- Main -->
+<div class='wrapper style1'>
+<div class='container'>
+<div class='row'>
+<div class='12u skel-cell-important' id='content'>
+<article class='special' id='main'>
+<header>
+<h2>Docker(pool)を用いたプレビュー環境を検証する</h2>
+<span class='byline'>
+<a href="/article/tags/rails/">rails</a>
+<a href="/article/tags/docker/">docker</a>
+</span>
+</header>
+<section><header><h3>はじめに</h3></header>
+
+<p>この記事では<a href="https://github.com/mookjp/pool">mook/pool</a>を使ってdockerでプレビュー環境を作ろうという趣旨のものです。<br>
+docker周辺では技術開発が盛んで、利用シーンも多岐にわたるようになりました。<br>
+プロダクション環境での利用、開発時の開発者の環境統一、テストの実行などと行った具合です。<br>
+今回はdockerを用いたプレビュー環境の可能性を検証します。</p>
+
+<p>私は普段railsのアプリケーションを開発しています。<br>
+railsアプリ開発だけに注目しても、ユーザーが触れるwebの側面もありますし、APIの提供もあります。<br>
+さらには、rails開発者は開発の拠点が地理的に分散しています。<br>
+もちろんrails開発者以外にもiPhone/Android開発、デザイナー、ディレクターとチームには様々なメンバーが集まっています。<br>
+docker登場以来、チーム開発でどのように有効利用できるかを模索してきました。<br>
+その中でも期待していたのはプレビューの環境です。</p>
+
+<p>チームとして何を問題意識として持っていたのか言うと、例えば複数の新機能開発が同時に進行していた場合の確認です。<br>
+もちろんテストコードによって一定の信頼は担保できますが、デザインや画面遷移なども確認したいわけです。<br>
+APIの提供となれば、モバイルアプリ開発チームは実際に接続して確認したいという要望もあります。<br>
+rails開発者同士のレビューならば<code>git checkout</code>してブランチを切り替えてローカルで確認できます。<br>
+モバイルアプリ開発者の場合でも、もちろんgitの操作はできます。<br>
+しかし<code>rake db:migrate</code>してその他rakeタスクを実行して&hellip;といったrailsの操作や作法を強要することは避けたいです。<br>
+rails/モバイルアプリエンジニア間のハードルに関しては、ローカルでdockerを用いることで、一定の問題解決を図ることが出来ます。<br>
+共通知識としてdockerの操作を覚えることで、railsアプリの更新時には<code>git checkout</code>して<code>docker build</code>, <code>docker run</code>すれば動作するようにすれば良いのです。<br>
+ですがこの方法はエンジニアには通用してもデザイナーや、ましてやディレクター（Windows環境ならなおさら）にこれを要求することは難易度が高いです。<br>
+チームにはインテグレーションやステージングと呼ばれるサーバー環境ももちろん構築してあります。<br>
+これらの環境はAWS OpsWorksで構築してあるため、ブランチを切り替えてデプロイし直すということは可能です、<br>
+しかしリリース用の検証を行うことが主目的であり、ディレクターや複数のステークホルダーが同時に異なる機能を確認したいときには対応が困難です。（ブランチを切り替えてデプロイする毎に確認作業が必要になるため）<br>
+このような問題を解決するべく、つまりrails開発者以外でも簡単に機能毎のブランチを切り替えて確認できるような環境の構築が望まれていました。<br>
+今回はプレビュー環境を構築する為に<a href="https://github.com/mookjp/pool">mook/pool</a>を使い、これを検証してみます。</p>
+
+</section><section><header><h3>poolとは</h3></header>
+
+<p>poolはシンプルな紹介をすればリバースプロキシです。<br>
+コア部分はmod_mrubyで開発されており、アクセスに応じて動的にdockerアプリケーションのビルド、起動、そしてリクエストのフォーワードを行ってくれます。</p>
+
+<p>たとえば<code>http://master.pool.dev</code>なら<code>master</code>ブランチの、<code>http://feauture.pool.dev</code>なら<code>feauture</code>ブランチのソースを取得してビルドを行ってくれます。<br>
+サブドメイン部分にはブランチ名の他にもコミットIDやタグを指定することも可能です。</p>
+
+<p>内部実装については、作者様自身の解説「<a href="http://qiita.com/mookjp/items/ed5961589428238d610b">mod_mrubyとDockerを使ってプレビュー環境を作成するプロキシサーバを作った</a>」があるので参考になります。</p>
+
+<h1>セットアップ</h1>
+
+<p>ローカルで試すためにはvagrantが必要です。<br>
+vagrantのDNSプラグインも必要になるので用意しておきます。</p>
+<pre class="highlight shell"><code>vagrant plugin install vagrant-dns
+vagrant dns --install
+vagrant dns --start
+</code></pre>
+
+<p>後は<code>git clone https://github.com/mookjp/pool.git</code>して設定を済ませて<code>vagrant up</code>するだけです。<br>
+設定は最低限デプロイ対象となるリポジトリを指定しておきます。</p>
+<pre class="highlight plaintext"><code>s.args &lt;&lt; "https://github.com/k-shogo/mini_doc.git"
+</code></pre>
+
+<p>初回はvagrant boxの用意や、pool自体のビルドも必要なので気長に待ちます。<br>
+準備が完了すれば<code>http://master.pool.dev</code>にアクセスすれば、設定したリポジトリからクローンし、リポジトリ内部のDockerfileに応じてビルドを行ってくれます。</p>
+
+<p>公式リポジトリには<a href="https://github.com/mookjp/pool#aws-ec2-instances">AWS EC2へのインストール方法</a>も記載されています。</p>
+
+</section><section><header><h3>railsアプリ側の準備</h3></header>
+
+<p>poolの環境構築が済んだので、pool上でrailsアプリケーションを動作させてみます。<br>
+検証用のリポジトリは<a href="https://github.com/k-shogo/mini_doc">k-shogo/mini_doc</a>に用意してあります。<br>
+railsをdockerで動作させたい場合の構成については、以前に「<a href="http://qiita.com/k-shogo/items/592e243f9763d0c3b10a">railsをdockerで動かしたい場合の構成はどうするべきか</a>」にまとめました。<br>
+投稿時（2014/07/08）よりも環境の整備が進んでおり、dockerには<a href="http://blog.docker.com/2014/09/docker-hub-official-repos-announcing-language-stacks/">公式のLANGUAGE STACKS</a>という物が登場しました。<br>
+<a href="https://registry.hub.docker.com/_/rails/">railsのstack</a>も用意されており、<a href="https://github.com/docker-library/rails/blob/940d1a7d0fc11d32aed4eb3b2cb22f62f65c6814/onbuild/Dockerfile">onbuildがサポートされたDockerfile</a>が用意されているので、<br>
+最小限の用意ならDockerfileに<code>FROM rails:onbuild</code>と書くだけでも良いのですが、<br>
+細かくコントロールしたかったので<a href="https://registry.hub.docker.com/_/ruby/">公式のrubyイメージ</a>をFROMにして始めます。</p>
+
+<p>一つ目のポイントとして、DBについてはどうするか。<br>
+プロダクション環境ではmysqlなりpostgresqlやAmazon RDSを使うのですが、プレビュー環境において複数コンテナの起動や、外部のDBに接続することは面倒が増えるだけです。<br>
+データベースを共用するよりもむしろコンテナ毎に独立している方が都合が良いのでsqliteを用いることにします。<br>
+<code>bundler</code>によって依存するgemを管理するrailsでは、<code>Gemfile</code>にgroupを記述することで対処します。</p>
+
+<p>例えばプレビューだけsqliteで、その他でMySQLを使い場合の<code>Gemfile</code>です。<br>
+このようにした場合、ローカルでの開発時には<code>bundle install --without preview</code>しておけばプレビュー用のgemは開発環境にはインストールされません。</p>
+<pre class="highlight plaintext"><code>group :preview do
+  gem 'sqlite3'
+end
+
+group :development, :test, :production do
+  gem 'mysql2'
+end
+</code></pre>
+
+<p>railsでは環境自体も複数定義しておくことが可能なので、今回はプレビュー用の環境定義ファイルを用意します。<br>
+独自の環境定義は<code>config/environments/</code>以下に<code>preview.rb</code>作成するだけです。<br>
+DBはプロダクションとは異なる構成にしましたが、その他はプロダクションと近くしたいところです。<br>
+<code>eager_load</code>を有効化し、アセットもプリコンパイルして動作を確認しましょう。<br>
+ただ、アセットファイルの配信についてはDBと同じく、フロントに立てるnginx等を別に用意したくないので、railsサーバー自身が静的ファイルを配信出来るように<code>serve_static_files</code>の有効化を行っておきます。</p>
+<pre class="highlight plaintext"><code>Rails.application.configure do
+  config.cache_classes = true
+  # eager_load を有効化
+  config.eager_load = true
+  config.consider_all_requests_local       = false
+  config.action_controller.perform_caching = true
+  # 静的ファイルを直接配信する
+  config.serve_static_files = true
+  config.assets.js_compressor = :uglifier
+  config.assets.compile = false
+  config.assets.digest = true
+  config.log_level = :debug
+  config.i18n.fallbacks = true
+  config.active_support.deprecation = :notify
+  config.log_formatter = ::Logger::Formatter.new
+  config.active_record.dump_schema_after_migration = false
+end
+</code></pre>
+
+<p><code>Dockerfile</code>は以下のようにしています。<br>
+公式LANGUAGE STACKSのrubyをベースに、sqliteとアセットのコンパイルに必要なnodeをインストールしています。<br>
+先に<code>Gemfile</code>, <code>Gemfile.lock</code>をコピーしているのは、<code>Gemfile</code>に変更が無い場合に<code>bundle install</code>をスキップして高速化を図る工夫です。<br>
+<code>Dockerfile</code>の中での<code>bundle install</code>では、開発やプロダクション固有のgemをインストールしないようにしてあります。<br>
+poolではコンテナと80番ポートを接続するので、<code>EXPOSE 80</code>を指定してあります。</p>
+<pre class="highlight plaintext"><code>FROM ruby:2.2.0
+
+RUN apt-get update &amp;&amp; apt-get install -y nodejs sqlite3 --no-install-recommends &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY Gemfile /usr/src/app/
+COPY Gemfile.lock /usr/src/app/
+RUN bundle install -j4 --without development test production
+
+ADD . /usr/src/app
+
+ENV RAILS_ENV preview
+RUN bundle exec rake db:create &amp;&amp; \
+    bundle exec rake db:migrate &amp;&amp; \
+    bundle exec rake db:seed_fu &amp;&amp; \
+    bundle exec rake assets:precompile
+
+EXPOSE 80
+CMD ["rails", "server", "-b", "0.0.0.0", "-p", "80"]
+
+</code></pre>
+
+<p>プレビュー用途なので、ある程度確認用のデータが欲しくなります。<br>
+railsにはシードデータを記述する<code>db/seeds.rb</code>がデフォルトで用意されていますが、何度も<code>rake db:seed</code>すると重複して登録されてしまったりするため、今回は<a href="https://github.com/mbleigh/seed-fu">mbleigh/seed-fu</a>を用いてデータの投入を行っています。<br>
+この<code>seed-fu</code>を利用すると、データの投入や環境毎の定義を分割することを容易にしてくれます。</p>
+
+<p><code>.dockerignore</code>もちゃんと用意しておきましょう。<br>
+ローカルでビルドするときなど、余分なファイルをADDしなくなるので、時間の短縮やビルド時のキャッシュに役立ちます。<br>
+例えばログファイルがADD対象になっている場合、アプリケーションのコードに変更が無くても、<code>development.log</code>に変化があるだけでキャッシュが使われなくなってしまいます。</p>
+<pre class="highlight plaintext"><code>### Rails ###
+public/assets/*
+
+## Environment normalisation:
+.bundle
+vendor/bundle
+.git
+
+## db
+db/*.sqlite3
+
+## log
+log
+tmp
+
+## OSX
+.DS_Store
+</code></pre>
+
+</section><section><header><h3>poolを使ってみてのまとめと今後の課題</h3></header>
+
+<p>poolのセットアップと、railsアプリ側の準備さえしてしまえば、ブラウザからのアクセスによってコンテナのビルドから行ってくれるのはお手軽です。<br>
+開発環境をローカルに持っていないディレクターには例えば「<code>http://design_fix.pool.dev</code>にアクセスしれもらえば新しいデザインを直接確認できますよ」と教えさえすれば良いのです。<br>
+（pool側で初回ビルドの場合時間がかかるので、一度自分でアクセスしてビルドしてから教えるのが良し）<br>
+複数の変更作業が同時に走っていても、プレビューで対応できるのは無駄な待ち時間が発生しなくてグッドです。</p>
+
+<p>次に課題について。<br>
+第一には「やっぱりDBはMySQLで確認したい！」とか「redis, memcache, elasticsearch, solrをrailsアプリから利用したいんだけど」「バックグランドで動作するワーカーも動作させたい(resqueとかsidekiqとか)」の場合にどうするかについて。<br>
+「poolをfigを使って複数コンテナ動作するように拡張する」というのも一つの選択肢でアリだと考えました。<br>
+ですが個人的にはとりあえず単一コンテナで動作できるように<code>Dockerfile</code>を用意する事がpool wayなのかなと思っています。<br>
+今回はプロダクション環境で使いたいわけでは無く、プレビューの環境なので、単一コンテナで完全に分離できた方が都合が良いからです。<br>
+<code>Dockerfile</code>の記述は増えますが、プロダクション環境で無い限り1コンテナ1プロセスを前提とした運用は面倒を増やしかねません。<br>
+複数プロセスの起動についてはrailsの場合は<a href="https://github.com/ddollar/foreman">ddollar/foreman</a>で対応が楽かな。（検証アプリに導入したら追記します）</p>
+
+<p>第二には<code>Dockerfile</code>ビルド時の挙動について。<br>
+今回の<code>Dockerfile</code>の例では、<code>Gemfile</code>及び<code>Gemfile.lock</code>をアプリケーション本体のコードより先にADDすることにより、<code>bundle install</code>の結果をキャッシュする手法が組み込まれています。<br>
+しかし、<code>Gemfile</code>の中身に変更が無かったとしても、タイムスタンプが変更された場合、dockerはタイムスタンプを含めたメタデータで管理しているためにビルドしたキャッシュが効きません。<br>
+これはpool利用時にのみ発生する物ではありません。<code>Gemfile</code>に対して<code>touch</code>してみるとビルドのキャッシュが使用されないことを簡単に確認できます。<br>
+Jenkinsでdockerをビルドする場合などもこの問題に当たるので、そのような場合は<code>Gemfile</code>と<code>Gemfile.lock</code>に<code>touch -t</code>でタイムスタンプを常に一定にすることで回避するテクニックが存在します。<br>
+<code>Gemfile</code>と<code>Gemfile.lock</code>のタイムスタンプを常に同じ値にしたとしても、内容が更新されている場合はメタデータが変わっているので問題はありません。<br>
+ADDをなるべくキャッシュさせたい場合に<code>touch</code>を使うのですが、poolではその選択肢をとることが出来ません。<br>
+これには「リポジトリに<code>before_build.sh</code>があれば実行する」などの拡張をpoolに施すと効率化を図れるかもしれません。</p>
+
+<p>第三にはリポジトリの取り扱いとアクセスコントロールについて。<br>
+プレビュー環境の閲覧の制限について、つまりユーザーからpoolへのアクセスはAWSならセキュリティグループで対応することが出来ます。<br>
+しかし、poolからアプリのリポジトリへのアクセスはどうでしょうか。<br>
+アプリのリポジトリはいつもGitHubで公開できるわけではありません。<br>
+Bitbucketを使っていたり、プライベートなgitサーバーを構築している所も多いでしょう。<br>
+アプリ本体のリポジトリだけでなく、Gemfile内部に独自のgemを指定している場合もあります。<br>
+この場合のssh鍵や認証ユーザーの取り扱いに関してはさらなる検証が必要だと感じました。実際にpoolをAWS EC2等に設置して検証して見たいです。</p>
+
+<p>課題と感じるところはある物の、poolの「アドレスによって動的にコンテナのビルド、起動を行う」というアイデアは強力です。<br>
+チーム開発において有効活用できる場面は多いと思います。</p>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<div id='footer'>
+<div class='container'>
+<div class='row'>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-left circled solo'>
+<span>Next Article</span>
+</h2>
+</header>
+</section>
+<!-- Posts -->
+<section class='6u'>
+<header>
+<h2 class='fa fa-angle-right circled solo'>
+<span>Prev Article</span>
+</h2>
+</header>
+<ul class='divided'>
+<li>
+<article class='post stub'>
+<header>
+<h3>
+<a href="/article/2014/12/16/rails-tips/">早く知っておけば良かったrailsの技</a>
+</h3>
+</header>
+<span class='timestamp'>prev article</span>
+</article>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+
+</body>
+</html>
