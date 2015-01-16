@@ -62,26 +62,14 @@
 </header>
 <section><header><h3>neo4jとは</h3></header>
 
-<p><a href="http://www.neo4j.org/">neo4j</a>とは<br>
-Neo Technologyが開発したJavaベースの<br>
-グラフデータベースです。<br>
+<p><a href="http://www.neo4j.org/">neo4j</a>とはNeo Technologyが開発したJavaベースのグラフデータベースです。<br>
 （<a href="http://oss.infoscience.co.jp/neo4j/neo4j.org/">日本語ページ</a>）</p>
 
-<p>グラフデータベースは、<br>
-一つ一つのデータを行で表現するリレーショナルデータベースと異なり、<br>
-ノード（頂点）、リレーションシップ（エッジ）、プロパティ（属性）<br>
-という3つの基本構成要素でデータを格納します。<br>
-グラフデータベースが有用なのは<br>
-TwitterやFacebookのように、フォローや友人関係を扱う時です。<br>
-「友人のそのまた友人を探す」や「任意の二人を選択し、最短の関係（パス）を探す」などの<br>
-問題を解こうとしたとき、<br>
-リレーショナルデータベースでは関係の探索に大量の結合演算が必要になりますが、<br>
-グラフ構造をそのまま格納しているグラフデータベースなら高速に処理することが可能です。</p>
+<p>グラフデータベースは、一つ一つのデータを行で表現するリレーショナルデータベースと異なり、ノード（頂点）、リレーションシップ（エッジ）、プロパティ（属性）という3つの基本構成要素でデータを格納します。<br>
+グラフデータベースが有用なのはTwitterやFacebookのように、フォローや友人関係を扱う時です。<br>
+「友人のそのまた友人を探す」や「任意の二人を選択し、最短の関係（パス）を探す」などの問題を解こうとしたとき、リレーショナルデータベースでは関係の探索に大量の結合演算が必要になりますが、グラフ構造をそのまま格納しているグラフデータベースなら高速に処理することが可能です。</p>
 
-<p>neo4jはオープンソースですが、<br>
-ライセンスはAGPLv3なので、<br>
-商用利用などの際は<br>
-<a href="http://oss.infoscience.co.jp/neo4j/neo4j.org/licensing-guide.html">ライセンス選択の手引き</a>を参考にしてください。</p>
+<p>neo4jはオープンソースですが、ライセンスはAGPLv3なので、商用利用などの際は<a href="http://oss.infoscience.co.jp/neo4j/neo4j.org/licensing-guide.html">ライセンス選択の手引き</a>を参考にしてください。</p>
 
 </section><section><header><h3>neo4jのインストール</h3></header>
 
@@ -91,9 +79,7 @@ TwitterやFacebookのように、フォローや友人関係を扱う時です�
 </code></pre>
 
 <p>neo4jにはデフォルトでブラウザからアクセスできる機能が組み込まれています。<br>
-neo4jを起動し、<br>
-<code>http://localhost:7474/webadmin/</code><br>
-にアクセスする事でブラウザからデータなどが確認可能です。</p>
+neo4jを起動し、<code>http://localhost:7474/webadmin/</code>にアクセスする事でブラウザからデータなどが確認可能です。</p>
 
 </section><section><header><h3>rubyからneo4jを利用する</h3></header>
 
@@ -104,14 +90,12 @@ neo4jを起動し、<br>
 <code>gem &#39;neography&#39;</code>を記述して<code>bundle install</code>します。</p>
 
 <p>rubyからneo4jに接続してみます。<br>
-neo4jのポートなどがデフォルトのままなら、<br>
-neographyをrequireして<code>Neography::Rest.new</code>するだけなので簡単です。</p>
+neo4jのポートなどがデフォルトのままなら、neographyをrequireして<code>Neography::Rest.new</code>するだけなので簡単です。</p>
 <pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'neography'</span>
 <span class="vi">@neo</span> <span class="o">=</span> <span class="no">Neography</span><span class="o">::</span><span class="no">Rest</span><span class="p">.</span><span class="nf">new</span>
 </code></pre>
 
-<p>接続先などの設定がデフォルトと異なる場合でも<br>
-<code>Neography::Rest.new</code>の引数に設定を渡すだけす。</p>
+<p>接続先などの設定がデフォルトと異なる場合でも<code>Neography::Rest.new</code>の引数に設定を渡すだけす。</p>
 
 <p>ノードの作成、プロパティの追加、リレーションの追加などのサンプルです。</p>
 <pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'neography'</span>
@@ -132,8 +116,7 @@ neographyをrequireして<code>Neography::Rest.new</code>するだけなので�
 <span class="vi">@neo</span><span class="p">.</span><span class="nf">get_node_relationships</span><span class="p">(</span><span class="n">node2</span><span class="p">,</span> <span class="ss">:in</span><span class="p">,</span> <span class="ss">:friend</span><span class="p">)</span>
 </code></pre>
 
-<p>それぞれの行を実行すると、<br>
-REST APIの結果をハッシュに格納した物が返ります。<br>
+<p>それぞれの行を実行すると、REST APIの結果をハッシュに格納した物が返ります。<br>
 このままだと少々扱いにくいです。</p>
 <pre class="highlight ruby"><code><span class="p">{</span>
   <span class="s2">"extensions"</span> <span class="o">=&gt;</span> <span class="p">{},</span>
@@ -155,8 +138,7 @@ REST APIの結果をハッシュに格納した物が返ります。<br>
 
 </section><section><header><h3>rubyからneo4jを利用する2</h3></header>
 
-<p>前述の利用では、<br>
-返ってくるデータが少々扱いにくいところがありました。<br>
+<p>前述の利用では、返ってくるデータが少々扱いにくいところがありました。<br>
 そこでneographyには抽象化度を上げた利用方法が用意されています。</p>
 
 <p>例えばノードの作成は以下のようになります。</p>
@@ -181,8 +163,7 @@ REST APIの結果をハッシュに格納した物が返ります。<br>
 <pre class="highlight ruby"><code><span class="n">node1</span><span class="p">.</span><span class="nf">del</span>
 </code></pre>
 
-<p>接続先の設定について変更する場合は<br>
-<code>Neography.configure</code>ブロックで行います。</p>
+<p>接続先の設定について変更する場合は<code>Neography.configure</code>ブロックで行います。</p>
 <pre class="highlight ruby"><code><span class="no">Neography</span><span class="p">.</span><span class="nf">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
   <span class="n">config</span><span class="p">.</span><span class="nf">protocol</span>       <span class="o">=</span> <span class="s2">"http://"</span>
   <span class="n">config</span><span class="p">.</span><span class="nf">server</span>         <span class="o">=</span> <span class="s2">"localhost"</span>
@@ -243,9 +224,7 @@ REST APIの結果をハッシュに格納した物が返ります。<br>
 
 </section><section><header><h3>rubyからneo4jを利用する3</h3></header>
 
-<p><code>Neography::Node#rels</code>でリレーション<br>
-<code>Neography::Relationship</code>を取得したときは、<br>
-開始ノードや終端ノードにアクセスしただけでした。<br>
+<p><code>Neography::Node#rels</code>でリレーション<code>Neography::Relationship</code>を取得したときは、開始ノードや終端ノードにアクセスしただけでした。<br>
 もう少し進んで<code>Neography::NodeTraverser</code>を利用してみましょう。</p>
 
 <p>5つのノードを作成し、リレーションとして友人関係（friends）を定義します。</p>
@@ -271,9 +250,7 @@ REST APIの結果をハッシュに格納した物が返ります。<br>
 <p><img alt="グラフ" width="377" height="273" src="/images/2013-09-04-ruby-neo4j/ss.png" /></p>
 
 <p>ここから<code>Neography::NodeTraverser</code>を利用します。<br>
-<code>Neography::NodeTraverser</code>の利用には、<br>
-リレーションを張るのに使用した<br>
-<code>outgoing</code>,<code>incoming</code>,<code>both</code>を使います。</p>
+<code>Neography::NodeTraverser</code>の利用には、リレーションを張るのに使用した<code>outgoing</code>,<code>incoming</code>,<code>both</code>を使います。</p>
 
 <p>ノード&quot;1&quot;を基準にして友人を辿ってみます。</p>
 <pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
@@ -299,21 +276,13 @@ REST APIの結果をハッシュに格納した物が返ります。<br>
 <p><code>:breadth</code>以外にも<code>&quot;breadth&quot;</code>,<code>&quot;breadth first&quot;</code>,<code>&quot;breadthFirst&quot;</code>,<code>:wide</code>,<code>&quot;wide&quot;</code>の指定でも同じです。</p>
 
 <p><code>friends</code>関係が各ノード間で双方向に張られているので、<br>
-トラバースの結果に同一ノードが含まれています。<br>
-そこで、重複したノードを除外してみます。</p>
+トラバースの結果に同一ノードが含まれています。そこで、重複したノードを除外してみます。</p>
 <pre class="highlight ruby"><code><span class="n">n1</span><span class="p">.</span><span class="nf">outgoing</span><span class="p">(</span><span class="ss">:friends</span><span class="p">).</span><span class="nf">depth</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span><span class="nf">order</span><span class="p">(</span><span class="ss">:breadth</span><span class="p">).</span><span class="nf">uniqueness</span><span class="p">(</span><span class="ss">:nodeglobal</span><span class="p">).</span><span class="nf">map</span> <span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span><span class="p">.</span><span class="nf">name</span><span class="p">}</span>
 <span class="c1"># =&gt; ["2", "4", "3", "5"]</span>
 </code></pre>
 
 <p><code>:nodeglobal</code>は<code>&quot;node global&quot;</code>,<code>&quot;nodeglobal&quot;</code>,<code>&quot;node_global&quot;</code>としてしても同じです。<br>
-<code>uniqueenss</code>の指定は、<br>
-<code>&quot;node global&quot;</code>以外にも<br>
-<code>&quot;node path&quot;</code>,<br>
-<code>&quot;node recent&quot;</code>,<br>
-<code>&quot;relationship global&quot;</code>, <br>
-<code>&quot;relationship path&quot;</code>,<br>
-<code>&quot;relationship recent&quot;</code>がありますが、<br>
-今回は割愛します。</p>
+<code>uniqueenss</code>の指定は、<code>&quot;node global&quot;</code>以外にも<code>&quot;node path&quot;</code>,<code>&quot;node recent&quot;</code>,<code>&quot;relationship global&quot;</code>, <code>&quot;relationship path&quot;</code>,<code>&quot;relationship recent&quot;</code>がありますが、今回は割愛します。</p>
 
 <p>次に、2関係先だけの友達に限定してみます。<br>
 ベースは先ほどの物を使います。</p>

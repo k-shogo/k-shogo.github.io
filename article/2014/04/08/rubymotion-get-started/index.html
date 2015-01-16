@@ -61,8 +61,7 @@
 </header>
 <section><header><h3>はじめに</h3></header>
 
-<p>今まではサーバーサイドの開発が主だったのですが、<br>
-思い立って<a href="http://www.rubymotion.com/">RubyMotion</a>を始めて見ました。</p>
+<p>今まではサーバーサイドの開発が主だったのですが、思い立って<a href="http://www.rubymotion.com/">RubyMotion</a>を始めて見ました。</p>
 
 </section><section><header><h3>プロジェクトの開始</h3></header>
 
@@ -113,8 +112,7 @@ rake
 </section><section><header><h3>外部ライブラリの利用</h3></header>
 
 <p>RubyMotionは外部のライブラリを用いることも容易です。<br>
-CRubyのライブラリをそのまま使えるわけではありませんが、<br>
-RubyMotion用Gemも豊富に用意されています。</p>
+CRubyのライブラリをそのまま使えるわけではありませんが、RubyMotion用Gemも豊富に用意されています。</p>
 
 <p>使いたいライブラリを<code>Gemfile</code>に追記します。<br>
 今回は<a href="https://github.com/clearsightstudio/ProMotion">ProMotion</a>を使用してみます。</p>
@@ -128,8 +126,7 @@ RubyMotion用Gemも豊富に用意されています。</p>
 <p><code>Gemfile</code>に依存関係を記述したら<code>bundle install</code>コマンドでライブラリをインストールします。<br>
 グローバルに入れない場合は<code>bundle install --path vendor/bundle</code>など、インストールパスを指定しましょう。</p>
 
-<p><code>Rake</code>ファイルに<code>bundler</code>を使う設定がなされていれば、<br>
-<code>bundle exec rake</code>としなくとも<code>rake</code>コマンドだけでタスクを実行できます。</p>
+<p><code>Rake</code>ファイルに<code>bundler</code>を使う設定がなされていれば、<code>bundle exec rake</code>としなくとも<code>rake</code>コマンドだけでタスクを実行できます。</p>
 
 <h4><code>Rakefile</code></h4>
 <pre class="highlight ruby"><code><span class="c1"># -*- coding: utf-8 -*-</span>
@@ -150,8 +147,7 @@ RubyMotion用Gemも豊富に用意されています。</p>
 
 </section><section><header><h3>ProMotionをつかってみる</h3></header>
 
-<p><code>bundler</code>で<code>ProMotion</code>をインストールできたので、<br>
-画面を作ってみます。</p>
+<p><code>bundler</code>で<code>ProMotion</code>をインストールできたので、画面を作ってみます。</p>
 
 <h4><code>app/app_delegate.rb</code></h4>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">AppDelegate</span> <span class="o">&lt;</span> <span class="no">PM</span><span class="o">::</span><span class="no">Delegate</span>
@@ -206,8 +202,7 @@ RubyMotion用Gemも豊富に用意されています。</p>
 
 </section><section><header><h3>CocoaPodsの利用</h3></header>
 
-<p>RubyMotionでも<a href="http://cocoapods.org/">CocoaPods</a>で管理されている<br>
-ライブラリも利用することが可能です。</p>
+<p>RubyMotionでも<a href="http://cocoapods.org/">CocoaPods</a>で管理されているライブラリも利用することが可能です。</p>
 
 <p><code>Gemfile</code>に<a href="https://github.com/HipByte/motion-cocoapods">motion-cocoapods</a>を追加します。</p>
 

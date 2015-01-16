@@ -62,25 +62,19 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>昨今のスマートフォンの普及は目覚ましく、<br>
-位置情報を利用したサービスも増えてきました。</p>
+<p>昨今のスマートフォンの普及は目覚ましく、位置情報を利用したサービスも増えてきました。</p>
 
-<p>位置情報サービスを構築するとき、<br>
-データベースは何を使うでしょうか。<br>
-<a href="http://www.mongodb.org/">mongoDB</a>には<br>
-<a href="http://docs.mongodb.org/manual/core/geospatial-indexes/">地理空間インデックス</a>が<br>
-用意されているため、有効な選択肢になり得ます。</p>
+<p>位置情報サービスを構築するとき、データベースは何を使うでしょうか。<br>
+<a href="http://www.mongodb.org/">mongoDB</a>には<a href="http://docs.mongodb.org/manual/core/geospatial-indexes/">地理空間インデックス</a>が用意されているため、有効な選択肢になり得ます。</p>
 
 <p>位置情報と全文検索を組み合わせて検索したいときはどうでしょうか。<br>
-mongoDB + ElasticSearchなどの複数のデータベースという選択肢もありますが、<br>
-条件の組み合わせ処理が煩雑になってしまいます。</p>
+mongoDB + ElasticSearchなどの複数のデータベースという選択肢もありますが、条件の組み合わせ処理が煩雑になってしまいます。</p>
 
 <p>今回はElasticSearchで全文検索と位置情報の両方を扱ってみます。</p>
 
 </section><section><header><h3>準備</h3></header>
 
-<p>railsからElasticSearchを利用する準備は<br>
-&ldquo;<a href="/article/2013/09/03/rails-elasticsearch/">railsから全文検索エンジンelasticsearchを利用する</a>&quot;を参考にしてください。</p>
+<p>railsからElasticSearchを利用する準備は&ldquo;<a href="/article/2013/09/03/rails-elasticsearch/">railsから全文検索エンジンelasticsearchを利用する</a>&quot;を参考にしてください。</p>
 
 <p>今回作成するサンプルの要点をまとめます。</p>
 
@@ -94,9 +88,7 @@ mongoDB + ElasticSearchなどの複数のデータベースという選択肢も
 
 </section><section><header><h3>テーブル定義</h3></header>
 
-<p>まずテーブルの定義をします。<br>
-ピンに自由につける名前を<code>name</code>、<br>
-住所の情報を<code>address</code>とします。<br>
+<p>まずテーブルの定義をします。ピンに自由につける名前を<code>name</code>、住所の情報を<code>address</code>とします。<br>
 位置情報は<code>latitude</code>、<code>longitude</code>です。</p>
 
 <h4><code>Migration</code></h4>
@@ -115,19 +107,14 @@ mongoDB + ElasticSearchなどの複数のデータベースという選択肢も
 </code></pre>
 
 <p>次にmodelの設定を行います。<br>
-今回も<a href="https://github.com/karmi/tire">tire</a>のgemを使用するので、<br>
-<code>Tire::Model</code>をincludeします。</p>
+今回も<a href="https://github.com/karmi/tire">tire</a>のgemを使用するので、<code>Tire::Model</code>をincludeします。</p>
 <pre class="highlight ruby"><code><span class="kp">include</span> <span class="no">Tire</span><span class="o">::</span><span class="no">Model</span><span class="o">::</span><span class="no">Search</span>
 <span class="kp">include</span> <span class="no">Tire</span><span class="o">::</span><span class="no">Model</span><span class="o">::</span><span class="no">Callbacks</span>
 </code></pre>
 
-<p>マッピングの設定に関して、<br>
-<code>name</code>、<code>address</code>は日本語での検索を行いたいので、<br>
-<code>analyzer</code>に<code>kuromoji</code>を指定します。<br>
+<p>マッピングの設定に関して、<code>name</code>、<code>address</code>は日本語での検索を行いたいので、<code>analyzer</code>に<code>kuromoji</code>を指定します。<br>
 ここでのポイントは<code>indexes :location, type: :geo_point, lat_lon: true</code>です。<br>
-これは<code>location</code>というフィールドに地理情報を扱うための<br>
-<a href="http://www.elasticsearch.org/guide/reference/mapping/geo-point-type/">geo-point-type</a><br>
-を指定しています。<br>
+これは<code>location</code>というフィールドに地理情報を扱うための<a href="http://www.elasticsearch.org/guide/reference/mapping/geo-point-type/">geo-point-type</a>を指定しています。<br>
 ただし、位置情報は<code>latitude</code>と<code>longitude</code>に格納していました。<br>
 そのためElasticSearchに渡す情報を加工することにします。</p>
 <pre class="highlight ruby"><code><span class="n">tire</span> <span class="k">do</span>
@@ -139,8 +126,7 @@ mongoDB + ElasticSearchなどの複数のデータベースという選択肢も
 <span class="k">end</span>
 </code></pre>
 
-<p>ElasticSearchに渡す情報をカスタマイズするには<br>
-<code>.to_indexed_json</code>を定義します。</p>
+<p>ElasticSearchに渡す情報をカスタマイズするには<code>.to_indexed_json</code>を定義します。</p>
 <pre class="highlight ruby"><code><span class="k">def</span> <span class="nf">to_indexed_json</span>
   <span class="p">{</span>
     <span class="ss">name: </span><span class="nb">name</span><span class="p">,</span>

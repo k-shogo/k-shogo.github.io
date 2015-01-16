@@ -61,16 +61,13 @@
 </header>
 <section><header><h3>はじめに</h3></header>
 
-<p>前回、&quot;<a href="/article/2014/04/09/rubymotion-core-data-query">CoreDataQueryでデータを保存する</a>&ldquo;では、<br>
-CoreDataQueryを用いてデータを保存してみました。<br>
+<p>前回、&quot;<a href="/article/2014/04/09/rubymotion-core-data-query">CoreDataQueryでデータを保存する</a>&ldquo;では、CoreDataQueryを用いてデータを保存してみました。<br>
 今回はコンソールからではなく、アプリ上で一覧、保存、更新、削除が出来るように実装してみます。</p>
 
 </section><section><header><h3>準備</h3></header>
 
 <p>アプリの基本は<a href="/article/2014/04/09/rubymotion-core-data-query">前回</a>のものを使います。<br>
-今回はフォーム画面もあるため、画面構築を簡易にするために<a href="https://github.com/clayallsopp/formotion">formotion</a>と、<br>
-<a href="https://github.com/clearsightstudio/ProMotion">ProMotion</a>とformotionを組み合わせる<br>
-<a href="https://github.com/rheoli/ProMotion-formotion">ProMotion-formotion</a>を追加しました。<br>
+今回はフォーム画面もあるため、画面構築を簡易にするために<a href="https://github.com/clayallsopp/formotion">formotion</a>と、<a href="https://github.com/clearsightstudio/ProMotion">ProMotion</a>とformotionを組み合わせる<a href="https://github.com/rheoli/ProMotion-formotion">ProMotion-formotion</a>を追加しました。<br>
 ProMotion-formotionを使う場合、現在はProMotion, formotionともにgitにあるコードを指定する必要があります。</p>
 
 <h4><code>Gemfile</code></h4>
@@ -220,8 +217,7 @@ bundle exec cdq init
 </code></pre>
 
 <p>これで、一覧、作成、更新、削除がアプリ内で出来るようになりました。<br>
-一覧画面でスワイプすると削除リンクが出現し、”Add&quot;ボタンで新規作成画面に、<br>
-そして各項目のタップで編集が出来るようになっています 。</p>
+一覧画面でスワイプすると削除リンクが出現し、”Add&quot;ボタンで新規作成画面に、そして各項目のタップで編集が出来るようになっています 。</p>
 
 <p><img alt="screen" width="800" height="1632" src="/images/2014-04-10-rubymotion-cdq-crud/screen.png" /></p>
 </section>

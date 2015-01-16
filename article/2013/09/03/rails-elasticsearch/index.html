@@ -62,29 +62,20 @@
 </header>
 <section><header><h3>ElasticSearchとは</h3></header>
 
-<p><a href="http://www.elasticsearch.org/">ElasticSearch</a>は<br>
-Solrと同じApache Lucene上で稼働するオープンソースの全文検索システムです。<br>
-ElasticSearchの特徴としては、<br>
-REST APIが整備されていて、<br>
-JSONですべてやり取りできるところです。</p>
+<p><a href="http://www.elasticsearch.org/">ElasticSearch</a>はSolrと同じApache Lucene上で稼働するオープンソースの全文検索システムです。<br>
+ElasticSearchの特徴としては、REST APIが整備されていて、JSONですべてやり取りできるところです。</p>
 
 </section><section><header><h3>準備</h3></header>
 
-<p>ElasticSearchはJavaで動作するので事前にJavaのインストールが必要です。</p>
-
-<p>ElasticSearchのインストールはMacならbrewがあるので簡単です。</p>
+<p>ElasticSearchはJavaで動作するので事前にJavaのインストールが必要です。<br>
+ElasticSearchのインストールはMacならbrewがあるので簡単です。</p>
 <pre class="highlight shell"><code><span class="gp">$ </span>brew install elasticsearch
 </code></pre>
 
-<p>Windowsでも<a href="https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.3.zip">Zipをダウンロード</a>して、<br>
-batファイル叩くだけだったので楽です。</p>
+<p>Windowsでも<a href="https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.3.zip">Zipをダウンロード</a>して、batファイル叩くだけだったので楽です。</p>
 
-<p>ElasticSearchには<br>
-<a href="http://www.elasticsearch.org/guide/reference/modules/plugins/">様々なプラグイン</a><br>
-が用意されており、その中に日本語対応の物も用意されています。<br>
-kuromojiを用いた<br>
-<a href="https://github.com/elasticsearch/elasticsearch-analysis-kuromoji">elasticsearch-analysis-kuromoji</a><br>
-を使います。</p>
+<p>ElasticSearchには<a href="http://www.elasticsearch.org/guide/reference/modules/plugins/">様々なプラグイン</a>が用意されており、その中に日本語対応の物も用意されています。<br>
+kuromojiを用いた<a href="https://github.com/elasticsearch/elasticsearch-analysis-kuromoji">elasticsearch-analysis-kuromoji</a>を使います。</p>
 
 <p>プラグインのインストールも簡単で用意されている<code>plugin</code>コマンドにgitの短縮アドレスを渡して叩くだけです。<br>
 （バージョン指定は適宜最新のものを参照してください）</p>
@@ -92,24 +83,17 @@ kuromojiを用いた<br>
 </code></pre>
 
 <p>これでkuromojiをプラグインとして利用可能となりました。<br>
-日本語対応させる際に、後述するrailsのmodelでフィールド毎にAnalyzerとしてkuromojiを指定することも出来ますし、<br>
-デフォルトのAnalyzerとして利用したければ設定ファイル<br>
-（macなら<code>/usr/local/opt/elasticsearch/config/elasticsearch.yml</code>）に<br>
-以下を追記して指定することも可能です。</p>
+日本語対応させる際に、後述するrailsのmodelでフィールド毎にAnalyzerとしてkuromojiを指定することも出来ますし、デフォルトのAnalyzerとして利用したければ設定ファイル（macなら<code>/usr/local/opt/elasticsearch/config/elasticsearch.yml</code>）に以下を追記して指定することも可能です。</p>
 <pre class="highlight plaintext"><code>index.analysis.analyzer.default.type: custom
 index.analysis.analyzer.default.tokenizer: kuromoji_tokenizer
 </code></pre>
 
 <p>ブラウザからElasticSearchの状態を確認できるプラグインも複数用意されています。<br>
-今回は基本的な<br>
-<a href="https://github.com/mobz/elasticsearch-head">elasticsearch-head</a><br>
-を導入してみます。</p>
+今回は基本的な<a href="https://github.com/mobz/elasticsearch-head">elasticsearch-head</a>を導入してみます。</p>
 <pre class="highlight shell"><code><span class="gp">$ </span>plugin --install mobz/elasticsearch-head
 </code></pre>
 
-<p>elasticsearch-headプラグイン導入後は<br>
-<code>http://localhost:9200/_plugin/head/</code><br>
-にアクセスすることでブラウザから様々な確認が出来るようになります。</p>
+<p>elasticsearch-headプラグイン導入後は<code>http://localhost:9200/_plugin/head/</code>にアクセスすることでブラウザから様々な確認が出来るようになります。</p>
 
 </section><section><header><h3>サンプルRailsアプリ</h3></header>
 
@@ -125,10 +109,8 @@ index.analysis.analyzer.default.tokenizer: kuromoji_tokenizer
 
 </section><section><header><h3>連携</h3></header>
 
-<p>RailsとElasticSearchとの連携には<br>
-<a href="https://github.com/karmi/tire">tire</a>を使います。<br>
-<code>Gemfile</code>に<br>
-<code>gem &#39;tire&#39;</code>を追加して<code>bundle intall</code>します。</p>
+<p>RailsとElasticSearchとの連携には<a href="https://github.com/karmi/tire">tire</a>を使います。<br>
+<code>Gemfile</code>に<code>gem &#39;tire&#39;</code>を追加して<code>bundle intall</code>します。</p>
 
 <p>次にmodelにElasticSearchとの連携を記述します。</p>
 
@@ -172,9 +154,7 @@ index.analysis.analyzer.default.tokenizer: kuromoji_tokenizer
 </code></pre>
 
 <p>これで<br>
-<code>http://localhost:3000/articles</code>にアクセスして<br>
-適当にニュース記事のデータを突っ込んで、<br>
-検索窓にワードを打ち込めば検索可能になっています。</p>
+<code>http://localhost:3000/articles</code>にアクセスして適当にニュース記事のデータを突っ込んで、検索窓にワードを打ち込めば検索可能になっています。</p>
 </section>
 </article>
 </div>

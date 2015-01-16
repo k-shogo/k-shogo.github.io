@@ -354,8 +354,7 @@ new_user_note GET    /users/:user_id/notes/new(.:format) notes#new
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;これで &lt;code&gt;notes#show&lt;/code&gt; の時に冗長だったユーザーID指定が不要になりました。&lt;br&gt;
-ちょっと注意なのが &lt;code&gt;form_for&lt;/code&gt; に渡すパスです。&lt;br&gt;
-例えば、&lt;code&gt;notes#create&lt;/code&gt; の時は &lt;code&gt;/users/:user_id/notes&lt;/code&gt; で、&lt;code&gt;notes#update&lt;/code&gt; の時は &lt;code&gt;/notes/:id&lt;/code&gt; とユーザーIDの有無が異なります。&lt;br&gt;
+ちょっと注意なのが &lt;code&gt;form_for&lt;/code&gt; に渡すパスです。例えば、&lt;code&gt;notes#create&lt;/code&gt; の時は &lt;code&gt;/users/:user_id/notes&lt;/code&gt; で、&lt;code&gt;notes#update&lt;/code&gt; の時は &lt;code&gt;/notes/:id&lt;/code&gt; とユーザーIDの有無が異なります。&lt;br&gt;
 これだと &lt;code&gt;form_for(@note) do&lt;/code&gt; のままだと &lt;code&gt;notes#new&lt;/code&gt; の時に &lt;code&gt;undefined method notes_path&lt;/code&gt; なんて言われちゃいます。&lt;br&gt;
 （&lt;code&gt;shallow&lt;/code&gt; オプションを指定しない場合は &lt;code&gt;form_for([@user, @note])&lt;/code&gt; のように指定すれば良い）&lt;br&gt;
 そこで、&lt;code&gt;form_for&lt;/code&gt; は以下のように設定します。&lt;/p&gt;
@@ -394,8 +393,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;もちろん使いどころは nilガードだけじゃありません。&lt;br&gt;
-&lt;code&gt;User&lt;/code&gt; クラスにニックネーム &lt;code&gt;nickname&lt;/code&gt; もあったとして、&lt;br&gt;
-「ニックネームが設定されていればそちらを、されていない（nilなら）名前を出したい」なんて時はこうすれば良いわけです。&lt;/p&gt;
+&lt;code&gt;User&lt;/code&gt; クラスにニックネーム &lt;code&gt;nickname&lt;/code&gt; もあったとして、「ニックネームが設定されていればそちらを、されていない（nilなら）名前を出したい」なんて時はこうすれば良いわけです。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;nickname&lt;/span&gt; &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;name&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -452,13 +450,11 @@ ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;try&lt;/code&gt; だとメソッド名の打ち間違いなども &lt;code&gt;nil&lt;/code&gt; で返ってきますが、&lt;br&gt;
-存在しないメソッドの場合は &lt;code&gt;NoMethodError&lt;/code&gt; を返してくれる &lt;code&gt;try!&lt;/code&gt; も用意されています。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;try&lt;/code&gt; だとメソッド名の打ち間違いなども &lt;code&gt;nil&lt;/code&gt; で返ってきますが、存在しないメソッドの場合は &lt;code&gt;NoMethodError&lt;/code&gt; を返してくれる &lt;code&gt;try!&lt;/code&gt; も用意されています。&lt;/p&gt;
 
 &lt;h3&gt;delegate も使ってみよう&lt;/h3&gt;
 
-&lt;p&gt;上の例では &lt;code&gt;note.user.name&lt;/code&gt; とメソッドの呼び出しをしていますが、&lt;br&gt;
-オブジェクト指向プログラミングの界隈だと、「デメテルの法則」に反しているとも言われます。&lt;/p&gt;
+&lt;p&gt;上の例では &lt;code&gt;note.user.name&lt;/code&gt; とメソッドの呼び出しをしていますが、オブジェクト指向プログラミングの界隈だと、「デメテルの法則」に反しているとも言われます。&lt;/p&gt;
 
 &lt;p&gt;それじゃあ、といって&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Note&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;ActiveRecord&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Base&lt;/span&gt;
@@ -498,8 +494,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;ちなみにプレーンなruby にも委譲の為の &lt;code&gt;Forwardable&lt;/code&gt; モジュールが用意されており、使い方も似ています。&lt;br&gt;
-&lt;code&gt;Forwardable&lt;/code&gt; の方はメソッドのリネームが出来る所が長所ですが、&lt;br&gt;
-&lt;code&gt;ActiveSupport&lt;/code&gt; の &lt;code&gt;delegate&lt;/code&gt; に用意されている &lt;code&gt;prefix&lt;/code&gt; と &lt;code&gt;allow_nil&lt;/code&gt; が使い勝手が良いので、rails だと &lt;code&gt;ActiveSupport&lt;/code&gt; の &lt;code&gt;delegate&lt;/code&gt; をよく使います。&lt;/p&gt;
+&lt;code&gt;Forwardable&lt;/code&gt; の方はメソッドのリネームが出来る所が長所ですが、&lt;code&gt;ActiveSupport&lt;/code&gt; の &lt;code&gt;delegate&lt;/code&gt; に用意されている &lt;code&gt;prefix&lt;/code&gt; と &lt;code&gt;allow_nil&lt;/code&gt; が使い勝手が良いので、rails だと &lt;code&gt;ActiveSupport&lt;/code&gt; の &lt;code&gt;delegate&lt;/code&gt; をよく使います。&lt;/p&gt;
 
 &lt;h3&gt;クラスマクロは自分で作れる&lt;/h3&gt;
 
@@ -548,14 +543,12 @@ ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt
 
 &lt;p&gt;実行してみた結果が上の様子です。&lt;code&gt;&amp;gt;&lt;/code&gt; が入力、&lt;code&gt;=&amp;gt;&lt;/code&gt; が出力です。&lt;br&gt;
 クラスマクロによって、使うと &lt;code&gt;&amp;quot;#{attr}_with_suffix&amp;quot;&lt;/code&gt; というメソッドが作られるようになっています。&lt;br&gt;
-つまり Boy, Girl クラスで &lt;code&gt;suffix :name, &amp;#39;さん&amp;#39;&lt;/code&gt; と使ったことによって、&lt;br&gt;
-&lt;code&gt;name_with_suffix&lt;/code&gt; メソッドがマクロによって定義されているのです。&lt;br&gt;
+つまり Boy, Girl クラスで &lt;code&gt;suffix :name, &amp;#39;さん&amp;#39;&lt;/code&gt; と使ったことによって、&lt;code&gt;name_with_suffix&lt;/code&gt; メソッドがマクロによって定義されているのです。&lt;br&gt;
 さらにマクロによって定義したメソッドの内容は、「名前が設定されていれば、後ろにマクロで指定した文字列を追加する」という物だったので、&lt;code&gt;girl.name_with_suffix&lt;/code&gt; によって「はなこ さん」と返ってきている訳です。&lt;br&gt;
 この例だと実は &lt;code&gt;girl.name&lt;/code&gt; と呼び出すだけで &lt;code&gt;girl.name_with_suffix&lt;/code&gt; と同じ結果を得ることが出来ます。&lt;br&gt;
 これは、&lt;code&gt;alias_method_chain&lt;/code&gt; によって、元々の &lt;code&gt;name&lt;/code&gt; メソッドが &lt;code&gt;name_without_suffix&lt;/code&gt; として待避され、&lt;code&gt;name_with_suffix&lt;/code&gt; として定義したメソッドが &lt;code&gt;name&lt;/code&gt; としても呼び出せるようになっているからなのです。&lt;/p&gt;
 
-&lt;p&gt;クラスマクロを定義する場所は、今回のように継承元クラスや、&lt;br&gt;
-&lt;code&gt;ActiveSupport::Concern&lt;/code&gt; でモジュール化するなど、いろいろな方法があります。&lt;/p&gt;
+&lt;p&gt;クラスマクロを定義する場所は、今回のように継承元クラスや、&lt;code&gt;ActiveSupport::Concern&lt;/code&gt; でモジュール化するなど、いろいろな方法があります。&lt;/p&gt;
 
 &lt;h3&gt;super do で操作を差し込む&lt;/h3&gt;
 
@@ -574,8 +567,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;User#birthday&lt;/code&gt; メソッドは、「happy birthday!」とメッセージを表示し、&lt;br&gt;
-年齢に1を加えてその値を返す物です。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;User#birthday&lt;/code&gt; メソッドは、「happy birthday!」とメッセージを表示し、年齢に1を加えてその値を返す物です。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Boy&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;User&lt;/span&gt;
   &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;birthday&lt;/span&gt;
     &lt;span class="k"&gt;super&lt;/span&gt;
@@ -584,8 +576,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Userクラスを継承したBoyクラスにおいて、&lt;code&gt;birthday&lt;/code&gt;メソッドをオーバーライドしようとしたとき、&lt;br&gt;
-&lt;code&gt;super&lt;/code&gt; によって継承元のメソッドを呼び出すことが可能です。&lt;br&gt;
+&lt;p&gt;Userクラスを継承したBoyクラスにおいて、&lt;code&gt;birthday&lt;/code&gt;メソッドをオーバーライドしようとしたとき、&lt;code&gt;super&lt;/code&gt; によって継承元のメソッドを呼び出すことが可能です。&lt;br&gt;
 しかし、「メッセージの表示」と「年齢の加算」の間に処理を挟みたい時にはどうしましょう。&lt;br&gt;
 そのために &lt;code&gt;super&lt;/code&gt; を使わずにオーバーライドしてしまうと、メッセージの定義が重複するなどしてメンテナンス性が下がってしまいます。&lt;br&gt;
 そんなときには継承元クラスに処理を差し込めるポイントを作っておきましょう。&lt;/p&gt;
@@ -612,12 +603,9 @@ ruby だとこれを「nilガード」なんて呼ばれています。&lt;br&gt
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Userクラスに &lt;code&gt;yield if block_given?&lt;/code&gt; を用意したので、&lt;br&gt;
-継承したクラスにおいて &lt;code&gt;birthday&lt;/code&gt; メソッドをオーバーライドしたとき、&lt;br&gt;
-ブロックによる &lt;code&gt;super&lt;/code&gt; を呼び出したときに、そこに処理を差し込むことが可能になります。&lt;/p&gt;
+&lt;p&gt;Userクラスに &lt;code&gt;yield if block_given?&lt;/code&gt; を用意したので、継承したクラスにおいて &lt;code&gt;birthday&lt;/code&gt; メソッドをオーバーライドしたとき、ブロックによる &lt;code&gt;super&lt;/code&gt; を呼び出したときに、そこに処理を差し込むことが可能になります。&lt;/p&gt;
 
-&lt;p&gt;ログイン処理などによく用いられる &lt;a href="https://github.com/plataformatec/devise"&gt;plataformatec/devise&lt;/a&gt; では、&lt;br&gt;
-例えば &lt;code&gt;Devise::SessionsController&lt;/code&gt; 等において、「ログインしたときにそのユーザーに何か処理したいな」ってケースのために処理差し込みのポイントを用意してくれていたりします。&lt;/p&gt;
+&lt;p&gt;ログイン処理などによく用いられる &lt;a href="https://github.com/plataformatec/devise"&gt;plataformatec/devise&lt;/a&gt; では、例えば &lt;code&gt;Devise::SessionsController&lt;/code&gt; 等において、「ログインしたときにそのユーザーに何か処理したいな」ってケースのために処理差し込みのポイントを用意してくれていたりします。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Devise&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;SessionsController&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;DeviseController&lt;/span&gt;
   &lt;span class="c1"&gt;# POST /resource/sign_in&lt;/span&gt;
   &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;create&lt;/span&gt;
@@ -664,8 +652,7 @@ view で form_for 使いたいし、validate も同じように定義したい�
     </author>
     <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
 
-&lt;p&gt;この記事では認証のプラグインである&lt;a href="https://github.com/plataformatec/devise"&gt;devise&lt;/a&gt;を&lt;br&gt;
-JSON APIで利用しやすく拡張することを目的としています。&lt;/p&gt;
+&lt;p&gt;この記事では認証のプラグインである&lt;a href="https://github.com/plataformatec/devise"&gt;devise&lt;/a&gt;をJSON APIで利用しやすく拡張することを目的としています。&lt;/p&gt;
 
 &lt;p&gt;deviseにはトークンによる認証機能もありましたが、現在デフォルトでは削除されています。&lt;br&gt;
 公式wiki &lt;a href="https://github.com/plataformatec/devise/wiki/How-To:-Simple-Token-Authentication-Example"&gt;How To: Simple Token Authentication Example&lt;/a&gt;には&lt;code&gt;TokenAuthenticatable&lt;/code&gt;が削除された経緯や、&lt;br&gt;
@@ -769,9 +756,7 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;viewをカスタマイズするために生成したので、&lt;br&gt;
-&lt;code&gt;config/initializers/devise.rb&lt;/code&gt;にて&lt;br&gt;
-&lt;code&gt;config.scoped_views = true&lt;/code&gt;としておきます。&lt;/p&gt;
+&lt;p&gt;viewをカスタマイズするために生成したので、&lt;code&gt;config/initializers/devise.rb&lt;/code&gt;にて&lt;code&gt;config.scoped_views = true&lt;/code&gt;としておきます。&lt;/p&gt;
 
 &lt;h3&gt;ノートモデルを作る&lt;/h3&gt;
 
@@ -792,8 +777,7 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;abilityを設定したら、&lt;br&gt;
-&lt;code&gt;app/controllers/notes_controller.rb&lt;/code&gt;に&lt;code&gt;load_and_authorize_resource&lt;/code&gt;を追加して、アクセスコントロールします。&lt;/p&gt;
+&lt;p&gt;abilityを設定したら、&lt;code&gt;app/controllers/notes_controller.rb&lt;/code&gt;に&lt;code&gt;load_and_authorize_resource&lt;/code&gt;を追加して、アクセスコントロールします。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;NotesController&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;ApplicationController&lt;/span&gt;
   &lt;span class="n"&gt;load_and_authorize_resource&lt;/span&gt;
   &lt;span class="n"&gt;before_action&lt;/span&gt; &lt;span class="ss"&gt;:set_note&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;only: &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:show&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:edit&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:update&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:destroy&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
@@ -861,9 +845,7 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;ほぼデフォルトのままですが、&lt;br&gt;
-&lt;code&gt;index&lt;/code&gt;では自分が作成したノートだけを返すように, &lt;br&gt;
-&lt;code&gt;create&lt;/code&gt;ではノートと作成者が関連付くように変更しています。&lt;/p&gt;
+&lt;p&gt;ほぼデフォルトのままですが、&lt;code&gt;index&lt;/code&gt;では自分が作成したノートだけを返すように、&lt;code&gt;create&lt;/code&gt;ではノートと作成者が関連付くように変更しています。&lt;/p&gt;
 
 &lt;h3&gt;見た目を調整&lt;/h3&gt;
 
@@ -905,9 +887,7 @@ JavaScript Runtime        Node.js (V8)
         ログイン
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/config/initializers/simple_form.rb"&gt;simple_formのsemantic-ui対応&lt;/a&gt;&lt;br&gt;
-や&lt;br&gt;
-&lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/helpers/semantic_ui_helper.rb"&gt;フラッシュメッセージ用helper&lt;/a&gt;, &lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/assets/javascripts/semantic_ui_helper.js.coffee"&gt;メッセージ削除用js&lt;/a&gt;等はオマケ要素なのでgithubを参照してください。&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/config/initializers/simple_form.rb"&gt;simple_formのsemantic-ui対応&lt;/a&gt;や&lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/helpers/semantic_ui_helper.rb"&gt;フラッシュメッセージ用helper&lt;/a&gt;, &lt;a href="https://github.com/k-shogo/devise_api_sample/blob/master/app/assets/javascripts/semantic_ui_helper.js.coffee"&gt;メッセージ削除用js&lt;/a&gt;等はオマケ要素なのでgithubを参照してください。&lt;/p&gt;
 
 &lt;p&gt;画面はこんな感じになりました。&lt;br&gt;
 &lt;img alt="main" width="1075" height="485" src="/images/2014-09-13-devise_authentication_token/main.png" /&gt;&lt;/p&gt;
@@ -965,9 +945,7 @@ JavaScript Runtime        Node.js (V8)
 
 &lt;p&gt;&lt;code&gt;config/routes.rb&lt;/code&gt;に&lt;code&gt;resource :authentication_token, only: [:update, :destroy]&lt;/code&gt;を追加します。&lt;/p&gt;
 
-&lt;p&gt;ユーザーが自分でアクセストークンを発行できるように、&lt;br&gt;
-ユーザーの設定画面&lt;code&gt;app/views/users/registrations/edit.html.haml&lt;/code&gt;に&lt;br&gt;
-アクセストークン発行ボタンをつけます。&lt;/p&gt;
+&lt;p&gt;ユーザーが自分でアクセストークンを発行できるように、ユーザーの設定画面&lt;code&gt;app/views/users/registrations/edit.html.haml&lt;/code&gt;にアクセストークン発行ボタンをつけます。&lt;/p&gt;
 &lt;pre class="highlight haml"&gt;&lt;code&gt;&lt;span class="nt"&gt;%h2&lt;/span&gt;
   Edit &lt;span class="si"&gt;#{&lt;/span&gt;&lt;span class="n"&gt;resource_name&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;to_s&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;humanize&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;
 &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;simple_form_for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resource&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;as: &lt;/span&gt;&lt;span class="n"&gt;resource_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;url: &lt;/span&gt;&lt;span class="n"&gt;registration_path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resource_name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="ss"&gt;html: &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="ss"&gt;method: :put&lt;/span&gt; &lt;span class="p"&gt;})&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;
@@ -1002,8 +980,7 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="n"&gt;link_to&lt;/span&gt; &lt;span class="s2"&gt;"Back"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:back&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;アクセストークン発行ボタンは&lt;code&gt;remote&lt;/code&gt;設定にしたので、&lt;br&gt;
-押下したときの動作を&lt;code&gt;app/assets/javascripts/authentication_token.js.coffee&lt;/code&gt;で定義します。&lt;/p&gt;
+&lt;p&gt;アクセストークン発行ボタンは&lt;code&gt;remote&lt;/code&gt;設定にしたので、押下したときの動作を&lt;code&gt;app/assets/javascripts/authentication_token.js.coffee&lt;/code&gt;で定義します。&lt;/p&gt;
 &lt;pre class="highlight coffeescript"&gt;&lt;code&gt;&lt;span class="nx"&gt;$&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;
   &lt;span class="nx"&gt;$&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'#generate_authentication_token'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="na"&gt;on&lt;/span&gt; &lt;span class="s"&gt;'ajax:complete'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;event&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;ajax&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;status&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;
@@ -1020,8 +997,7 @@ JavaScript Runtime        Node.js (V8)
 
 &lt;h3&gt;アクセストークンによる認証&lt;/h3&gt;
 
-&lt;p&gt;トークンの発行が出来るようになったので、&lt;br&gt;
-続いてトークンによる認証の機構を追加します。&lt;/p&gt;
+&lt;p&gt;トークンの発行が出来るようになったので、続いてトークンによる認証の機構を追加します。&lt;/p&gt;
 
 &lt;p&gt;今回は&lt;code&gt;app/controllers/application_controller.rb&lt;/code&gt;に追加します。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ApplicationController&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;ActionController&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Base&lt;/span&gt;
@@ -1049,15 +1025,12 @@ JavaScript Runtime        Node.js (V8)
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;これで、リクエストパラメーターに&lt;code&gt;email&lt;/code&gt;と&lt;code&gt;token&lt;/code&gt;が含まれていた場合に、&lt;br&gt;
-トークンによってユーザーを認証出来るようになりました。&lt;/p&gt;
+&lt;p&gt;これで、リクエストパラメーターに&lt;code&gt;email&lt;/code&gt;と&lt;code&gt;token&lt;/code&gt;が含まれていた場合に、トークンによってユーザーを認証出来るようになりました。&lt;/p&gt;
 
 &lt;h3&gt;deviseのjson API対応&lt;/h3&gt;
 
-&lt;p&gt;ここまででトークンによる認証は実装しましたが、&lt;br&gt;
-このままだとwebでユーザー登録 &amp;amp; トークン発行後にしかAPIが利用できません。&lt;br&gt;
-そこでユーザー登録もAPIで利用できるようにするために&lt;br&gt;
-&lt;code&gt;config/application.rb&lt;/code&gt;でdeviseがjsonのリクエストにも対応できるように設定します。&lt;/p&gt;
+&lt;p&gt;ここまででトークンによる認証は実装しましたが、このままだとwebでユーザー登録 &amp;amp; トークン発行後にしかAPIが利用できません。&lt;br&gt;
+そこでユーザー登録もAPIで利用できるようにするために&lt;code&gt;config/application.rb&lt;/code&gt;でdeviseがjsonのリクエストにも対応できるように設定します。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="k"&gt;module&lt;/span&gt; &lt;span class="nn"&gt;DeviseApiUse&lt;/span&gt;
   &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Application&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="no"&gt;Application&lt;/span&gt;
     &lt;span class="c1"&gt;# 中略&lt;/span&gt;
@@ -1078,12 +1051,10 @@ To use the following, add gem &amp;lsquo;responders&amp;rsquo;, &amp;rsquo;~&amp
 &lt;p&gt;APIでのログイン時、アクセストークンが無い場合に生成して返すように、ログインの動作を拡張します。&lt;/p&gt;
 
 &lt;p&gt;これでユーザー登録もAPIで利用可能になりました。&lt;br&gt;
-APIでのログイン時、ユーザー情報のJSONを返すのですが、&lt;br&gt;
-ユーザーがトークンを発行していない場合は改めてトークン発行APIを叩く必要があります。　　&lt;br&gt;
+APIでのログイン時、ユーザー情報のJSONを返すのですが、ユーザーがトークンを発行していない場合は改めてトークン発行APIを叩く必要があります。&lt;br&gt;
 そこで、APIでのログイン時のみ、「トークンが発行されていない場合は作成する」ように拡張します。&lt;/p&gt;
 
-&lt;p&gt;deviseのコントローラーを拡張するので、&lt;br&gt;
-&lt;code&gt;config/routes.rb&lt;/code&gt;でdeviseのルーティングをカスタマイズし、独自コントローラーに向くようにします。&lt;/p&gt;
+&lt;p&gt;deviseのコントローラーを拡張するので、&lt;code&gt;config/routes.rb&lt;/code&gt;でdeviseのルーティングをカスタマイズし、独自コントローラーに向くようにします。&lt;/p&gt;
 &lt;pre class="highlight ruby"&gt;&lt;code&gt;&lt;span class="no"&gt;Rails&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;routes&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;draw&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
   &lt;span class="n"&gt;resources&lt;/span&gt; &lt;span class="ss"&gt;:notes&lt;/span&gt;
   &lt;span class="n"&gt;resource&lt;/span&gt; &lt;span class="ss"&gt;:authentication_token&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;only: &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="ss"&gt;:update&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="ss"&gt;:destroy&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
@@ -1103,8 +1074,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、&lt;
 &lt;span class="k"&gt;end&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;Devise::SessionsController&lt;/code&gt;の&lt;code&gt;create&lt;/code&gt;にはブロックを渡せるので、&lt;br&gt;
-それによってAPIでのログイン時にトークンが無い場合には発行してからレスポンスを返すようにしています。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Devise::SessionsController&lt;/code&gt;の&lt;code&gt;create&lt;/code&gt;にはブロックを渡せるので、それによってAPIでのログイン時にトークンが無い場合には発行してからレスポンスを返すようにしています。&lt;/p&gt;
 
 &lt;h3&gt;APIのリクエストを試してみる&lt;/h3&gt;
 
@@ -1209,20 +1179,16 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、&lt;
 
 &lt;p&gt;よく使うコマンドはエイリアスを設定するとタイプ数を減少させることが出来ます。&lt;/p&gt;
 
-&lt;p&gt;ブランチを表示する&lt;code&gt;branch&lt;/code&gt;コマンドでは&lt;br&gt;
-&lt;code&gt;-a&lt;/code&gt;オプションでリモートも含めたすべてのブランチを、&lt;br&gt;
-&lt;code&gt;-v&lt;/code&gt;オプションでコミットメッセージを含めた情報を表示させています。&lt;/p&gt;
+&lt;p&gt;ブランチを表示する&lt;code&gt;branch&lt;/code&gt;コマンドでは&lt;code&gt;-a&lt;/code&gt;オプションでリモートも含めたすべてのブランチを、&lt;code&gt;-v&lt;/code&gt;オプションでコミットメッセージを含めた情報を表示させています。&lt;/p&gt;
 
-&lt;p&gt;フェッチコマンド&lt;code&gt;fetch&lt;/code&gt;では&lt;br&gt;
-&lt;code&gt;--prune&lt;/code&gt;オプションを指定し、自動的にリモートで削除されているブランチを削除するようにしています。&lt;/p&gt;
+&lt;p&gt;フェッチコマンド&lt;code&gt;fetch&lt;/code&gt;では&lt;code&gt;--prune&lt;/code&gt;オプションを指定し、自動的にリモートで削除されているブランチを削除するようにしています。&lt;/p&gt;
 
 &lt;h3&gt;簡易undo&lt;/h3&gt;
 &lt;pre class="highlight conf"&gt;&lt;code&gt;[&lt;span class="n"&gt;alias&lt;/span&gt;]
   &lt;span class="n"&gt;uncommit&lt;/span&gt; = &lt;span class="n"&gt;reset&lt;/span&gt; &lt;span class="n"&gt;HEAD&lt;/span&gt;^
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;reset&lt;/code&gt;コマンドではオプションの&lt;code&gt;--soft&lt;/code&gt;, &lt;code&gt;--hard&lt;/code&gt;, &lt;code&gt;--mixed&lt;/code&gt;の使い分けにより、&lt;br&gt;
-HEAD, インデックス, ワーキングツリーがそれぞれどうなるか気にしなければなりません。&lt;br&gt;
+&lt;p&gt;&lt;code&gt;reset&lt;/code&gt;コマンドではオプションの&lt;code&gt;--soft&lt;/code&gt;, &lt;code&gt;--hard&lt;/code&gt;, &lt;code&gt;--mixed&lt;/code&gt;の使い分けにより、HEAD, インデックス, ワーキングツリーがそれぞれどうなるか気にしなければなりません。&lt;br&gt;
 好みの動作でよく使うものをエイリアスで登録しています。&lt;/p&gt;
 
 &lt;h3&gt;ログ表示系&lt;/h3&gt;
@@ -1238,8 +1204,7 @@ HEAD, インデックス, ワーキングツリーがそれぞれどうなるか
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;使用言語は環境に合わせたgitignoreを適宜用意するのは面倒なものです。&lt;br&gt;
-そんなときは&lt;a href="https://github.com/github/gitignore"&gt;githubがまとめているgitignore&lt;/a&gt;を参考にするのもよいですが、&lt;br&gt;
-コマンドからgitignoreを生成できるようにしておくとより簡単になります。&lt;/p&gt;
+そんなときは&lt;a href="https://github.com/github/gitignore"&gt;githubがまとめているgitignore&lt;/a&gt;を参考にするのもよいですが、コマンドからgitignoreを生成できるようにしておくとより簡単になります。&lt;/p&gt;
 
 &lt;p&gt;そこで&lt;a href="http://www.gitignore.io/"&gt;gitignore.io&lt;/a&gt;というサービスを利用し、コマンドからgitignoreを生成できるようにしています。&lt;br&gt;
 使い方は&lt;code&gt;git ignore ruby,rails&lt;/code&gt;とオプション指定をカンマ区切りで渡すだけ。&lt;br&gt;
@@ -1333,8 +1298,7 @@ config/secrets.yml
     </author>
     <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
 
-&lt;p&gt;dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、&lt;br&gt;
-構成も落ち着いてきたのでまとめます。&lt;/p&gt;
+&lt;p&gt;dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、構成も落ち着いてきたのでまとめます。&lt;/p&gt;
 
 &lt;h3&gt;お試しバージョン&lt;/h3&gt;
 
@@ -1407,11 +1371,9 @@ CMD bash -l -c &lt;span class="s1"&gt;'bundle exec rails s'&lt;/span&gt;
 
 &lt;h3&gt;試行錯誤バージョン&lt;/h3&gt;
 
-&lt;p&gt;毎回rubyをビルドし直すのが時間がかかるので、rubyが入ったコンテナのリポジトリを分離し、&lt;br&gt;
-ruby, node等を用意したコンテナ + railsリポジトリ + railsが動作するコンテナ の3リポジトリ構成にしてみました。&lt;br&gt;
+&lt;p&gt;毎回rubyをビルドし直すのが時間がかかるので、rubyが入ったコンテナのリポジトリを分離し、ruby, node等を用意したコンテナ + railsリポジトリ + railsが動作するコンテナ の3リポジトリ構成にしてみました。&lt;br&gt;
 つまり先ほどのDockerfileを半分に分割する感じです。&lt;br&gt;
-さらにrailsのセットアップ部分で&lt;code&gt;bash -l -c&lt;/code&gt;とかつけるのもイケてないと感じたので、&lt;br&gt;
-セットアップのスクリプトを分離しても見ました。&lt;/p&gt;
+さらにrailsのセットアップ部分で&lt;code&gt;bash -l -c&lt;/code&gt;とかつけるのもイケてないと感じたので、セットアップのスクリプトを分離しても見ました。&lt;/p&gt;
 
 &lt;h4&gt;railsを動作させるコンテナのDockerfile&lt;/h4&gt;
 &lt;pre class="highlight shell"&gt;&lt;code&gt;FROM kshogo/docker-rails-base
@@ -1463,15 +1425,14 @@ bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake assets:precompile &lt;span 
 &lt;p&gt;たしかに毎回rubyビルドする部分は解消されたのですが、気になるポイントも出てきました。&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;＊毎回&lt;code&gt;git clone&lt;/code&gt;する、つまりrailsリポジトリ変更したらpushしてからコンテナビルドし直さなきゃいけない&lt;/li&gt;
-&lt;li&gt;＊ブランチ切り替えて試したいときにわざわざDockerfile編集？&lt;/li&gt;
-&lt;li&gt;＊セットアップのロジックをrailsリポジトリじゃなくて動作させる側のコンテナに持たせるのが不自然&lt;/li&gt;
+&lt;li&gt;毎回&lt;code&gt;git clone&lt;/code&gt;する、つまりrailsリポジトリ変更したらpushしてからコンテナビルドし直さなきゃいけない&lt;/li&gt;
+&lt;li&gt;ブランチ切り替えて試したいときにわざわざDockerfile編集？&lt;/li&gt;
+&lt;li&gt;セットアップのロジックをrailsリポジトリじゃなくて動作させる側のコンテナに持たせるのが不自然&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3&gt;現在の構成&lt;/h3&gt;
 
-&lt;p&gt;そもそもDockerでrbenvいらないじゃん + railsリポジトリの中にDockerfileがあった方がいいねってことで、&lt;br&gt;
-ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。&lt;/p&gt;
+&lt;p&gt;そもそもDockerでrbenvいらないじゃん + railsリポジトリの中にDockerfileがあった方がいいねってことで、ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。&lt;/p&gt;
 
 &lt;h4&gt;ベースとなるコンテナのDockerfile&lt;/h4&gt;
 &lt;pre class="highlight shell"&gt;&lt;code&gt;FROM dockerfile/ubuntu
@@ -1546,15 +1507,12 @@ ENTRYPOINT &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"/usr/bin/
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;ポイントはrailsアプリ全体をADDする前に、&lt;code&gt;Gemfile&lt;/code&gt;と&lt;code&gt;Gemcile.lock&lt;/code&gt;だけをADDして&lt;br&gt;
-&lt;code&gt;bundle install&lt;/code&gt;している箇所です。&lt;br&gt;
+&lt;p&gt;ポイントはrailsアプリ全体をADDする前に、&lt;code&gt;Gemfile&lt;/code&gt;と&lt;code&gt;Gemcile.lock&lt;/code&gt;だけをADDして&lt;code&gt;bundle install&lt;/code&gt;している箇所です。&lt;br&gt;
 これによって、Gemfileに更新があった場合のみ&lt;code&gt;bundle install&lt;/code&gt;が実行されるようになります。&lt;/p&gt;
 
 &lt;h4&gt;.dockerignore&lt;/h4&gt;
 
-&lt;p&gt;実はこの構成にした直後、「ローカルで&lt;code&gt;docker build&lt;/code&gt;したときに&lt;code&gt;vendor/bundle&lt;/code&gt;以下にインストールされたgemのファイル群までADDされて無駄」、「Dockerfileの中で&lt;code&gt;.bundle/config&lt;/code&gt;を消さないと設定を引き継いでしまう」などの不満点もあり、&lt;br&gt;
-gitignoreファイルみたいに除外指定したいなーと思っていたら、&lt;br&gt;
-&lt;a href="http://blog.docker.com/2014/07/announcing-docker-1-1/"&gt;docker 1.1.0&lt;/a&gt;でdockerignoreファイルに対応されたのでその不満も解消しました。&lt;/p&gt;
+&lt;p&gt;実はこの構成にした直後、「ローカルで&lt;code&gt;docker build&lt;/code&gt;したときに&lt;code&gt;vendor/bundle&lt;/code&gt;以下にインストールされたgemのファイル群までADDされて無駄」、「Dockerfileの中で&lt;code&gt;.bundle/config&lt;/code&gt;を消さないと設定を引き継いでしまう」などの不満点もあり、gitignoreファイルみたいに除外指定したいなーと思っていたら、&lt;a href="http://blog.docker.com/2014/07/announcing-docker-1-1/"&gt;docker 1.1.0&lt;/a&gt;でdockerignoreファイルに対応されたのでその不満も解消しました。&lt;/p&gt;
 &lt;pre class="highlight plaintext"&gt;&lt;code&gt;### Rails ###
 public/assets/*
 
@@ -1566,8 +1524,8 @@ vendor/bundle
 &lt;h4&gt;ポイント&lt;/h4&gt;
 
 &lt;ul&gt;
-&lt;li&gt;＊ADDがキャッシュされるのでGemfileが変更されてなければ&lt;code&gt;bundle install&lt;/code&gt;がスキップされる&lt;/li&gt;
-&lt;li&gt;＊&lt;code&gt;git checkout&lt;/code&gt;すればブランチ違いでのbuildが簡単&lt;/li&gt;
+&lt;li&gt;ADDがキャッシュされるのでGemfileが変更されてなければ&lt;code&gt;bundle install&lt;/code&gt;がスキップされる&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;git checkout&lt;/code&gt;すればブランチ違いでのbuildが簡単&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3&gt;まとめ&lt;/h3&gt;
@@ -1575,8 +1533,7 @@ vendor/bundle
 &lt;p&gt;railsリポジトリにDockerfileを同梱した方が簡単だったというのが感想です。&lt;br&gt;
 dockerの開発も活発で、ほしいなーと思った機能が早速docker 1.1.0に含まれていたのには感心しました。&lt;/p&gt;
 
-&lt;p&gt;今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、&lt;br&gt;
-本来はDBコンテナは分離した方がいいですね。&lt;/p&gt;
+&lt;p&gt;今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、本来はDBコンテナは分離した方がいいですね。&lt;/p&gt;
 </content>
   </entry>
   <entry>
@@ -1591,16 +1548,13 @@ dockerの開発も活発で、ほしいなーと思った機能が早速docker 1
     <content type="html">&lt;h3&gt;Docker 1.0リリース&lt;/h3&gt;
 
 &lt;p&gt;&lt;a href="http://blog.docker.com/2014/06/its-here-docker-1-0/"&gt;Docker 1.0&lt;/a&gt;が正式にリリースされました。&lt;br&gt;
-&amp;ldquo;Docker&amp;quot;は本体となるDocker Engine, 自動デプロイや自動ビルドおよびDockerイメージを共有するDocker Hubなどの&lt;br&gt;
-プラットフォームの総称ということになりました。&lt;/p&gt;
+&amp;ldquo;Docker&amp;quot;は本体となるDocker Engine, 自動デプロイや自動ビルドおよびDockerイメージを共有するDocker Hubなどのプラットフォームの総称ということになりました。&lt;/p&gt;
 
-&lt;p&gt;今回のリリースにおいて「エンタープライズでの活用に耐え得るものになった」とも述べられており、&lt;br&gt;
-今後益々の活用が増えると予想されます。&lt;/p&gt;
+&lt;p&gt;今回のリリースにおいて「エンタープライズでの活用に耐え得るものになった」とも述べられており、今後益々の活用が増えると予想されます。&lt;/p&gt;
 
 &lt;h3&gt;MacにおけるDocker 1.0 へのアップグレード&lt;/h3&gt;
 
-&lt;p&gt;&amp;rdquo;&lt;a href="/article/2014/02/10/docker-on-mac"&gt;Macに正式対応したdocker ver 0.8 のセットアップ&lt;/a&gt;&amp;ldquo;では、ver 0.8 のセットアップを行いましたが、&lt;br&gt;
-1.0のリリースに合わせてセットアップの方法が若干変更されています。&lt;/p&gt;
+&lt;p&gt;&amp;rdquo;&lt;a href="/article/2014/02/10/docker-on-mac"&gt;Macに正式対応したdocker ver 0.8 のセットアップ&lt;/a&gt;&amp;ldquo;では、ver 0.8 のセットアップを行いましたが、1.0のリリースに合わせてセットアップの方法が若干変更されています。&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;boot2dockerの&lt;a href="https://github.com/boot2docker/osx-installer/releases"&gt;公式インストーラ&lt;/a&gt;の登場&lt;/li&gt;
@@ -1622,8 +1576,7 @@ brew install vagrant
 
 &lt;h4&gt;boot2docker をインストール&lt;/h4&gt;
 
-&lt;p&gt;ver 1.0は&lt;a href="https://github.com/caskroom/homebrew-cask"&gt;homebrew-cask&lt;/a&gt;で管理されているため、&lt;br&gt;
-&lt;code&gt;brew cask install&lt;/code&gt;コマンドを用います。&lt;/p&gt;
+&lt;p&gt;ver 1.0は&lt;a href="https://github.com/caskroom/homebrew-cask"&gt;homebrew-cask&lt;/a&gt;で管理されているため、&lt;code&gt;brew cask install&lt;/code&gt;コマンドを用います。&lt;/p&gt;
 &lt;pre class="highlight plaintext"&gt;&lt;code&gt;brew cask install boot2docker
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -1637,8 +1590,7 @@ brew install vagrant
 
 &lt;h4&gt;boot2dockerコマンドでのアップグレード&lt;/h4&gt;
 
-&lt;p&gt;以前のバージョンをアンインストールし、&lt;br&gt;
-&lt;code&gt;boot2docker download&lt;/code&gt;コマンドで最新のISOイメージを取得し、更新を行います。&lt;/p&gt;
+&lt;p&gt;以前のバージョンをアンインストールし、&lt;code&gt;boot2docker download&lt;/code&gt;コマンドで最新のISOイメージを取得し、更新を行います。&lt;/p&gt;
 &lt;pre class="highlight plaintext"&gt;&lt;code&gt;boot2docker delete
 boot2docker download
 boot2docker up

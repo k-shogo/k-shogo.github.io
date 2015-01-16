@@ -94,20 +94,16 @@
 
 <p>よく使うコマンドはエイリアスを設定するとタイプ数を減少させることが出来ます。</p>
 
-<p>ブランチを表示する<code>branch</code>コマンドでは<br>
-<code>-a</code>オプションでリモートも含めたすべてのブランチを、<br>
-<code>-v</code>オプションでコミットメッセージを含めた情報を表示させています。</p>
+<p>ブランチを表示する<code>branch</code>コマンドでは<code>-a</code>オプションでリモートも含めたすべてのブランチを、<code>-v</code>オプションでコミットメッセージを含めた情報を表示させています。</p>
 
-<p>フェッチコマンド<code>fetch</code>では<br>
-<code>--prune</code>オプションを指定し、自動的にリモートで削除されているブランチを削除するようにしています。</p>
+<p>フェッチコマンド<code>fetch</code>では<code>--prune</code>オプションを指定し、自動的にリモートで削除されているブランチを削除するようにしています。</p>
 
 </section><section><header><h3>簡易undo</h3></header>
 <pre class="highlight conf"><code>[<span class="n">alias</span>]
   <span class="n">uncommit</span> = <span class="n">reset</span> <span class="n">HEAD</span>^
 </code></pre>
 
-<p><code>reset</code>コマンドではオプションの<code>--soft</code>, <code>--hard</code>, <code>--mixed</code>の使い分けにより、<br>
-HEAD, インデックス, ワーキングツリーがそれぞれどうなるか気にしなければなりません。<br>
+<p><code>reset</code>コマンドではオプションの<code>--soft</code>, <code>--hard</code>, <code>--mixed</code>の使い分けにより、HEAD, インデックス, ワーキングツリーがそれぞれどうなるか気にしなければなりません。<br>
 好みの動作でよく使うものをエイリアスで登録しています。</p>
 
 </section><section><header><h3>ログ表示系</h3></header>
@@ -123,8 +119,7 @@ HEAD, インデックス, ワーキングツリーがそれぞれどうなるか
 </code></pre>
 
 <p>使用言語は環境に合わせたgitignoreを適宜用意するのは面倒なものです。<br>
-そんなときは<a href="https://github.com/github/gitignore">githubがまとめているgitignore</a>を参考にするのもよいですが、<br>
-コマンドからgitignoreを生成できるようにしておくとより簡単になります。</p>
+そんなときは<a href="https://github.com/github/gitignore">githubがまとめているgitignore</a>を参考にするのもよいですが、コマンドからgitignoreを生成できるようにしておくとより簡単になります。</p>
 
 <p>そこで<a href="http://www.gitignore.io/">gitignore.io</a>というサービスを利用し、コマンドからgitignoreを生成できるようにしています。<br>
 使い方は<code>git ignore ruby,rails</code>とオプション指定をカンマ区切りで渡すだけ。<br>

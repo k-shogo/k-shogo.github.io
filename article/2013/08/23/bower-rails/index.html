@@ -90,8 +90,7 @@
 
 <p>railsとbowerの統合は<a href="https://github.com/42dev/bower-rails/">bower-rails</a>のgemを使用する手もあります。</p>
 
-<p>bower-railsを使用する場合、<br>
-独自のDSLが用意されています。<br>
+<p>bower-railsを使用する場合、独自のDSLが用意されています。<br>
 独自DSLを使う場合は、Jsfileというファイルを作成し、以下のように記述します</p>
 
 <h4><code>Jsfile</code></h4>
@@ -109,10 +108,8 @@
 <pre class="highlight shell"><code>rake bower:dsl:install
 </code></pre>
 
-<p>実行するとvendor/assets/javascripts以下にbower.jsonが作成され、<br>
-それをもとにbower installがされてvendor/assets/javascripts/components以下にJSが入ります。</p>
-
-<p>このままではassetsで使えないので、vendor/assets/javascripts/componentsをassets pathに追加ます。</p>
+<p>実行するとvendor/assets/javascripts以下にbower.jsonが作成され、それをもとにbower installがされてvendor/assets/javascripts/components以下にJSが入ります。<br>
+このままではassetsで使えないので、vendor/assets/javascripts/componentsをassets pathに追加ます。</p>
 
 <h4><code>config/application.rb</code></h4>
 <pre class="highlight ruby"><code><span class="c1"># config/application.rb</span>

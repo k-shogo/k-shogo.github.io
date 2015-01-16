@@ -61,11 +61,8 @@
 </header>
 <section><header><h3>kuromojiとは</h3></header>
 
-<p><a href="http://www.atilika.com/ja/products/kuromoji.html">Kuromoji</a>は<br>
-<a href="http://www.atilika.com/ja/">atilika</a>社が開発した<br>
-Javaで作成されたオープンソースの日本語形態素解析エンジンです。</p>
-
-<p>Kuromojiは下記の機能を持っています。</p>
+<p><a href="http://www.atilika.com/ja/products/kuromoji.html">Kuromoji</a>は<a href="http://www.atilika.com/ja/">atilika</a>社が開発したJavaで作成されたオープンソースの日本語形態素解析エンジンです。<br>
+Kuromojiは下記の機能を持っています。</p>
 
 <ul>
 <li>複合語の分割</li>
@@ -75,32 +72,24 @@ Javaで作成されたオープンソースの日本語形態素解析エンジ�
 <li>検索用の設計（複数の単語分割モード）</li>
 </ul>
 
-<p>KuromojiのライセンスはApache v2ライセンスなので、<br>
-商用でも利用できそうです。</p>
+<p>KuromojiのライセンスはApache v2ライセンスなので、商用でも利用できそうです。</p>
 
 </section><section><header><h3>準備</h3></header>
 
-<p>ソースコードはgithubにあるのでビルドしても良いのですが、<br>
-zipでも<a href="https://github.com/downloads/atilika/kuromoji/kuromoji-0.7.7.zip">ダウンロード</a>する事が出来ます。<br>
+<p>ソースコードはgithubにあるのでビルドしても良いのですが、zipでも<a href="https://github.com/downloads/atilika/kuromoji/kuromoji-0.7.7.zip">ダウンロード</a>する事が出来ます。<br>
 今回はプロジェクトディレクトリ以下に解凍し、呼び出します。</p>
 
-<p>kuromojiはjavaで作成されていますが、<br>
-今回はrubyから使うことが目的なので、<a href="http://rjb.rubyforge.org/">rjb</a>を使います。<br>
-rjbはJNI (Java Native Interface) を利用して<br>
-Java VMを操作するライブラリです。<br>
-具体的には、Rubyプロセス内にJVMを起動し、<br>
-Java クラスファイルをロードしてメソッドを呼ぶことができます。</p>
+<p>kuromojiはjavaで作成されていますが、今回はrubyから使うことが目的なので、<a href="http://rjb.rubyforge.org/">rjb</a>を使います。<br>
+rjbはJNI (Java Native Interface) を利用してJava VMを操作するライブラリです。<br>
+具体的には、Rubyプロセス内にJVMを起動し、Java クラスファイルをロードしてメソッドを呼ぶことができます。</p>
 
-<p>rjbの用意は、<code>Gemfile</code>に<code>gem &#39;rjb&#39;</code>を追加し、<br>
-<code>require &#39;rjb&#39;</code>するだけです。</p>
+<p>rjbの用意は、<code>Gemfile</code>に<code>gem &#39;rjb&#39;</code>を追加し、<code>require &#39;rjb&#39;</code>するだけです。</p>
 
 </section><section><header><h3>形態素解析</h3></header>
 
 <p>rubyからkuromojiの使い際のポイントは</p>
 
-<p><code>Rjb::load</code>して<br>
-<code>Tokenizer=Rjb::import(&#39;org.atilika.kuromoji.Tokenizer&#39;)</code>、<br>
-<code>Tokenizer.builder.build</code>でトークナイザーを作る事です。</p>
+<p><code>Rjb::load</code>して<code>Tokenizer=Rjb::import(&#39;org.atilika.kuromoji.Tokenizer&#39;)</code>、<code>Tokenizer.builder.build</code>でトークナイザーを作る事です。</p>
 
 <h4>サンプルコード</h4>
 <pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'rjb'</span><span class="nb">require</span> <span class="s1">'rjb'</span>
@@ -156,12 +145,7 @@ km : 名詞,一般,*,*,*,*,*
 ある : 助動詞,*,*,*,五段・ラ行アル,基本形,ある,アル,アル
 </code></pre>
 
-<p>特徴は<code>all_features</code>で取得出来るほかに、<br>
-<code>surface_form</code>,<br>
-<code>part_of_speech</code>,<br>
-<code>base_form</code>,<br>
-<code>position</code>,<br>
-<code>reading</code>とそれぞれ個別でも取得可能です。</p>
+<p>特徴は<code>all_features</code>で取得出来るほかに、<code>surface_form</code>,<code>part_of_speech</code>,<code>base_form</code>,<code>position</code>,<code>reading</code>とそれぞれ個別でも取得可能です。</p>
 
 </section><section><header><h3>検索用の分割モード</h3></header>
 
@@ -172,8 +156,7 @@ km : 名詞,一般,*,*,*,*,*
 <span class="vi">@tknizer</span> <span class="o">=</span> <span class="no">Tokenizer</span><span class="p">.</span><span class="nf">builder</span><span class="p">.</span><span class="nf">mode</span><span class="p">(</span><span class="no">Mode</span><span class="o">.</span><span class="no">SEARCH</span><span class="p">).</span><span class="nf">build</span>
 </code></pre>
 
-<p>例えば検索用のモードだと、<br>
-先ほど「関西国際空港」と一つの単語だった物が分割されます。</p>
+<p>例えば検索用のモードだと、先ほど「関西国際空港」と一つの単語だった物が分割されます。</p>
 <pre class="highlight plaintext"><code>関西 : 名詞,固有名詞,地域,一般,*,*,関西,カンサイ,カンサイ
 国際 : 名詞,一般,*,*,*,*,国際,コクサイ,コクサイ
 空港 : 名詞,一般,*,*,*,*,空港,クウコウ,クーコー

@@ -63,13 +63,9 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>&ldquo;<a href="/article/2013/09/03/ruby-kuromoji/">rubyから形態素解析ライブラリkuromojiを使う</a>&rdquo;<br>
-でkuromojiを使っているので、<br>
-メジャーな形態素解析ライブラリであるMeCabとの比較をしてみようと思います。</p>
+<p>&ldquo;<a href="/article/2013/09/03/ruby-kuromoji/">rubyから形態素解析ライブラリkuromojiを使う</a>&quot;でkuromojiを使っているので、メジャーな形態素解析ライブラリであるMeCabとの比較をしてみようと思います。</p>
 
-<p>rubyからMeCabを利用しようとすると、<br>
-ソースを取得し、makeしてinstallしなければならないし、<br>
-場合によってはMakefileの修正も必要なのであまり好きではありませんでした。</p>
+<p>rubyからMeCabを利用しようとすると、ソースを取得し、makeしてinstallしなければならないし、場合によってはMakefileの修正も必要なのであまり好きではありませんでした。</p>
 
 <p>しかしふと<code>gem search mecab</code>してみると</p>
 <pre class="highlight plaintext"><code>*** REMOTE GEMS ***
@@ -90,10 +86,7 @@ mecab-syllable (0.0.5)
 <pre class="highlight plaintext"><code>brwe install mecab mecab-ipadic
 </code></pre>
 
-<p><code>bundle init</code><br>
-して<code>Gemfile</code>に<br>
-<code>gem &#39;mecab&#39;</code>を追加し、<br>
-<code>bundle install</code>してみると・・・</p>
+<p><code>bundle init</code>して<code>Gemfile</code>に<code>gem &#39;mecab&#39;</code>を追加し、<code>bundle install</code>してみると・・・</p>
 
 <p>盛大なエラーが・・・</p>
 
@@ -146,8 +139,7 @@ Error: Download failed: http://downloads.sourceforge.net/project/mecab/mecab/0.9
 <span class="k">end</span>
 </code></pre>
 
-<p>これでいったん<code>brew uninstall mecab mecab-ipadic</code>して、<br>
-改めて<code>brew install mecab mecab-ipadic</code>すると無事mecab 0.98が使えるようになり、<br>
+<p>これでいったん<code>brew uninstall mecab mecab-ipadic</code>して、改めて<code>brew install mecab mecab-ipadic</code>すると無事mecab 0.98が使えるようになり、<br>
 <code>bundle install</code>でmecab-rubyもビルド出来ました。</p>
 
 </section><section><header><h3>rubyからmecabを使うテスト</h3></header>
@@ -172,8 +164,7 @@ Error: Download failed: http://downloads.sourceforge.net/project/mecab/mecab/0.9
 </code></pre>
 
 <p>動作しました。<br>
-バージョンの一致には気をつける必要がありますが、<br>
-bundle管理でgemからインストールできるようになっただけでも便利になりました。</p>
+バージョンの一致には気をつける必要がありますが、bundle管理でgemからインストールできるようになっただけでも便利になりました。</p>
 </section>
 </article>
 </div>

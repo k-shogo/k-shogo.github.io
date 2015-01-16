@@ -61,22 +61,19 @@
 </header>
 <section><header><h3>はじめに</h3></header>
 
-<p>前回、&quot;<a href="/article/2014/04/08/rubymotion-get-started/">RubyMotion事始め</a>&ldquo;では、<br>
-gem, CocoaPodsを用いて外部ライブラリを利用する方法をまとめました。<br>
+<p>前回、&quot;<a href="/article/2014/04/08/rubymotion-get-started/">RubyMotion事始め</a>&ldquo;では、gem, CocoaPodsを用いて外部ライブラリを利用する方法をまとめました。<br>
 今回はCoreDataを利用してデータを永続化する方法をまとめます。</p>
 
 </section><section><header><h3>Core Data Query 利用準備</h3></header>
 
-<p>RubyMotionでCoreDataを扱うために、<br>
-<a href="https://github.com/infinitered/cdq">cdq (Core Data Query)</a>を利用します。<br>
+<p>RubyMotionでCoreDataを扱うために、<a href="https://github.com/infinitered/cdq">cdq (Core Data Query)</a>を利用します。<br>
 まずは<code>motion</code>コマンドでプロジェクトを作成し、</p>
 <pre class="highlight plaintext"><code>motion create cdq_sample
 cd cdq_sample
 </code></pre>
 
 <p><code>Gemfile</code>に依存関係を記述します。<br>
-画面構成のコードを簡潔にするために、前回同様に<br>
-<a href="https://github.com/clearsightstudio/ProMotion">ProMotion</a>も使用しています。</p>
+画面構成のコードを簡潔にするために、前回同様に<a href="https://github.com/clearsightstudio/ProMotion">ProMotion</a>も使用しています。</p>
 
 <h4><code>Gemfile</code></h4>
 <pre class="highlight ruby"><code><span class="n">source</span> <span class="s1">'https://rubygems.org'</span>
@@ -93,10 +90,8 @@ cd cdq_sample
 <pre class="highlight plaintext"><code>bundle exec cdq init
 </code></pre>
 
-<p><code>init</code>で作成されるファイルの一つに<br>
-<code>schemas/0001_initial.rb</code>があります。<br>
-このファイルは<code>rails</code>での<code>migration</code>ファイルのようなもので、<br>
-スキーマを定義します。</p>
+<p><code>init</code>で作成されるファイルの一つに<code>schemas/0001_initial.rb</code>があります。<br>
+このファイルは<code>rails</code>での<code>migration</code>ファイルのようなもので、スキーマを定義します。</p>
 <pre class="highlight ruby"><code>
 <span class="n">schema</span> <span class="s2">"0001 initial"</span> <span class="k">do</span>
 
@@ -125,8 +120,7 @@ cd cdq_sample
 </code></pre>
 
 <p>また、<code>init</code>により<code>Rakefile</code>にも追記が行われています。<br>
-これは<code>build:simulator</code>タスク実行時に<code>schema:build</code>も行われることを表しており、<br>
-<code>schema:build</code>タスクを実行することで<code>xcdatamodeld</code>が生成されます。</p>
+これは<code>build:simulator</code>タスク実行時に<code>schema:build</code>も行われることを表しており、<code>schema:build</code>タスクを実行することで<code>xcdatamodeld</code>が生成されます。</p>
 <pre class="highlight ruby"><code><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="vg">$:</span><span class="p">.</span><span class="nf">unshift</span><span class="p">(</span><span class="s2">"/Library/RubyMotion/lib"</span><span class="p">)</span>
 <span class="nb">require</span> <span class="s1">'motion/project/template/ios'</span>
@@ -228,8 +222,7 @@ cd cdq_sample
 <span class="k">end</span>
 </code></pre>
 
-<p>準備が出来たので、<br>
-<code>rake</code>コマンドを叩きましょう。<br>
+<p>準備が出来たので、<code>rake</code>コマンドを叩きましょう。<br>
 シミュレーターが立ち上がります。<br>
 このとき、自動的に<code>schema:build</code>タスクも実行され、<code>xcdatamodeld</code>が生成されます。<br>
 まだデータが登録されていないので、テーブルの内容は空です。</p>
@@ -239,19 +232,14 @@ cd cdq_sample
 <pre class="highlight ruby"><code><span class="no">Item</span><span class="p">.</span><span class="nf">create</span> <span class="ss">body: </span><span class="s1">'test'</span>
 </code></pre>
 
-<p>シミュレーターに戻り、画面を下に引っ張って更新してみると、<br>
-テーブルの内容が増えていることが確認できます。</p>
+<p>シミュレーターに戻り、画面を下に引っ張って更新してみると、テーブルの内容が増えていることが確認できます。</p>
 
-<p>このとき、シミュレーター上でホームボタンを押し、すぐアプリを立ち上げ直しただけでは<br>
-登録した情報はそのままです。<br>
-しかし、コンソールを<code>exit</code>で抜けた場合や、ホームボタンをダブルタップしてアプリを<br>
-バックグラウンドからも削除し、<br>
-その後アプリを起動し直すと登録した情報が消えています。<br>
+<p>このとき、シミュレーター上でホームボタンを押し、すぐアプリを立ち上げ直しただけでは登録した情報はそのままです。<br>
+しかし、コンソールを<code>exit</code>で抜けた場合や、ホームボタンをダブルタップしてアプリをバックグラウンドからも削除し、その後アプリを起動し直すと登録した情報が消えています。<br>
 つまりメモリ上にのみ登録されていたわけです。</p>
 
 <p>データを永続化する手順も簡単です。<br>
-もう一度<code>rake</code>でシミュレータを起動し、<br>
-再度<code>Item.create</code>でデータを登録してみましょう。<br>
+もう一度<code>rake</code>でシミュレータを起動し、再度<code>Item.create</code>でデータを登録してみましょう。<br>
 今回は永続化するために<code>cdq.save</code>コマンドを実行します。</p>
 <pre class="highlight ruby"><code><span class="no">Item</span><span class="p">.</span><span class="nf">create</span> <span class="ss">body: </span><span class="s1">'test2'</span>
 <span class="n">cdq</span><span class="p">.</span><span class="nf">save</span>

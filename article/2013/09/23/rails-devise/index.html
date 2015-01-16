@@ -62,10 +62,8 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>Webアプリケーションの作成の際、<br>
-ユーザー認証機能の実装は全て自分で実装しようとすると大変な物になります。<br>
-今回はrailsアプリケーションに<a href="https://github.com/plataformatec/devise">devise</a>gemを用いて<br>
-認証機能の実装を行います。</p>
+<p>Webアプリケーションの作成の際、ユーザー認証機能の実装は全て自分で実装しようとすると大変な物になります。<br>
+今回はrailsアプリケーションに<a href="https://github.com/plataformatec/devise">devise</a>gemを用いて認証機能の実装を行います。</p>
 
 </section><section><header><h3>Railsアプリケーションの作成</h3></header>
 
@@ -79,8 +77,7 @@
 <pre class="highlight ruby"><code><span class="n">gem</span> <span class="s1">'rails'</span>
 </code></pre>
 
-<p>bundlerを用いてrailsをインストールし、<br>
-その後railsアプリケーションのひな形を作成します。<br>
+<p>bundlerを用いてrailsをインストールし、その後railsアプリケーションのひな形を作成します。<br>
 今回はデータベースにMySQLを指定しています。</p>
 <pre class="highlight plaintext"><code>bundle install --path vendor/bundle
 bundle exec rails new . --skip-bundle -d mysql
@@ -137,26 +134,21 @@ Some setup you must do manually if you haven't yet:
 <p>1はメールアドレス認証機能を有効化した際の案内メールに記載されるURLに関してのオプションです。<br>
 実際の運用でメールアドレス認証機能を有効化した時には<code>config/environments/production.rb</code>も編集が必要です。</p>
 
-<p>2はトップページの指定を、<br>
-3はメッセージ出力用タグの設置を意味しています。</p>
+<p>2はトップページの指定を、3はメッセージ出力用タグの設置を意味しています。</p>
 
-<p>4はHerokuを用いるときの注意で、<br>
-5はviewをカスタマイズするときの方法を表しています。</p>
+<p>4はHerokuを用いるときの注意で、5はviewをカスタマイズするときの方法を表しています。</p>
 
 </section><section><header><h3>ユーザーモデルの作成</h3></header>
 
 <p>次にユーザーのモデルを作成します。<br>
-今回は認証に用いるモデルをmemberとし、<br>
-memberモデルとviewの作成を行ってみます。</p>
+今回は認証に用いるモデルをmemberとし、memberモデルとviewの作成を行ってみます。</p>
 <pre class="highlight plaintext"><code>bundle exec rails g devise member
 bundle exec rails g devise:views members
 </code></pre>
 
 </section><section><header><h3>メール認証機能の有効化</h3></header>
 
-<p>メール認証機能を有効化するには、migrationファイルで、<br>
-<code>## Confirmable</code>をアンコメントし、<br>
-memberモデルに<code>:confirmable</code>を追加します。</p>
+<p>メール認証機能を有効化するには、migrationファイルで、<code>## Confirmable</code>をアンコメントし、memberモデルに<code>:confirmable</code>を追加します。</p>
 
 <h4><code>db/migrate/2013xxxxxxxxxx_devise_create_members.rb</code></h4>
 <pre class="highlight ruby"><code><span class="c1">## Confirmable</span>
@@ -179,8 +171,7 @@ memberモデルに<code>:confirmable</code>を追加します。</p>
          <span class="ss">:validatable</span>
 </code></pre>
 
-<p>deviseを初期化した際のメッセージに従い、<br>
-<code>mailer.default_url_options</code>を設定し</p>
+<p>deviseを初期化した際のメッセージに従い、<code>mailer.default_url_options</code>を設定し</p>
 
 <h4><code>config/environments/development.rb</code></h4>
 <pre class="highlight plaintext"><code>config.action_mailer.default_url_options = { :host =&gt; 'localhost:3000' }

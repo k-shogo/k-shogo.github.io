@@ -61,19 +61,13 @@
 </header>
 <section><header><h3>ダミーデータ</h3></header>
 
-<p>diffを求めるのに先立ち、<br>
-ダミーのデータを用意してみましょう。</p>
+<p>diffを求めるのに先立ち、ダミーのデータを用意してみましょう。</p>
 
-<p>rubyでのテストデータの生成には<br>
-<a href="https://github.com/stympy/faker">faker</a>や<br>
-<a href="https://github.com/sevenwire/forgery">forgery</a>が知られています。<br>
-今回はforgeryの日本語拡張である<br>
-<a href="https://github.com/namakesugi/forgery_ja">forgery_ja</a>を使用しています。</p>
+<p>rubyでのテストデータの生成には<a href="https://github.com/stympy/faker">faker</a>や<a href="https://github.com/sevenwire/forgery">forgery</a>が知られています。<br>
+今回はforgeryの日本語拡張である<a href="https://github.com/namakesugi/forgery_ja">forgery_ja</a>を使用しています。</p>
 
-<p>ダミーデータはCSVで用意する物とし、<br>
-一行にはid, 名前, 住所を格納してみましょう。<br>
-最終的には差分を算出したいので、<br>
-削除、変更、追加された異なる2つのデータを生成します。</p>
+<p>ダミーデータはCSVで用意する物とし、一行にはid, 名前, 住所を格納してみましょう。<br>
+最終的には差分を算出したいので、削除、変更、追加された異なる2つのデータを生成します。</p>
 <pre class="highlight ruby"><code><span class="c1"># ダミー生成スクリプト</span>
 
 <span class="nb">require</span> <span class="s1">'csv'</span>
@@ -133,10 +127,8 @@
 
 </section><section><header><h3>diffの取得</h3></header>
 
-<p>差分の取得には<br>
-<a href="https://github.com/halostatue/diff-lcs">diff-lcs</a>を使用してみます。<br>
-使い方は簡単で、<br>
-2つの配列を渡すだけです。</p>
+<p>差分の取得には<a href="https://github.com/halostatue/diff-lcs">diff-lcs</a>を使用してみます。<br>
+使い方は簡単で、2つの配列を渡すだけです。</p>
 <pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'diff/lcs'</span>
 
 <span class="n">seq1</span> <span class="o">=</span> <span class="sx">%w(a b c e h j l m n p)</span>
@@ -147,29 +139,20 @@
 <span class="n">sdiff</span> <span class="o">=</span> <span class="no">Diff</span><span class="o">::</span><span class="no">LCS</span><span class="p">.</span><span class="nf">sdiff</span><span class="p">(</span><span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span><span class="p">)</span>
 </code></pre>
 
-<p>ちなみに、<br>
-LCSはLongest Common Subsequenceなので、<br>
-2つの要素列の最長共通部分列という意味です。</p>
+<p>ちなみに、LCSはLongest Common Subsequenceなので、2つの要素列の最長共通部分列という意味です。</p>
 
-<p><code>Diff::LCS.diff</code>と<code>Diff::LCS.sdiff</code>の違いは、<br>
-差分一つ一つが<a href="http://diff-lcs.rubyforge.org/Diff/LCS/Change.html">Diff::LCS::Change</a>で返るか、<br>
-<a href="http://diff-lcs.rubyforge.org/Diff/LCS/ContextChange.html">Diff::LCS::ContextChange</a>で返るかの違いです。</p>
+<p><code>Diff::LCS.diff</code>と<code>Diff::LCS.sdiff</code>の違いは、差分一つ一つが<a href="http://diff-lcs.rubyforge.org/Diff/LCS/Change.html">Diff::LCS::Change</a>で返るか、<a href="http://diff-lcs.rubyforge.org/Diff/LCS/ContextChange.html">Diff::LCS::ContextChange</a>で返るかの違いです。</p>
 
-<p><code>Diff::LCS.sdiff</code>で比較できる一行の単位は文字列ですが、<br>
-<code>Diff::LCS.diff</code>は一行の単位が<code>Array</code>でも大丈夫です。<br>
+<p><code>Diff::LCS.sdiff</code>で比較できる一行の単位は文字列ですが、<code>Diff::LCS.diff</code>は一行の単位が<code>Array</code>でも大丈夫です。<br>
 今回は<code>CSV.read</code>の読み出しをそのまま突っ込むので<code>Diff::LCS.diff</code>を使用します。</p>
 
 </section><section><header><h3>diff算出サンプル &amp; ベンチマーク</h3></header>
 
-<p>作成したダミーデータのdiffを求めるとともに、<br>
-ベンチマークを取ってみます。<br>
-rubyで簡易なベンチマークの実行は<br>
-標準で用意されている<code>benchmark</code>を利用するのが簡単です。</p>
+<p>作成したダミーデータのdiffを求めるとともに、ベンチマークを取ってみます。<br>
+rubyで簡易なベンチマークの実行は標準で用意されている<code>benchmark</code>を利用するのが簡単です。</p>
 
-<p>実行したマシンはMac Book Airで<br>
-プロセッサは Intel Core i5 1.7GHz。<br>
-ダミーのCSVの中身は100000件、<br>
-ファイルサイズは5.4MBです。</p>
+<p>実行したマシンはMac Book Airでプロセッサは Intel Core i5 1.7GHz。<br>
+ダミーのCSVの中身は100000件、ファイルサイズは5.4MBです。</p>
 <pre class="highlight ruby"><code><span class="c1"># diff算出サンプル</span>
 <span class="nb">require</span> <span class="s1">'csv'</span>
 <span class="nb">require</span> <span class="s1">'diff/lcs'</span>
@@ -212,15 +195,6 @@ total:    3.880000   0.070000   3.950000 (  3.955243)
 -----
 ~~ 以下略 ~~
 </code></pre>
-
-</section><section><header><h3>参考</h3></header>
-
-<ul>
-<li><a href="http://namakesugi.blog42.fc2.com/blog-entry-104.html">RailsのプラグインForgeryとは</a></li>
-<li><a href="http://namakesugi.blog42.fc2.com/blog-entry-107.html">BundlerでGemの基盤を生成してrubygems.orgにpushする方法</a></li>
-<li><a href="http://gihyo.jp/dev/column/01/prog/2011/diff_sd200906">diffの動作原理を知る～どのようにして差分を導き出すのか</a></li>
-<li><a href="http://a-newcomer.com/29">RubyでのBenchmarkの取り方をば。</a></li>
-</ul>
 </section>
 </article>
 </div>

@@ -62,10 +62,8 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>Mac OSX 10.7.5において、<br>
-java 1.7.0をインストールしたときのこと。<br>
-<a href="http://java.com/ja/download/">java公式</a>からVersion 7 Update 25をダウンロードし、<br>
-インストールしてみても、</p>
+<p>Mac OSX 10.7.5において、java 1.7.0をインストールしたときのこと。<br>
+<a href="http://java.com/ja/download/">java公式</a>からVersion 7 Update 25をダウンロードし、インストールしてみても、</p>
 <pre class="highlight shell"><code><span class="gp">$ </span>java -version
 java version <span class="s2">"1.6.0_51"</span>
 Java<span class="o">(</span>TM<span class="o">)</span> SE Runtime Environment <span class="o">(</span>build 1.6.0_51-b11-457-11M4509<span class="o">)</span>
@@ -74,20 +72,14 @@ Java HotSpot<span class="o">(</span>TM<span class="o">)</span> 64-Bit Server VM 
 
 <p>と1.6.0から変わっていない。</p>
 
-<p>以前までなら<br>
-<code>/Applications/Utilities/Java Preferences.app</code><br>
-を起動して実行バージョンの優先度を入れ替えるだけで済んだのだが、<br>
-<code>Java Preferences.app</code>が無くなっている・・・</p>
+<p>以前までなら<code>/Applications/Utilities/Java Preferences.app</code>を起動して実行バージョンの優先度を入れ替えるだけで済んだのだが、<code>Java Preferences.app</code>が無くなっている・・・</p>
 
-<p>Mac OSX 10.8.4のまっさらな状態のマシンに<br>
-同じくjava 1.7.0してみても、javaコマンドを打ってみると1.7.0は認識されておらず、<br>
-1.6.0のインストールのダイアログが出てしまう。</p>
+<p>Mac OSX 10.8.4のまっさらな状態のマシンに同じくjava 1.7.0してみても、javaコマンドを打ってみると1.7.0は認識されておらず、1.6.0のインストールのダイアログが出てしまう。</p>
 
 </section><section><header><h3>調査</h3></header>
 
 <p>MacにおけるJavaの構成は中々に厄介だ。<br>
-以前からJavaをインストールしてあったOSX 10.7.5において、<br>
-Javaコマンドの向き先を見てみると</p>
+以前からJavaをインストールしてあったOSX 10.7.5において、Javaコマンドの向き先を見てみると</p>
 <pre class="highlight shell"><code><span class="gp">$ </span>which java
 /usr/bin/java
 <span class="gp">$ </span>ls -l /usr/bin/java
@@ -107,13 +99,10 @@ lrwxr-xr-x  1      1B  6 25 22:53:26 2013 Current@ -&gt; A
 lrwxr-xr-x  1     59B  6 25 22:53:25 2013 CurrentJDK@ -&gt; /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents
 </code></pre>
 
-<p><code>A</code>って何だよと思うのですが、<br>
-<a href="https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html#//apple_ref/doc/uid/20002253-99920-BAJFEJFI">Appleの解説</a>によると、<br>
-異なるバージョン毎に<code>A</code>,<code>B</code>とディレクトリを分けるらしい。</p>
+<p><code>A</code>って何だよと思うのですが、<a href="https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html#//apple_ref/doc/uid/20002253-99920-BAJFEJFI">Appleの解説</a>によると、異なるバージョン毎に<code>A</code>,<code>B</code>とディレクトリを分けるらしい。</p>
 
 <p>1.7.0はこのディレクトリには入っていません。<br>
-何処にあるかというと<br>
-<code>/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin</code></p>
+何処にあるかというと<code>/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin</code></p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">pwd</span>
 /Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin
 <span class="gp">$ </span>./java -version

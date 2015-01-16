@@ -188,8 +188,7 @@ new_user_note GET    /users/:user_id/notes/new(.:format) notes#new
 </code></pre>
 
 <p>これで <code>notes#show</code> の時に冗長だったユーザーID指定が不要になりました。<br>
-ちょっと注意なのが <code>form_for</code> に渡すパスです。<br>
-例えば、<code>notes#create</code> の時は <code>/users/:user_id/notes</code> で、<code>notes#update</code> の時は <code>/notes/:id</code> とユーザーIDの有無が異なります。<br>
+ちょっと注意なのが <code>form_for</code> に渡すパスです。例えば、<code>notes#create</code> の時は <code>/users/:user_id/notes</code> で、<code>notes#update</code> の時は <code>/notes/:id</code> とユーザーIDの有無が異なります。<br>
 これだと <code>form_for(@note) do</code> のままだと <code>notes#new</code> の時に <code>undefined method notes_path</code> なんて言われちゃいます。<br>
 （<code>shallow</code> オプションを指定しない場合は <code>form_for([@user, @note])</code> のように指定すれば良い）<br>
 そこで、<code>form_for</code> は以下のように設定します。</p>
@@ -228,8 +227,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。<br>
 </code></pre>
 
 <p>もちろん使いどころは nilガードだけじゃありません。<br>
-<code>User</code> クラスにニックネーム <code>nickname</code> もあったとして、<br>
-「ニックネームが設定されていればそちらを、されていない（nilなら）名前を出したい」なんて時はこうすれば良いわけです。</p>
+<code>User</code> クラスにニックネーム <code>nickname</code> もあったとして、「ニックネームが設定されていればそちらを、されていない（nilなら）名前を出したい」なんて時はこうすれば良いわけです。</p>
 <pre class="highlight ruby"><code><span class="n">user</span><span class="p">.</span><span class="nf">nickname</span> <span class="o">||</span> <span class="n">user</span><span class="p">.</span><span class="nf">name</span>
 </code></pre>
 
@@ -286,13 +284,11 @@ ruby だとこれを「nilガード」なんて呼ばれています。<br>
 <span class="k">end</span>
 </code></pre>
 
-<p><code>try</code> だとメソッド名の打ち間違いなども <code>nil</code> で返ってきますが、<br>
-存在しないメソッドの場合は <code>NoMethodError</code> を返してくれる <code>try!</code> も用意されています。</p>
+<p><code>try</code> だとメソッド名の打ち間違いなども <code>nil</code> で返ってきますが、存在しないメソッドの場合は <code>NoMethodError</code> を返してくれる <code>try!</code> も用意されています。</p>
 
 </section><section><header><h3>delegate も使ってみよう</h3></header>
 
-<p>上の例では <code>note.user.name</code> とメソッドの呼び出しをしていますが、<br>
-オブジェクト指向プログラミングの界隈だと、「デメテルの法則」に反しているとも言われます。</p>
+<p>上の例では <code>note.user.name</code> とメソッドの呼び出しをしていますが、オブジェクト指向プログラミングの界隈だと、「デメテルの法則」に反しているとも言われます。</p>
 
 <p>それじゃあ、といって</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Note</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
@@ -332,8 +328,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。<br>
 </code></pre>
 
 <p>ちなみにプレーンなruby にも委譲の為の <code>Forwardable</code> モジュールが用意されており、使い方も似ています。<br>
-<code>Forwardable</code> の方はメソッドのリネームが出来る所が長所ですが、<br>
-<code>ActiveSupport</code> の <code>delegate</code> に用意されている <code>prefix</code> と <code>allow_nil</code> が使い勝手が良いので、rails だと <code>ActiveSupport</code> の <code>delegate</code> をよく使います。</p>
+<code>Forwardable</code> の方はメソッドのリネームが出来る所が長所ですが、<code>ActiveSupport</code> の <code>delegate</code> に用意されている <code>prefix</code> と <code>allow_nil</code> が使い勝手が良いので、rails だと <code>ActiveSupport</code> の <code>delegate</code> をよく使います。</p>
 
 </section><section><header><h3>クラスマクロは自分で作れる</h3></header>
 
@@ -382,14 +377,12 @@ ruby だとこれを「nilガード」なんて呼ばれています。<br>
 
 <p>実行してみた結果が上の様子です。<code>&gt;</code> が入力、<code>=&gt;</code> が出力です。<br>
 クラスマクロによって、使うと <code>&quot;#{attr}_with_suffix&quot;</code> というメソッドが作られるようになっています。<br>
-つまり Boy, Girl クラスで <code>suffix :name, &#39;さん&#39;</code> と使ったことによって、<br>
-<code>name_with_suffix</code> メソッドがマクロによって定義されているのです。<br>
+つまり Boy, Girl クラスで <code>suffix :name, &#39;さん&#39;</code> と使ったことによって、<code>name_with_suffix</code> メソッドがマクロによって定義されているのです。<br>
 さらにマクロによって定義したメソッドの内容は、「名前が設定されていれば、後ろにマクロで指定した文字列を追加する」という物だったので、<code>girl.name_with_suffix</code> によって「はなこ さん」と返ってきている訳です。<br>
 この例だと実は <code>girl.name</code> と呼び出すだけで <code>girl.name_with_suffix</code> と同じ結果を得ることが出来ます。<br>
 これは、<code>alias_method_chain</code> によって、元々の <code>name</code> メソッドが <code>name_without_suffix</code> として待避され、<code>name_with_suffix</code> として定義したメソッドが <code>name</code> としても呼び出せるようになっているからなのです。</p>
 
-<p>クラスマクロを定義する場所は、今回のように継承元クラスや、<br>
-<code>ActiveSupport::Concern</code> でモジュール化するなど、いろいろな方法があります。</p>
+<p>クラスマクロを定義する場所は、今回のように継承元クラスや、<code>ActiveSupport::Concern</code> でモジュール化するなど、いろいろな方法があります。</p>
 
 </section><section><header><h3>super do で操作を差し込む</h3></header>
 
@@ -408,8 +401,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。<br>
 <span class="k">end</span>
 </code></pre>
 
-<p><code>User#birthday</code> メソッドは、「happy birthday!」とメッセージを表示し、<br>
-年齢に1を加えてその値を返す物です。</p>
+<p><code>User#birthday</code> メソッドは、「happy birthday!」とメッセージを表示し、年齢に1を加えてその値を返す物です。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Boy</span> <span class="o">&lt;</span> <span class="no">User</span>
   <span class="k">def</span> <span class="nf">birthday</span>
     <span class="k">super</span>
@@ -418,8 +410,7 @@ ruby だとこれを「nilガード」なんて呼ばれています。<br>
 <span class="k">end</span>
 </code></pre>
 
-<p>Userクラスを継承したBoyクラスにおいて、<code>birthday</code>メソッドをオーバーライドしようとしたとき、<br>
-<code>super</code> によって継承元のメソッドを呼び出すことが可能です。<br>
+<p>Userクラスを継承したBoyクラスにおいて、<code>birthday</code>メソッドをオーバーライドしようとしたとき、<code>super</code> によって継承元のメソッドを呼び出すことが可能です。<br>
 しかし、「メッセージの表示」と「年齢の加算」の間に処理を挟みたい時にはどうしましょう。<br>
 そのために <code>super</code> を使わずにオーバーライドしてしまうと、メッセージの定義が重複するなどしてメンテナンス性が下がってしまいます。<br>
 そんなときには継承元クラスに処理を差し込めるポイントを作っておきましょう。</p>
@@ -446,12 +437,9 @@ ruby だとこれを「nilガード」なんて呼ばれています。<br>
 <span class="k">end</span>
 </code></pre>
 
-<p>Userクラスに <code>yield if block_given?</code> を用意したので、<br>
-継承したクラスにおいて <code>birthday</code> メソッドをオーバーライドしたとき、<br>
-ブロックによる <code>super</code> を呼び出したときに、そこに処理を差し込むことが可能になります。</p>
+<p>Userクラスに <code>yield if block_given?</code> を用意したので、継承したクラスにおいて <code>birthday</code> メソッドをオーバーライドしたとき、ブロックによる <code>super</code> を呼び出したときに、そこに処理を差し込むことが可能になります。</p>
 
-<p>ログイン処理などによく用いられる <a href="https://github.com/plataformatec/devise">plataformatec/devise</a> では、<br>
-例えば <code>Devise::SessionsController</code> 等において、「ログインしたときにそのユーザーに何か処理したいな」ってケースのために処理差し込みのポイントを用意してくれていたりします。</p>
+<p>ログイン処理などによく用いられる <a href="https://github.com/plataformatec/devise">plataformatec/devise</a> では、例えば <code>Devise::SessionsController</code> 等において、「ログインしたときにそのユーザーに何か処理したいな」ってケースのために処理差し込みのポイントを用意してくれていたりします。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">Devise</span><span class="o">::</span><span class="no">SessionsController</span> <span class="o">&lt;</span> <span class="no">DeviseController</span>
   <span class="c1"># POST /resource/sign_in</span>
   <span class="k">def</span> <span class="nf">create</span>

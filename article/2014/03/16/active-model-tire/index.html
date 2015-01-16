@@ -70,19 +70,13 @@
 
 </section><section><header><h3>注意：elasticsearch用rubyクライアントについて</h3></header>
 
-<p>今回、elasticsearchとの連携は<a href="https://github.com/karmi/tire">tire</a>を用いていますが、<br>
-これからは後継のプロジェクトである<br>
-<a href="https://github.com/elasticsearch/elasticsearch-ruby">elasticsearch-ruby</a> 及び <a href="https://github.com/elasticsearch/elasticsearch-rails">elasticsearch-rails</a> の方が主流になっていくと思います。</p>
+<p>今回、elasticsearchとの連携は<a href="https://github.com/karmi/tire">tire</a>を用いていますが、これからは後継のプロジェクトである<a href="https://github.com/elasticsearch/elasticsearch-ruby">elasticsearch-ruby</a> 及び <a href="https://github.com/elasticsearch/elasticsearch-rails">elasticsearch-rails</a> の方が主流になっていくと思います。</p>
 
 </section><section><header><h3>モデルの準備</h3></header>
 
-<p>データベースを用いて永続化を行う際、<br>
-通常は<code>ActiveRecord::Base</code>を継承したモデルを用いますが、<br>
-今回はデータベースを用いないため、<code>ActiveModel</code>を使います。<br>
-また、今回作成するアプリケーションでは、elasticsearch上のみでCRUDする処理の部分以外を簡潔にするために、<br>
-名前のフィールドだけを持つ単純な<code>User</code>モデルを仮定しています。<br>
-<code>rails g scaffold user name:string</code> でひな形を作成し、<br>
-該当のマイグレーションファイルを消してスタートします。</p>
+<p>データベースを用いて永続化を行う際、通常は<code>ActiveRecord::Base</code>を継承したモデルを用いますが、今回はデータベースを用いないため、<code>ActiveModel</code>を使います。<br>
+また、今回作成するアプリケーションでは、elasticsearch上のみでCRUDする処理の部分以外を簡潔にするために、名前のフィールドだけを持つ単純な<code>User</code>モデルを仮定しています。<br>
+<code>rails g scaffold user name:string</code> でひな形を作成し、該当のマイグレーションファイルを消してスタートします。</p>
 
 <p>とりあえずは<code>ActiveModel</code>と<code>Tire</code>をincludeしたクラスを作成します。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
@@ -95,9 +89,7 @@
 
 <p>次にフィールドを定義します。<br>
 また、同時にelasticsearch上のマッピングも定義しておきます。<br>
-作成している<code>User</code>モデルは要素としては名前、つまり<code>name</code>フィールドのみを持つとしましたが、<br>
-CRUD処理を行うためにも<br>
-documentを一意に特定するためのフィールドも必要になるため、これを<code>id</code>として定義します。</p>
+作成している<code>User</code>モデルは要素としては名前、つまり<code>name</code>フィールドのみを持つとしましたが、CRUD処理を行うためにもdocumentを一意に特定するためのフィールドも必要になるため、これを<code>id</code>として定義します。</p>
 
 <p><code>id</code>は必須としたいため、<code>validates</code>も設定しておきましょう。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
@@ -118,8 +110,7 @@ documentを一意に特定するためのフィールドも必要になるため
 </section><section><header><h3>elasticsearchへのインデックス登録の準備</h3></header>
 
 <p>elasticsearchへモデルの情報をjsonで送るために、<code>to_indexed_json</code>を定義します。<br>
-<code>User.index.import users</code>などのように<code>Tire::Index.import</code>を用いて一括登録することも出来るように、<br>
-<code>serializable_hash</code>を定義し、<code>to_indexed_json</code>ではそれを呼び出すようにしています。</p>
+<code>User.index.import users</code>などのように<code>Tire::Index.import</code>を用いて一括登録することも出来るように、<code>serializable_hash</code>を定義し、<code>to_indexed_json</code>ではそれを呼び出すようにしています。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
 
   <span class="c1"># 中略</span>
@@ -142,8 +133,7 @@ documentを一意に特定するためのフィールドも必要になるため
 
 <p>モデル情報の保存が出来るようにしてみます。<br>
 <code>save</code>は単純で<code>tire</code>の<code>update_index</code>を呼び出すだけです。<br>
-<code>id</code>フィールドは必須としたいので、<br>
-設定していなければ<code>SecureRandom.uuid</code>でIDを作成します。<br>
+<code>id</code>フィールドは必須としたいので、設定していなければ<code>SecureRandom.uuid</code>でIDを作成します。<br>
 この時<code>valid?</code>を見ておけば、モデル全体のデータの検証をすることが出来ます。</p>
 
 <p><code>persisted?</code>はフォーム送信時にコントローラーの<code>create</code>か<code>update</code>どちらのメソッドに行くのかの判定に必要になります。</p>
@@ -173,8 +163,7 @@ documentを一意に特定するためのフィールドも必要になるため
 </section><section><header><h3>削除</h3></header>
 
 <p>elasticsearch上からの削除も<code>update_index</code>を使うことで実現します。<br>
-このとき<code>destroyed?</code>が<code>true</code>になると<code>update_index</code>で削除してくれるので、<br>
-フィールドに削除フラグを表す<code>destroyed</code>を追加しています。</p>
+このとき<code>destroyed?</code>が<code>true</code>になると<code>update_index</code>で削除してくれるので、フィールドに削除フラグを表す<code>destroyed</code>を追加しています。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
 
   <span class="c1"># 中略</span>
@@ -196,9 +185,7 @@ documentを一意に特定するためのフィールドも必要になるため
 
 <p>コントローラーから呼ばれる<code>User.all</code>, <code>User.find</code>を用意します。<br>
 どちらも<code>tire.search</code>を使い、<code>#find</code>では<code>id</code>を指定して取得できるようにしてみます。<br>
-<code>load</code>は検索結果から<code>ActiveModel</code>のインスタンスを作成するために用意してあり、<br>
-検索結果をハッシュに変更した中には<code>_score</code>, <code>_type</code>などの要素が含まれているため、<br>
-<code>method_missing</code>で余分なものを無視しています。</p>
+<code>load</code>は検索結果から<code>ActiveModel</code>のインスタンスを作成するために用意してあり、検索結果をハッシュに変更した中には<code>_score</code>, <code>_type</code>などの要素が含まれているため、<code>method_missing</code>で余分なものを無視しています。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
 
   <span class="c1"># 中略</span>
@@ -229,8 +216,7 @@ documentを一意に特定するためのフィールドも必要になるため
 </section><section><header><h3>モデルの全体像</h3></header>
 
 <p>ここまで作成してきたモデルの全体像を示します。<br>
-ここに検索のロジックなどを追加することを考えると、<br>
-モジュールで分割した方が良さそうですね。</p>
+ここに検索のロジックなどを追加することを考えると、モジュールで分割した方が良さそうですね。</p>
 <pre class="highlight ruby"><code><span class="k">class</span> <span class="nc">User</span>
   <span class="kp">include</span> <span class="no">ActiveModel</span><span class="o">::</span><span class="no">Model</span>
   <span class="kp">include</span> <span class="no">Tire</span><span class="o">::</span><span class="no">Model</span><span class="o">::</span><span class="no">Search</span>
@@ -305,14 +291,11 @@ documentを一意に特定するためのフィールドも必要になるため
 
 </section><section><header><h3>既知の問題</h3></header>
 
-<p><code>ActiveRecord::Base</code>を継承したモデルから、<br>
-今回作成したモデルに置き換えるだけで、<br>
-コントローラやビューに変更を加えることなくCRUDが出来るようになっています。</p>
+<p><code>ActiveRecord::Base</code>を継承したモデルから、今回作成したモデルに置き換えるだけで、コントローラやビューに変更を加えることなくCRUDが出来るようになっています。</p>
 
 <p>ただし少し問題もあります。<br>
 たとえば新規作成時、一覧ページにリダイレクトした後に、新たに作成したデータが存在しないように見えることがあります。<br>
-実はリロードすると正常に作成されており、<br>
-これはリダイレクトされるタイミングとElasticsearchに永続化が完了するタイミングが同期していないことに原因があります。<br>
+実はリロードすると正常に作成されており、これはリダイレクトされるタイミングとElasticsearchに永続化が完了するタイミングが同期していないことに原因があります。<br>
 個人的には<code>ajax:complete</code>イベントで<code>create</code>や<code>destroy</code>に対する要素の増減を制御して対処しています。</p>
 </section>
 </article>

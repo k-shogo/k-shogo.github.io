@@ -62,27 +62,19 @@
 </header>
 <section><header><h3>背景</h3></header>
 
-<p>&ldquo;<a href="/article/2013/09/09/elasticsearch-geo/">ElasticSearchで地理情報も扱う</a>&quot;で、<br>
-ElasticSearchで全文検索だけで無く位置情報の検索も同時に取り扱うことを試しました。</p>
-
-<p>今回はそのElasticSearchでの位置情報利用が実用に足るかの検証を行います。</p>
+<p>&ldquo;<a href="/article/2013/09/09/elasticsearch-geo/">ElasticSearchで地理情報も扱う</a>&quot;で、ElasticSearchで全文検索だけで無く位置情報の検索も同時に取り扱うことを試しました。<br>
+今回はそのElasticSearchでの位置情報利用が実用に足るかの検証を行います。</p>
 
 </section><section><header><h3>テストデータ</h3></header>
 
-<p>今回ベンチマークで使用するデータは、<br>
-国土交通省が公開している<br>
-<a href="http://nlftp.mlit.go.jp/isj/index.html">位置参照情報ダウンロードサービス</a>を利用させて頂きます。<br>
+<p>今回ベンチマークで使用するデータは、国土交通省が公開している<a href="http://nlftp.mlit.go.jp/isj/index.html">位置参照情報ダウンロードサービス</a>を利用させて頂きます。<br>
 今回はその中でも東京都のデータを使用しました。</p>
 
-<p>東京都のデータだけでも<br>
-解凍したCSVで約30MB、<br>
-データは291104件あるのでテストデータとしては十分でしょう。</p>
+<p>東京都のデータだけでも解凍したCSVで約30MB、データは291104件あるのでテストデータとしては十分でしょう。</p>
 
-<p>ちなみに、都道府県別データの中で最大なのは愛知県で、<br>
-解凍したCSVが約116MB、データは1127623件あります。</p>
+<p>ちなみに、都道府県別データの中で最大なのは愛知県で、解凍したCSVが約116MB、データは1127623件あります。</p>
 
-<p>ダウンロードしたCSVファイルの文字コードはShift-JISなので、<br>
-後で扱いやすいように<code>nkf -Sw</code>などして変換しておきます。<br>
+<p>ダウンロードしたCSVファイルの文字コードはShift-JISなので、後で扱いやすいように<code>nkf -Sw</code>などして変換しておきます。<br>
 また、ヘッダーが日本語なので適当にアルファベットに変更しました。</p>
 
 <h4>データサンプル</h4>
@@ -98,8 +90,7 @@ ElasticSearchで全文検索だけで無く位置情報の検索も同時に取�
 
 </section><section><header><h3>データ取り込み</h3></header>
 
-<p>今回、取り扱うCSVのファイルサイズが大きめなので、<br>
-<code>smarter_csv</code>のgemを使います。<br>
+<p>今回、取り扱うCSVのファイルサイズが大きめなので、<code>smarter_csv</code>のgemを使います。<br>
 <code>Gemfile</code>に<code>gem &#39;smarter_csv&#39;</code>を追加して<code>bundle install</code>します。</p>
 
 <p>次に、データの取り込み用にrakeタスクを作成してみます。</p>
@@ -140,15 +131,12 @@ ElasticSearchで全文検索だけで無く位置情報の検索も同時に取�
 
 </section><section><header><h3>ページネーション</h3></header>
 
-<p>29万件のデータを取り込んだので、<br>
-そのままindexにアクセスすると大変なことになりそうです。<br>
+<p>29万件のデータを取り込んだので、そのままindexにアクセスすると大変なことになりそうです。<br>
 そこでページネーション機能を追加します。</p>
 
-<p>ページネーションには<br>
-<a href="https://github.com/amatsuda/kaminari">kaminari</a>を使います。</p>
+<p>ページネーションには<a href="https://github.com/amatsuda/kaminari">kaminari</a>を使います。</p>
 
-<p><a href="https://github.com/karmi/tire">tire</a>がkaminariと互換性があるため、<br>
-<code>tire.search</code>に<code>page: (params[:page] || 1)</code>を追加するだけです。</p>
+<p><a href="https://github.com/karmi/tire">tire</a>がkaminariと互換性があるため、<code>tire.search</code>に<code>page: (params[:page] || 1)</code>を追加するだけです。</p>
 
 <h4><code>app/models/pin.rb</code></h4>
 <pre class="highlight ruby"><code><span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">search</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
@@ -164,8 +152,7 @@ ElasticSearchで全文検索だけで無く位置情報の検索も同時に取�
 <span class="k">end</span>
 </code></pre>
 
-<p>viewもページネーションに対応させるので、<br>
-<code>app/views/pins/index.html.haml</code>の下部に以下のコードを追加します。</p>
+<p>viewもページネーションに対応させるので、<code>app/views/pins/index.html.haml</code>の下部に以下のコードを追加します。</p>
 
 <h4><code>app/views/pins/index.html.haml</code></h4>
 <pre class="highlight haml"><code><span class="p">=</span> <span class="n">paginate</span> <span class="vi">@pins</span>

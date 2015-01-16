@@ -61,111 +61,63 @@
 </header>
 <section><header><h3>Dockerとは</h3></header>
 
-<p><a href="http://www.docker.io/">Docker</a>は<br>
-クラウドベンダである<br>
-<a href="https://www.dotcloud.com/">dotCloud</a>が<br>
-オープンソースで公開している<br>
-OSレベル仮想化を提供するソフトウェアであり、<br>
-<a href="http://lxc.sourceforge.net/">LXC</a>と<br>
-<a href="http://aufs.sourceforge.net/">AUFS</a>をベースに作られています。</p>
+<p><a href="http://www.docker.io/">Docker</a>はクラウドベンダである<a href="https://www.dotcloud.com/">dotCloud</a>がオープンソースで公開しているOSレベル仮想化を提供するソフトウェアであり、<a href="http://lxc.sourceforge.net/">LXC</a>と<a href="http://aufs.sourceforge.net/">AUFS</a>をベースに作られています。</p>
 
 <h4>LXC (LinuX Containers)</h4>
 
-<p>LXCは、<br>
-Linux上でOSレベル仮想化を提供する仕組みです。<br>
-LXCを用いることで一つのコントロールホスト上で、コンテナと呼ばれる単位で<br>
-複数の隔離されたLinuxシステムを走らせる事が可能となります。</p>
+<p>LXCは、Linux上でOSレベル仮想化を提供する仕組みです。<br>
+LXCを用いることで一つのコントロールホスト上で、コンテナと呼ばれる単位で複数の隔離されたLinuxシステムを走らせる事が可能となります。</p>
 
-<p>仮想化の分類としては、<br>
-物理マシンにファームウェアとしてハイパーバイザを内蔵し、ハードウェアによる仮想化を行う<br>
-IBM PowerVM, 日立 Virtage。<br>
-物理マシン上にソフトウェアとしてハイパーバイザを導入し、ソフトウェアによる仮想化を行う<br>
-VMWare vSphere, Xen。<br>
-ホストOSにカーネルモジュールとしてハイパーバイザ機能を追加し、ソフトウェアによる仮想化を行う<br>
-KVMなどがあります。</p>
+<p>仮想化の分類としては、物理マシンにファームウェアとしてハイパーバイザを内蔵し、ハードウェアによる仮想化を行うIBM PowerVM, 日立 Virtage。<br>
+物理マシン上にソフトウェアとしてハイパーバイザを導入し、ソフトウェアによる仮想化を行うVMWare vSphere, Xen。<br>
+ホストOSにカーネルモジュールとしてハイパーバイザ機能を追加し、ソフトウェアによる仮想化を行うKVMなどがあります。</p>
 
-<p>対してLXCのOSレベル仮想化はOSへのアクセスの仮想化を行い、<br>
-ホスト内の隔離された環境で仮想マシンを動かす技術です。<br>
+<p>対してLXCのOSレベル仮想化はOSへのアクセスの仮想化を行い、ホスト内の隔離された環境で仮想マシンを動かす技術です。<br>
 つまり、個別のプロセスとネットワークスペースを作り出す仮想環境であると言うことができます。</p>
 
-<p>OS内部は物理リソースを管理するカーネル空間とユーザープロセスを実行するユーザー空間に分かれ、<br>
-コンテナ型の仮想化ではカーネルの機能により複数のユーザー空間を作り出すことで、<br>
-ユーザープロセスから見えるリソースを分割します。</p>
+<p>OS内部は物理リソースを管理するカーネル空間とユーザープロセスを実行するユーザー空間に分かれ、コンテナ型の仮想化ではカーネルの機能により複数のユーザー空間を作り出すことで、ユーザープロセスから見えるリソースを分割します。</p>
 
-<p>LXCは、ホストおよびゲストOSがLinuxに限定されるという点はありますが、<br>
-物理マシンのシミュレーションを行っていないので、<br>
-VPSやEC2などの仮想マシン上でも問題なく動作し、<br>
-かつマシンを起動するプロセスが不要となるので、ハイパフォーマンスかつ省リソースな仮想化ツールとして有効です。</p>
+<p>LXCは、ホストおよびゲストOSがLinuxに限定されるという点はありますが、物理マシンのシミュレーションを行っていないので、VPSやEC2などの仮想マシン上でも問題なく動作し、かつマシンを起動するプロセスが不要となるので、ハイパフォーマンスかつ省リソースな仮想化ツールとして有効です。</p>
 
 <h4>AUFS (Advanced multi layered Unification FileSystem)</h4>
 
-<p>AUFSは<br>
-UnionFSと呼ばれる<br>
-異なるファイルシステムのファイルやディレクトリを透過的に重ね合わせ、<br>
-ひとつのファイルツリーを構成できるファイルシステムの実装の一つです。<br>
-元の仮想マシンイメージを書き換えることなく、<br>
-更新が発生した部分を別の場所に書き込むため、<br>
-仮想マシンの立ち上げ時にイメージのコピー発生せず、すぐに使い始めることができます。</p>
+<p>AUFSはUnionFSと呼ばれる異なるファイルシステムのファイルやディレクトリを透過的に重ね合わせ、ひとつのファイルツリーを構成できるファイルシステムの実装の一つです。<br>
+元の仮想マシンイメージを書き換えることなく、更新が発生した部分を別の場所に書き込むため、仮想マシンの立ち上げ時にイメージのコピー発生せず、すぐに使い始めることができます。</p>
 
 </section><section><header><h3>なぜDockerか</h3></header>
 
-<p>Dockerを使ってみようと思ったは、<br>
-Immutable Infrastructure という考え方を知ったからです。</p>
-
-<p>Immutable Infrastructureは、<br>
-6wunderlist.comのCTOであり、<br>
-「情熱プログラマー」の著者である<br>
-Chad Fowler氏のブログで<br>
-<a href="http://chadfowler.com/blog/2013/06/23/immutable-deployments/">Trash Your Servers and Burn Your Code: Immutable Infrastructure and Disposable Components</a><br>
-という記事で綴られています。</p>
+<p>Dockerを使ってみようと思ったは、Immutable Infrastructure という考え方を知ったからです。<br>
+Immutable Infrastructureは、6wunderlist.comのCTOであり、「情熱プログラマー」の著者であるChad Fowler氏のブログで<a href="http://chadfowler.com/blog/2013/06/23/immutable-deployments/">Trash Your Servers and Burn Your Code: Immutable Infrastructure and Disposable Components</a>という記事で綴られています。</p>
 
 <h4>Immutable Infrastracture とは</h4>
 
-<p>Immutableとは、<br>
-状態が変更出来ないことを指しています。<br>
-つまり、Immutable Infrastractureとは<br>
-「運用中のサーバーに変更を加えない」というアプローチでサーバーを管理することを意味しています。</p>
+<p>Immutableとは、状態が変更出来ないことを指しています。<br>
+つまり、Immutable Infrastractureとは「運用中のサーバーに変更を加えない」というアプローチでサーバーを管理することを意味しています。</p>
 
-<p>Immutable Infrastractureの考えでは、<br>
-サーバーの設定を変更する場合、<br>
-その変更を加えた新しいサーバーを用意し、<br>
-アプリケーションのデプロイも新しくサーバーを立ち上げてそちらにデプロイを行います。<br>
-稼働中のサーバーにSSHでログインして設定を変更するようなことはせず、常にサーバーを追加していき、<br>
-DNSを張り替えた後、参照されなくなったサーバーを破棄します。<br>
-Immutable Infrastractureの実現には、<br>
-Blue-Green Deploymentと呼ばれる手法をとります。</p>
+<p>Immutable Infrastractureの考えでは、サーバーの設定を変更する場合、その変更を加えた新しいサーバーを用意し、アプリケーションのデプロイも新しくサーバーを立ち上げてそちらにデプロイを行います。<br>
+稼働中のサーバーにSSHでログインして設定を変更するようなことはせず、常にサーバーを追加していき、DNSを張り替えた後、参照されなくなったサーバーを破棄します。<br>
+Immutable Infrastractureの実現には、Blue-Green Deploymentと呼ばれる手法をとります。</p>
 
-<p>ThoughtWorksのソフトウェアデリバリーコンサルタントである<br>
-Kief Moris氏は、<br>
-ブログでImmutable Serverについて説明しています。</p>
+<p>ThoughtWorksのソフトウェアデリバリーコンサルタントであるKief Moris氏は、ブログでImmutable Serverについて説明しています。</p>
 
 <blockquote>
 <p>自動構成ツール(CFEngine、Puppet、Chef)はサーバをどのように構成するかを定義し、新しいマシンや既存のマシンを規約に従った構成にできます。このようなツールは脆弱な<a href="http://martinfowler.com/bliki/SnowflakeServer.html">SnowflakeServers</a>の問題を避け、解体と再構築が可能な<a href="http://martinfowler.com/bliki/PhoenixServer.html">PhoenixServers</a>を実現します。イミュータブルサーバはこのようなツールを使ったやり方の論理的な帰結と言えます。サーバを1度配置したら、2度と変更せずに、新しいインスタンスに置き換えるのです。</p>
 </blockquote>
 
-<p>つまり、仮想マシンが状態を持っているがために、<br>
-冪等性や自己修復性のために条件を付けてセットアップの処理を書かなければならず、<br>
-しかも定期的に構成管理ツールのサーバーと通信する必要があったが、<br>
-仮想マシンが不変だという前提に立てば、その面倒が軽減されるということです。</p>
+<p>つまり、仮想マシンが状態を持っているがために、冪等性や自己修復性のために条件を付けてセットアップの処理を書かなければならず、しかも定期的に構成管理ツールのサーバーと通信する必要があったが、仮想マシンが不変だという前提に立てば、その面倒が軽減されるということです。</p>
 
-<p>もちろん構成管理ツールが不要になるわけではなく、<br>
-ベースとなる仮想マシンの構築や、<br>
-初回起動後の仮想マシンに対してマシンごとの変更を設定するために使われていくでしょう。<br>
-しかしそこではChefやPuppetのようなサーバー/クライアントタイプではなく、<br>
-Ansibleのようなものの方が向いているかもしれません。</p>
+<p>もちろん構成管理ツールが不要になるわけではなく、ベースとなる仮想マシンの構築や、初回起動後の仮想マシンに対してマシンごとの変更を設定するために使われていくでしょう。<br>
+しかしそこではChefやPuppetのようなサーバー/クライアントタイプではなく、Ansibleのようなものの方が向いているかもしれません。</p>
 
 </section><section><header><h3>dockerに触ってみる</h3></header>
 
-<p>今回は軽くdockerに触って見ることにしましょう。<br>
-ホストOSはMac OS X 10.8.5で、<br>
-VIrtual Boxとvagrantはセットアップ済みとします。</p>
+<p>今回は軽くdockerに触って見ることにしましょう。ホストOSはMac OS X 10.8.5で、VIrtual Boxとvagrantはセットアップ済みとします。</p>
 
 <h4>CoreOS</h4>
 
 <p>dockerはLXCを用いているので、Linuxホストでしか実行できません。<br>
 従ってまずはOSX上にLinuxを立ち上げます。<br>
-CoreOSとは、Linux kernelとsystemdだけで構成された軽量なディストリビューションであり、<br>
-dockerを動かすための最小構成として用意されています。</p>
+CoreOSとは、Linux kernelとsystemdだけで構成された軽量なディストリビューションであり、dockerを動かすための最小構成として用意されています。</p>
 <pre class="highlight plaintext"><code>git clone https://github.com/coreos/coreos-vagrant/ coreos
 cd coreos
 vagrant up
@@ -235,8 +187,7 @@ Commands:
     wait      Block until a container stops, then print its exit code
 </code></pre>
 
-<p><code>docker search</code>コマンドもしくは<a href="https://index.docker.io/">index.docker.io</a>で<br>
-dockerのimageを検索することができます。</p>
+<p><code>docker search</code>コマンドもしくは<a href="https://index.docker.io/">index.docker.io</a>でdockerのimageを検索することができます。</p>
 <pre class="highlight plaintext"><code>core@localhost ~ $ docker search ubuntu
 Found 25 results matching your query ("ubuntu")
 NAME                             DESCRIPTION
@@ -373,8 +324,7 @@ d4c5774e54a0        base:latest         bash                5 minutes ago       
 82e8a706e7ff
 </code></pre>
 
-<p>バックグラウンドで起動しているコンテナに対しては、<br>
-<code>docker attach</code>でAttachできます。</p>
+<p>バックグラウンドで起動しているコンテナに対しては、<code>docker attach</code>でAttachできます。</p>
 <pre class="highlight plaintext"><code>core@localhost ~ $ docker ps
 ID                  IMAGE               COMMAND             CREATED             STATUS              PORTS
 82e8a706e7ff        base:latest         bash                4 seconds ago       Up 4 seconds
@@ -383,11 +333,9 @@ core@localhost ~ $ docker attach 82e8a706e7ff
 root@82e8a706e7ff:/#
 </code></pre>
 
-<p>コンテナ上で作業し、そのコンテナの状態を保存したい場合は、<br>
-<code>docker commit</code>でコンテナのイメージを保存します。</p>
+<p>コンテナ上で作業し、そのコンテナの状態を保存したい場合は、<code>docker commit</code>でコンテナのイメージを保存します。</p>
 
-<p><a href="https://index.docker.io/">index.docker.io</a> に登録すれば、<br>
-<code>docker login</code>して<code>docker push</code>することでimageの公開も行うことが可能です。</p>
+<p><a href="https://index.docker.io/">index.docker.io</a> に登録すれば、<code>docker login</code>して<code>docker push</code>することでimageの公開も行うことが可能です。</p>
 
 <p><code>docker commit</code>では、コンテナIDの後にREPOSITORYを指定できます。<br>
 公開するならば、ユーザー名/イメージ名の書式にするのがよいと思います。</p>
@@ -419,8 +367,7 @@ Deleted: 895a13e29f4a
 <h5>フォーマット</h5>
 
 <p>Dockerfileのフォーマットは単純です。<br>
-命令では、大文字と小文字は区別されず、<br>
-dockerはDockerfileの命令を順番に評価します。</p>
+命令では、大文字と小文字は区別されず、dockerはDockerfileの命令を順番に評価します。</p>
 
 <p>最初の命令は<code>FROM</code>でなければなりません。<br>
 <code>#</code>から始まる行はコメントです。</p>
@@ -434,8 +381,7 @@ FROMはDockerfileの中で、最初の非コメントの命令でなければい
 <pre class="highlight plaintext"><code>FROM &lt;TAG&gt;：&lt;image&gt;
 </code></pre>
 
-<p>FROMは、複数のイメージを作成するために、<br>
-単一Dockerfileの内で複数回記述することもできます。</p>
+<p>FROMは、複数のイメージを作成するために、単一Dockerfileの内で複数回記述することもできます。</p>
 
 <h5>MAINTAINER</h5>
 <pre class="highlight plaintext"><code>MAINTAINER &lt;NAME&gt;
@@ -472,8 +418,7 @@ CMD command param1 param2 (as a shell)
 <pre class="highlight plaintext"><code>ENV &lt;key&gt; &lt;value&gt;
 </code></pre>
 
-<p><code>ENV</code>命令は<br>
-環境変数設定の<key>値に<value>セットします。</p>
+<p><code>ENV</code>命令は環境変数設定の<key>値に<value>セットします。</p>
 
 <h5>ADD</h5>
 
@@ -498,15 +443,13 @@ CMD command param1 param2 (as a shell)
 
 <h5>WORKDIR</h5>
 
-<p><code>WORKDIR</code>命令は、CMDコマンドの作業ディレクトリを指定します。<br>
-<code><br>
-WORKDIR /path/to/workdir<br>
-</code></p>
+<p><code>WORKDIR</code>命令は、CMDコマンドの作業ディレクトリを指定します。</p>
+<pre class="highlight plaintext"><code>WORKDIR /path/to/workdir
+</code></pre>
 
 <h4>dockerイメージのビルド</h4>
 
-<p>Dockerfileのあるディレクトリで<code>docker build</code>することで、<br>
-Dockerfileに基づいてイメージを作成することができます。</p>
+<p>Dockerfileのあるディレクトリで<code>docker build</code>することで、Dockerfileに基づいてイメージを作成することができます。</p>
 <pre class="highlight plaintext"><code>docker build .
 </code></pre>
 
@@ -596,9 +539,7 @@ Step 6 : CMD ["/usr/bin/redis-server"]
 Successfully built e31730c0e9f0
 </code></pre>
 
-<p>redisという名前でイメージを作成できたので、<br>
-<code>-d</code>オプションでバックグラウンド指定し、<br>
-<code>-p</code>オプションでport forwardを指定します。<br>
+<p>redisという名前でイメージを作成できたので、<code>-d</code>オプションでバックグラウンド指定し、<code>-p</code>オプションでport forwardを指定します。<br>
 <code>CMD</code>命令でredis-serverが指定してあるので、コマンドは省略できます。</p>
 <pre class="highlight plaintext"><code>core@localhost ~ $ docker run -d -p 6379 redis
 a558ea555e65
@@ -691,9 +632,7 @@ redis 172.17.0.9:6379&gt;
 <pre class="highlight plaintext"><code>redis-cli -h 192.168.33.10 -p 49157
 </code></pre>
 
-<p>OSX -&gt; CoreOS (vagrant) -&gt; コンテナ という構成なので、<br>
-直接SSH接続できるようなイメージを作成するとしたら、<br>
-sshサーバーを作るDockerfileを作成して<code>docer build</code>すればOKです。<br>
+<p>OSX -&gt; CoreOS (vagrant) -&gt; コンテナ という構成なので、直接SSH接続できるようなイメージを作成するとしたら、sshサーバーを作るDockerfileを作成して<code>docer build</code>すればOKです。<br>
 passwordは適宜変更してください。</p>
 
 <h6><code>Dockerfile</code> (ssh-server)</h6>
@@ -726,8 +665,7 @@ ID                  IMAGE               COMMAND                CREATED          
 
 </section><section><header><h3>雑感</h3></header>
 
-<p>dockerでのコンテナ操作は、<br>
-vagrant upするよりも遙かに軽いです。<br>
+<p>dockerでのコンテナ操作は、vagrant upするよりも遙かに軽いです。<br>
 仮想マシンを立ち上げて・操作して・破棄してを気兼ねなくできるようになりました。<br>
 サーバー状態の変更をgitのようにcommitで操作できるのも便利です。<br>
 Dockerfileを配布することによってセットアップ手順も公開できることも可能性が広がりますね。</p>
