@@ -665,47 +665,96 @@ elixirではキーワードリストとマップと呼ばれる2種類の連想�
 
 <p>まずはキーワードリストだ。<br>
 elixirでは，「最初の要素がアトムとなっているタプル」のリストをキーワードリストと呼ぶ。</p>
-<pre class="highlight elixir"><code><span class="n">iex</span><span class="p">(</span><span class="m">108</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">k_list</span> <span class="o">=</span> <span class="p">[{</span><span class="ss">:x</span><span class="p">,</span> <span class="m">20</span><span class="p">},</span> <span class="p">{</span><span class="ss">:y</span><span class="p">,</span> <span class="m">30</span><span class="p">}]</span>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">k_list</span> <span class="o">=</span> <span class="p">[{</span><span class="ss">:x</span><span class="p">,</span> <span class="m">20</span><span class="p">},</span> <span class="p">{</span><span class="ss">:y</span><span class="p">,</span> <span class="m">30</span><span class="p">}]</span>
 <span class="p">[</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">]</span>
 </code></pre>
 
 <p>キーワードリストを使うとき、省略した記法もサポートされている。</p>
-<pre class="highlight elixir"><code><span class="n">iex</span><span class="p">(</span><span class="m">109</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">k_list</span> <span class="o">=</span> <span class="p">[</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">]</span>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">k_list</span> <span class="o">=</span> <span class="p">[</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">]</span>
 <span class="p">[</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">]</span>
 </code></pre>
 
 <p>要素へのアクセスも出来る。指定のキーが無い場合は<code>nil</code>になる。<br>
 rubyのHashと同じような使い勝手だね。</p>
-<pre class="highlight elixir"><code><span class="n">iex</span><span class="p">(</span><span class="m">110</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">k_list</span><span class="p">[</span><span class="ss">:x</span><span class="p">]</span>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">k_list</span><span class="p">[</span><span class="ss">:x</span><span class="p">]</span>
 <span class="m">20</span>
-<span class="n">iex</span><span class="p">(</span><span class="m">111</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">k_list</span><span class="p">[</span><span class="ss">:z</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">k_list</span><span class="p">[</span><span class="ss">:z</span><span class="p">]</span>
 <span class="no">nil</span>
 </code></pre>
 
 <p>キーワードリストはあくまで「タプルのリスト」だから、操作もリストと同じだ。</p>
-<pre class="highlight elixir"><code><span class="n">iex</span><span class="p">(</span><span class="m">112</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">k_list</span> <span class="o">++</span> <span class="p">[</span><span class="ss">z:</span> <span class="m">40</span><span class="p">]</span>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">k_list</span> <span class="o">++</span> <span class="p">[</span><span class="ss">z:</span> <span class="m">40</span><span class="p">]</span>
 <span class="p">[</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">z:</span> <span class="m">40</span><span class="p">]</span>
-<span class="n">iex</span><span class="p">(</span><span class="m">114</span><span class="p">)</span><span class="o">&gt;</span> <span class="p">[{</span><span class="ss">:z</span><span class="p">,</span> <span class="m">40</span><span class="p">}</span> <span class="o">|</span> <span class="n">k_list</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">[{</span><span class="ss">:z</span><span class="p">,</span> <span class="m">40</span><span class="p">}</span> <span class="o">|</span> <span class="n">k_list</span><span class="p">]</span>
 <span class="p">[</span><span class="ss">z:</span> <span class="m">40</span><span class="p">,</span> <span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">]</span>
 </code></pre>
 
 <p>あくまでリストだから、キーの順番は保たれるし、同じキーが複数回あってもいい。<br>
 キーによるアクセス時、同一のキーがキーワードリスト内部にあっても、前方の値が優先される。</p>
-<pre class="highlight elixir"><code><span class="n">iex</span><span class="p">(</span><span class="m">116</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">new_list</span> <span class="o">=</span> <span class="n">k_list</span> <span class="o">++</span> <span class="p">[</span><span class="ss">z:</span> <span class="m">40</span><span class="p">,</span> <span class="ss">x:</span> <span class="m">10</span><span class="p">]</span>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="n">new_list</span> <span class="o">=</span> <span class="n">k_list</span> <span class="o">++</span> <span class="p">[</span><span class="ss">z:</span> <span class="m">40</span><span class="p">,</span> <span class="ss">x:</span> <span class="m">10</span><span class="p">]</span>
 <span class="p">[</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">z:</span> <span class="m">40</span><span class="p">,</span> <span class="ss">x:</span> <span class="m">10</span><span class="p">]</span>
-<span class="n">iex</span><span class="p">(</span><span class="m">117</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">new_list</span><span class="p">[</span><span class="ss">:x</span><span class="p">]</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">new_list</span><span class="p">[</span><span class="ss">:x</span><span class="p">]</span>
 <span class="m">20</span>
 </code></pre>
 
 <h4>マップ</h4>
-<pre class="highlight elixir"><code></code></pre>
-<pre class="highlight elixir"><code></code></pre>
-<pre class="highlight elixir"><code></code></pre>
 
-<h4>マップ</h4>
+<p>マップは<code>%{}</code>を使うと定義することができます。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="ss">:x</span> <span class="o">=&gt;</span> <span class="m">20</span><span class="p">,</span> <span class="ss">:y</span> <span class="o">=&gt;</span> <span class="m">30</span><span class="p">}</span>
+<span class="p">%{</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">}</span>
+</code></pre>
+
+<p>キーワードリストでは最初の要素がアトムでしたが、マップではキーをどんな値にもする事ができます。<br>
+キーワードリストはキーの順序が保たれ、複数の同一キーも許されました、<br>
+しかしマップではキーの順序は保たれず、もしマップを作るときに同じキーが渡されると最後の一つが優先されます。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="ss">:x</span> <span class="o">=&gt;</span> <span class="m">20</span><span class="p">,</span> <span class="ss">:x</span> <span class="o">=&gt;</span> <span class="m">30</span><span class="p">}</span>
+<span class="p">%{</span><span class="ss">x:</span> <span class="m">30</span><span class="p">}</span>
+</code></pre>
+
+<p>マップのキーが全てアトムの場合はrubyのhash記法のように省略を使うことが出来ます。</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">}</span>
+<span class="p">%{</span><span class="ss">x:</span> <span class="m">20</span><span class="p">,</span> <span class="ss">y:</span> <span class="m">30</span><span class="p">}</span>
+</code></pre>
+
+<p>マップは与えられたマップのキーがある部分にだけマッチするので、パターンマッチングに使いやすいです</p>
+<pre class="highlight elixir"><code><span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="ss">name:</span> <span class="n">n</span><span class="p">,</span> <span class="ss">age:</span> <span class="n">x</span><span class="p">}</span> <span class="o">=</span> <span class="p">%{</span><span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">,</span> <span class="ss">age:</span> <span class="m">30</span><span class="p">}</span>
+<span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">n</span>
+<span class="s1">'taro'</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">x</span>
+<span class="m">30</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="ss">name:</span> <span class="n">n</span><span class="p">}</span> <span class="o">=</span> <span class="p">%{</span><span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">,</span> <span class="ss">age:</span> <span class="m">30</span><span class="p">}</span>
+<span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">n</span>
+<span class="s1">'taro'</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="ss">name:</span> <span class="n">n</span><span class="p">}</span> <span class="o">=</span> <span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">}</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">MatchError</span><span class="p">)</span> <span class="n">no</span> <span class="n">match</span> <span class="n">of</span> <span class="n">right</span> <span class="n">hand</span> <span class="n">side</span> <span class="ss">value:</span> <span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">}</span>
+</code></pre>
+
+<p>マップにはキーにアクセスするための構文が提供されています。</p>
+<pre class="highlight elixir"><code><span class="c1"># 要素へのアクセス</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="p">%{</span><span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">,</span> <span class="ss">age:</span> <span class="m">30</span><span class="p">}</span>
+<span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">.</span><span class="n">name</span>
+<span class="s1">'taro'</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">.</span><span class="n">age</span>
+<span class="m">30</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">map</span><span class="o">.</span><span class="n">x</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">KeyError</span><span class="p">)</span> <span class="n">key</span> <span class="ss">:x</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">in</span><span class="p">:</span> <span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">}</span>
+
+<span class="c1"># 要素の更新</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="n">map</span> <span class="o">|</span> <span class="ss">name:</span> <span class="s1">'ziro'</span><span class="p">}</span>
+<span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">name:</span> <span class="s1">'ziro'</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="n">map</span>
+<span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">}</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="p">%{</span><span class="n">map</span> <span class="o">|</span> <span class="ss">x:</span> <span class="s1">'xxx'</span><span class="p">}</span>
+<span class="o">**</span> <span class="p">(</span><span class="no">ArgumentError</span><span class="p">)</span> <span class="n">argument</span> <span class="n">error</span>
+    <span class="p">(</span><span class="n">stdlib</span><span class="p">)</span> <span class="ss">:maps</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="ss">:x</span><span class="p">,</span> <span class="s1">'xxx'</span><span class="p">,</span> <span class="p">%{</span><span class="ss">age:</span> <span class="m">30</span><span class="p">,</span> <span class="ss">name:</span> <span class="s1">'taro'</span><span class="p">})</span>
+    <span class="p">(</span><span class="n">stdlib</span><span class="p">)</span> <span class="n">erl_eval</span><span class="o">.</span><span class="ss">erl:</span><span class="m">255</span><span class="p">:</span> <span class="n">anonymous</span> <span class="k">fn</span><span class="o">/</span><span class="m">2</span> <span class="ow">in</span> <span class="ss">:erl_eval</span><span class="o">.</span><span class="n">expr</span><span class="o">/</span><span class="m">5</span>
+    <span class="p">(</span><span class="n">stdlib</span><span class="p">)</span> <span class="n">lists</span><span class="o">.</span><span class="ss">erl:</span><span class="m">1261</span><span class="p">:</span> <span class="ss">:lists</span><span class="o">.</span><span class="n">foldl</span><span class="o">/</span><span class="m">3</span>
+</code></pre>
 
 </section><section><header><h3>まだ追記していくよ</h3></header>
-<pre class="highlight elixir"><code></code></pre>
 </section>
 </article>
 </div>
