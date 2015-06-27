@@ -4,10 +4,435 @@
   <id>http://k-shogo.github.io/</id>
   <link href="http://k-shogo.github.io/"/>
   <link href="http://k-shogo.github.io/feed.xml" rel="self"/>
-  <updated>2015-01-16T16:41:00+09:00</updated>
+  <updated>2015-02-21T14:34:00+09:00</updated>
   <author>
     <name>k-shogo</name>
   </author>
+  <entry>
+    <title>複雑な構成のrailsアプリをdockerで動かしたい場合はどうするべきか</title>
+    <link rel="alternate" href="/article/2015/02/21/rails-fig/"/>
+    <id>/article/2015/02/21/rails-fig/</id>
+    <published>2015-02-21T14:34:00+09:00</published>
+    <updated>2015-02-21T14:34:00+09:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;h1&gt;はじめに&lt;/h1&gt;
+
+&lt;p&gt;本記事は複雑な構成をとるrailsアプリケーションをdockerで動作させる場合についてまとめています。&lt;/p&gt;
+
+&lt;p&gt;これまでにrailsを動作させるコンテナのDockerfileをどう記述するのが良いかという観点と、railsアプリケーションのプレビュー環境をdockerで構築出来るかという検証の二つの記事を公開していました。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://qiita.com/k-shogo/items/592e243f9763d0c3b10a"&gt;railsをdockerで動かしたい場合の構成はどうするべきか - Qiita&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://qiita.com/k-shogo/items/cc47e448fa0c07ac3189"&gt;Docker(pool)を用いたプレビュー環境を検証する(railsアプリ開発チームの活用例) - Qiita&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;先に公開した二つの記事では、railsアプリケーションを単独のコンテナで動作させる場合について言及しています。&lt;br&gt;
+しかしアプリケーションの規模が大きくなるとrails単体だけでは無く、キャッシュにmemcachedやredis, 検索にsolrにelasticsearch, フロントにはapache, nginxと複数の要素で一つのシステムを構築することになってきます。&lt;br&gt;
+このような環境を出来るだけ簡単そして簡潔に構築することが本記事の目的です。&lt;/p&gt;
+
+&lt;h1&gt;コンセプト&lt;/h1&gt;
+
+&lt;p&gt;複数のサービスからなるシステムを構築する大きな方向性としては、サービス全部入りのコンテナを用意するものと、各機能毎にコンテナを用意するものが考えられます。&lt;br&gt;
+&amp;ldquo;全部入り&amp;quot;のコンテナを用意するとなると、Dockerfileにセットアップをごりごりと記述していくことになるでしょう。&lt;br&gt;
+Dockerfileの記述は複雑にならざるを得ず、少しの変更でコンテナ全体のビルドをやり直す必要も出てきます。&lt;br&gt;
+そこで本記事では、各サービス毎にコンテナを分離する方法をとります。&lt;br&gt;
+今回はコンポジションおよびオーケストレーションツールである&lt;a href="https://github.com/docker/compose"&gt;docker/compose&lt;/a&gt;を用います。&lt;/p&gt;
+
+&lt;p&gt;目指す構成としてはフロントにnginx, railsアプリはunicornを動作させ、データベースにはmysqlを、キャッシュと全文検索としてredis, elasticsearchを取り扱います。&lt;/p&gt;
+
+&lt;h1&gt;検証環境&lt;/h1&gt;
+
+&lt;p&gt;検証はmac上にboot2dockerでdocker環境を構築して行っています。&lt;br&gt;
+dockerは1.5.0, docker-compose 1.0.1 を使用しています。&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;boot2docker version
+Boot2Docker-cli version: v1.5.0
+Git commit: ccd9032
+
+&lt;span class="gp"&gt;$ &lt;/span&gt;docker version
+Client version: 1.5.0
+Client API version: 1.17
+Go version &lt;span class="o"&gt;(&lt;/span&gt;client&lt;span class="o"&gt;)&lt;/span&gt;: go1.4.1
+Git commit &lt;span class="o"&gt;(&lt;/span&gt;client&lt;span class="o"&gt;)&lt;/span&gt;: a8a31ef
+OS/Arch &lt;span class="o"&gt;(&lt;/span&gt;client&lt;span class="o"&gt;)&lt;/span&gt;: darwin/amd64
+Server version: 1.5.0
+Server API version: 1.17
+Go version &lt;span class="o"&gt;(&lt;/span&gt;server&lt;span class="o"&gt;)&lt;/span&gt;: go1.4.1
+Git commit &lt;span class="o"&gt;(&lt;/span&gt;server&lt;span class="o"&gt;)&lt;/span&gt;: a8a31ef
+
+&lt;span class="gp"&gt;$ &lt;/span&gt;docker-compose --version
+docker-compose 1.1.0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;本記事で掲載しているソースコードの全体を&lt;a href="https://github.com/k-shogo/mini_doc/tree/fig"&gt;k-shogo/mini_doc at fig&lt;/a&gt;で公開しています。&lt;/p&gt;
+
+&lt;h1&gt;railsコンテナ&lt;/h1&gt;
+
+&lt;p&gt;主役はrailsのコンテナです。従ってリポジトリもrailsがメインで、その中に他のコンテナの設定を含めることになります。&lt;br&gt;
+railsアプリのDockerfileはプロジェクトルートに設置します。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;FROM ruby:2.2.0
+
+RUN apt-get update &amp;amp;&amp;amp; apt-get install -y nodejs mysql-client --no-install-recommends &amp;amp;&amp;amp; rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY Gemfile /usr/src/app/
+COPY Gemfile.lock /usr/src/app/
+RUN bundle install -j4 --without development test
+
+COPY . /usr/src/app
+
+EXPOSE 3000
+CMD ["bundle", "exec", "unicorn", "-c", "config/unicorn.rb"]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;rubyのバージョンを切り替える場合には&lt;code&gt;FROM&lt;/code&gt;の公式rubyコンテナを切り替えることで容易に対応可能です。&lt;br&gt;
+今回はデータベースにmysqlを選択したことと、assetsのコンパイル目的で mysql-clientとnodeをインストールしています。&lt;br&gt;
+&lt;code&gt;Gemfile&lt;/code&gt;及び&lt;code&gt;Gemfile.lock&lt;/code&gt;をアプリケーションのソースの前に追加しているのは、キャッシュを用いてbundle installが必要ない場合にスキップして高速化を図るためです。&lt;br&gt;
+&lt;code&gt;RUN bundle install&lt;/code&gt;でGemfileに記述されたライブラリをインストールしますが、&lt;code&gt;development&lt;/code&gt;や&lt;code&gt;test&lt;/code&gt;グループを除外するかは好みで変更してください。&lt;br&gt;
+今回はrailsアプリケーションのDockerfile内部では&lt;code&gt;db:create&lt;/code&gt;や&lt;code&gt;db:migrate&lt;/code&gt;を行っていません。&lt;br&gt;
+これはdbに関するrakeタスクはデータベースに接続されていなければ実行できないためであり、railsアプリケーションのコンテナを単独でもビルドできるようにするためです。&lt;/p&gt;
+
+&lt;p&gt;Gemfileにはmysql, redis, elasticsearchに接続するためのライブラリ、そしてアプリケーションサーバーであるunicornを追加します。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;# database
+gem 'mysql2'
+
+# redis
+gem 'redis'
+
+# elasticsearch
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
+
+# Use Unicorn as the app server
+gem 'unicorn'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1&gt;オーケストレーション&lt;/h1&gt;
+
+&lt;p&gt;構成全体の設定を定義するfig.ymlもルートディレクトリに置いておきます。&lt;br&gt;
+構成全体の設定を定義するdocker-compose.ymlもルートディレクトリに置いておきます。&lt;br&gt;
+docker-compose.ymlではmysql, elasticsearech, redis, nginx, railsそしてdatastoreの5つのコンテナが定義されています。&lt;br&gt;
+記述方法の詳細は&lt;a href="https://github.com/docker/compose/blob/1.1.0/docs/yml.md"&gt;compose/yml.md at 1.1.0 · docker/compose&lt;/a&gt;を参照してください。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;mysql:
+  image: mysql:5.6.23
+  environment:
+    MYSQL_ROOT_PASSWORD: 'pass'
+  ports:
+    - '3306:3306'
+  volumes_from:
+    - datastore
+
+elasticsearch:
+  build: containers/elasticsearch
+  ports:
+    - '9200:9200'
+    - '9300:9300'
+  volumes_from:
+    - datastore
+
+redis:
+  image: redis:2.8.19
+  ports:
+    - '6379:6379'
+  volumes_from:
+    - datastore
+
+nginx:
+  build: containers/nginx
+  ports:
+    - '8080:80'
+  volumes_from:
+    - datastore
+  links:
+    - rails
+
+datastore:
+  build: containers/datastore
+
+rails:
+  build: .
+  ports:
+    - '3000:3000'
+  environment:
+    RAILS_ENV: preview
+    MYSQL_ROOT_PASSWORD: 'pass'
+    DATABASE_URL: mysql2://root:pass@mysql:3306
+    REDIS_URL: redis://redis:6379
+    ELASTICSEARCH_URL: http://elasticsearch:9200
+    SECRET_KEY_BASE: hogehoge
+  volumes_from:
+    - datastore
+  links:
+    - mysql
+    - elasticsearch
+    - redis
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;サービス毎のコンテナ定義&lt;/h2&gt;
+
+&lt;p&gt;まずはimageとbuildについて。&lt;br&gt;
+mysqlとredisはimageによって&lt;a href="https://registry.hub.docker.com/repos/stackbrew/"&gt;docker hubの公式イメージ&lt;/a&gt;を取得しています。&lt;br&gt;
+elasticsearchは日本語用プラグインを導入したイメージを使いたかったので、buildディレクティブで自前のDockerfileを指定しています。&lt;br&gt;
+今回は独自のDockerfileはリポジトリのルート以下にcontainersディレクトリを作り、さらにサービス毎にディレクトリを分割しています。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;- containers/                  
+ |- datastore/                 
+  |  Dockerfile                
+ |- elasticsearch/             
+  |  Dockerfile                
+ |- nginx/                     
+  |  Dockerfile                
+  |  nginx.conf
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;FROM elasticsearch:1.4.3
+
+RUN plugin install mobz/elasticsearch-head
+RUN plugin install elasticsearch/elasticsearch-analysis-kuromoji/2.4.2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;elasticsearchのDockerfileについて見てみましょう。&lt;br&gt;
+独自の定義とはいってもベースは公式のelasticsearchを利用しています。&lt;br&gt;
+追加で必要になるプラグインのインストールのみ記述することで意図が明確になります。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;FROM nginx:1.7.9
+COPY nginx.conf /etc/nginx/nginx.conf
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;nginxも公式イメージをベースにします。&lt;br&gt;
+js, cssなどの静的アセットを配信しつつ、unicornに対してリバースプロキシとしても動作させるので、このイメージには設定ファイルを追加します。&lt;/p&gt;
+
+&lt;p&gt;mysqlやredisも設定を変更したい場合は公式イメージに設定を上書きする運用が良いでしょう。&lt;/p&gt;
+
+&lt;h2&gt;コンテナ間のリンク&lt;/h2&gt;
+
+&lt;p&gt;docker-compose.ymlのlinksディレクティブではコンテナ間のリンクを定義します。&lt;br&gt;
+アクセスの方向性は nginx -&amp;gt; rails -&amp;gt; (mysql, redis, elasticsearch)のため、nginxのlinksにはrailsを、railsのlinksにはmysql, redis, elasticsearchを指定しています。&lt;/p&gt;
+
+&lt;p&gt;さて、railsのdatabase.ymlを指定するときにはどうするでしょうか。&lt;br&gt;
+dockerのコンテナ間のリンクの場合、&lt;code&gt;MYSQL_PORT_3306_TCP_ADDR&lt;/code&gt;のようなdockerが自動的に設定してくれる環境変数を用いる例が出てきます。&lt;br&gt;
+しかしこれは得策とはいえません。&lt;br&gt;
+redisへの接続を例に考えてみると、&lt;code&gt;REDIS_PORT_6379_TCP_ADDR&lt;/code&gt;のような環境変数になりますが、この使いにくい環境変数を活用しようとすると、&lt;code&gt;config/initializers/redis.rb&lt;/code&gt;等で切り分けが必要になります。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;if Rails.env.docker?
+  # docker環境の場合
+  Redis.current = Redis.new host: ['REDIS_PORT_6379_TCP_ADDR'], port: ENV['REDIS_PORT_6379_TCP_PORT']
+else
+  # それ以外の場合...
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;このような記述をしないための設定がrailsのenvironmentディレクティブです。&lt;/p&gt;
+&lt;pre class="highlight yaml"&gt;&lt;code&gt;&lt;span class="s"&gt;DATABASE_URL&lt;/span&gt;&lt;span class="pi"&gt;:&lt;/span&gt; &lt;span class="s"&gt;mysql2://root:pass@mysql:3306&lt;/span&gt;
+&lt;span class="s"&gt;REDIS_URL&lt;/span&gt;&lt;span class="pi"&gt;:&lt;/span&gt; &lt;span class="s"&gt;redis://redis:6379&lt;/span&gt;
+&lt;span class="s"&gt;ELASTICSEARCH_URL&lt;/span&gt;&lt;span class="pi"&gt;:&lt;/span&gt; &lt;span class="s"&gt;http://elasticsearch:9200&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;docker-composeでlinkディレクティブを指定すると、hostsに他コンテナの設定が追加されます。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;$ docker-compose run rails cat /etc/hosts
+172.17.2.69 6866a8e73892
+127.0.0.1   localhost
+::1 localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+172.17.2.66 minidoc_elasticsearch_1
+172.17.2.67 minidoc_redis_1
+172.17.2.67 redis
+172.17.2.67 redis_1
+172.17.2.66 elasticsearch
+172.17.2.66 elasticsearch_1
+172.17.2.65 mysql_1
+172.17.2.65 minidoc_mysql_1
+172.17.2.65 mysql
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;直接railsからhostsの値を用いても良いですが、environmentディレクティブで整理してrailsに環境変数として渡すことで、プロダクションなどの他環境に移しやすくなります。&lt;br&gt;
+例えばredis, elasticsearchはgemの設計として、それぞれ &lt;code&gt;REDIS_URL&lt;/code&gt;, &lt;code&gt;ELASTICSEARCH_URL&lt;/code&gt;が設定されていた場合に接続先として用いてくれるので、それらに合わせることでdocker環境でもプロダクション環境でも対応できます。&lt;br&gt;
+&lt;code&gt;database.yaml&lt;/code&gt;でも環境変数&lt;code&gt;DATABASE_URL&lt;/code&gt;で接続情報を渡すと決めていれば環境の切り替えが容易になります。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;default: &amp;amp;default
+  adapter: mysql2
+  encoding: utf8
+  pool: 5
+
+development:
+  &amp;lt;&amp;lt;: *default
+  database: minidoc_development
+  username: root
+  password:
+  host: localhost
+
+test:
+  &amp;lt;&amp;lt;: *default
+  database: minidoc_test
+  username: root
+  password:
+  host: localhost
+
+preview:
+  &amp;lt;&amp;lt;: *default
+  database: minidoc_preview
+  url: &amp;lt;%= ENV['DATABASE_URL'] %&amp;gt;
+
+production:
+  &amp;lt;&amp;lt;: *default
+  database: minidoc_production
+  url: &amp;lt;%= ENV['DATABASE_URL'] %&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;データボリュームコンテナ&lt;/h2&gt;
+
+&lt;p&gt;データボリュームコンテナには永続化、共有したいパスをVOLUMEコマンドで定義しているだけです。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;FROM busybox:latest
+
+VOLUME /var/lib/mysql
+VOLUME /usr/share/elasticsearch/data
+VOLUME /data
+VOLUME /usr/src/app/public
+VOLUME /usr/src/app/log
+
+CMD /bin/sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;mysqlやelasticsearch用には永続化するだけですが、ここでのポイントはrailsが生成するassetsの扱いです。&lt;br&gt;
+今回フロントのnginxから静的ファイルを配信したいので、アセットをnginxコンテナに渡さなければなりません。&lt;br&gt;
+もちろんローカルでassets:precompileしたものをnginxコンテナにADDする方法もとれます。&lt;br&gt;
+その場合、ローカルにnode.js等が必要になってくるため、今回の例ではnodeが用意されているrailsコンテナでコンパイルを行い、そのファイルを共有したボリュームによってnginxから読み出す方法を紹介します。&lt;br&gt;
+そのためのパスが&lt;code&gt;/usr/src/app/public&lt;/code&gt;です。&lt;br&gt;
+nginxの設定ファイルを見てみましょう。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+  worker_connections 1024; # increase if you have lots of clients
+  accept_mutex off; # "on" if nginx worker_processes &amp;gt; 1
+}
+
+http {
+  include mime.types;
+  default_type application/octet-stream;
+  log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+  access_log  /var/log/nginx/access.log  main;
+
+  sendfile on;
+
+  tcp_nopush on; # off may be better for *some* Comet/long-poll stuff
+  tcp_nodelay off; # on may be better for some Comet/long-poll stuff
+
+  gzip on;
+  gzip_http_version 1.0;
+  gzip_proxied any;
+  gzip_min_length 500;
+  gzip_disable "MSIE [1-6]\.";
+  gzip_types text/plain text/html text/xml text/css
+             text/comma-separated-values
+             text/javascript application/x-javascript
+             application/atom+xml;
+
+  upstream app_server {
+    # for UNIX domain socket setups:
+    # server unix:/path/to/.unicorn.sock fail_timeout=0;
+
+    # for TCP setups, point these to your backend servers
+    # server 192.168.0.7:8080 fail_timeout=0;
+    server rails:3000 fail_timeout=0;
+  }
+
+  server {
+    listen       80;
+    server_name  localhost;
+    client_max_body_size 4G;
+    keepalive_timeout 5;
+
+    # path for static files
+    root /usr/src/app/public;
+
+    try_files $uri/index.html $uri.html $uri @app;
+
+    location @app {
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://app_server;
+    }
+
+    # Rails error pages
+    error_page 500 502 503 504 /500.html;
+    location = /500.html {
+      root /usr/src/app/public;
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ポイントは&lt;code&gt;root /usr/src/app/public;&lt;/code&gt;の部分です。&lt;br&gt;
+&lt;code&gt;/usr/src/app&lt;/code&gt;はrailsアプリケーションが配置されている場所です。&lt;br&gt;
+そのためrailsコンテナで&lt;code&gt;rake assets:precompile&lt;/code&gt;すると&lt;code&gt;/usr/src/app/public&lt;/code&gt;にコンパイルされたアセットが配置されます。&lt;br&gt;
+このパスをデータボリュームコンテナで共有することでnginxコンテナから読み出すということです。&lt;/p&gt;
+
+&lt;h2&gt;その他設定 dockerignore&lt;/h2&gt;
+
+&lt;p&gt;dockerignoreファイルも用意しておきましょう。&lt;br&gt;
+ログや一時ファイルなどを除外しておかないと、アプリケーションの変更だと見なされてしまいます。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;## Rails
+public/assets/*
+
+## Environment normalisation:
+.bundle
+vendor/bundle
+.git
+
+## log
+log
+tmp
+
+## OSX
+.DS_Store
+
+## docker
+.dockerignore
+containers
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1&gt;ビルド &amp;amp; 実行&lt;/h1&gt;
+
+&lt;p&gt;一気にビルドする事も出来ますし、サービスを指定することも可能です。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;$ docker-compose build
+$ docker-compose build rails
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;rakeタスクなどを実行する場合には&lt;code&gt;docker-compose run rails&lt;/code&gt;に続けて指定できます。&lt;br&gt;
+docker-compose.yml&lt;code&gt;のなかで&lt;/code&gt;RAILS_ENV`を指定している場合はそのRails.envで動作します。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;$ docker-compose run rails rake db:create
+$ docker-compose run rails rake db:migrate
+$ docker-compose run rails rake db:seed_fu
+$ docker-compose run rails rake assets:precompile
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;docker-compose up&lt;/code&gt;で複数のコンテナを一気に立ち上げましょう。&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;$ docker-compose up
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;あとは&lt;code&gt;boot2docker ip&lt;/code&gt;でアドレスを確認し、今回の場合はnginxの80と8080番を繋いでいるので、&lt;code&gt;http://192.168.59.103:8080&lt;/code&gt; にアクセスします。（IPアドレスは人によって異なります）&lt;/p&gt;
+
+&lt;h1&gt;まとめ&lt;/h1&gt;
+
+&lt;p&gt;本記事では複雑な構成のrailsアプリケーションをdockerで動作させる場合についてまとめました。&lt;br&gt;
+今回はrailsのコードをコンテナに入れ、プロダクション相当で稼働させる例でした。&lt;br&gt;
+本番環境もdockerで運用することが出来たなら、ビルドしたコンテナをそのまま本番に持って行くことが出来るようにです。&lt;/p&gt;
+
+&lt;p&gt;開発環境で使いたい、つまりローカルでコードを編集し、結果をコンテナで実行させているrailsで確認したい場合などは、プロジェクトルートをData Volumeでマウントする運用も出来るでしょう。&lt;br&gt;
+この方法なら&lt;code&gt;docker build&lt;/code&gt;やコンテナに対して&lt;code&gt;rsync&lt;/code&gt;等すること無くコードの反映が可能になります。&lt;/p&gt;
+
+&lt;p&gt;dockerを用いた環境の構築では、railsのリポジトリに必要なサービスの設定ファイルを含められること、開発環境を複数開発者で揃えられること、そして容易に環境の破棄が可能になること（例えばブランチの切り替え時にデータボリュームコンテナを差し替えるなど）のメリットが考えられます、&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Docker(pool)を用いたプレビュー環境を検証する</title>
     <link rel="alternate" href="/article/2015/01/16/rails-on-pool/"/>
@@ -1792,7 +2217,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、ユ�
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;レスポンス&lt;/p&gt;
-&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge@gmail.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"authentication_token"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.054Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.057Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nt"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge@gmail.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"authentication_token"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="kc"&gt;null&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.054Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.057Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4&gt;ログイン（アクセストークンの取得）&lt;/h4&gt;
@@ -1802,7 +2227,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、ユ�
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;レスポンス&lt;/p&gt;
-&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge@gmail.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"authentication_token"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"jLJyLg_o3crPPhfUoCrA4kzdrHxP31Fc"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.054Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:11:45.007Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nt"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge@gmail.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"authentication_token"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"jLJyLg_o3crPPhfUoCrA4kzdrHxP31Fc"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.054Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:11:45.007Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4&gt;リソースへのアクセス&lt;/h4&gt;
@@ -1812,7 +2237,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、ユ�
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;レスポンス&lt;/p&gt;
-&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"user_id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"title"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"body"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:13:20.355Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:13:20.355Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nt"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"user_id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"title"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"body"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:13:20.355Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:13:20.355Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;ノート一覧リクエスト&lt;/p&gt;
@@ -1820,7 +2245,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、ユ�
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;レスポンス&lt;/p&gt;
-&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;[{&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"user_id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"title"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"body"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"url"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:3000/notes/11.json"&lt;/span&gt;&lt;span class="p"&gt;}]&lt;/span&gt;&lt;span class="w"&gt;
+&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;[{&lt;/span&gt;&lt;span class="nt"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"user_id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"title"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"test"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"body"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"url"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"http://localhost:3000/notes/11.json"&lt;/span&gt;&lt;span class="p"&gt;}]&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4&gt;アクセストークンの更新&lt;/h4&gt;
@@ -1830,7 +2255,7 @@ APIでのログイン時、ユーザー情報のJSONを返すのですが、ユ�
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;レスポンス&lt;/p&gt;
-&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge@gmail.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"authentication_token"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"WNRPupEy9f5CWiQE71kFQQEHut5DZxBc"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.054Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s2"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:16:57.923Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;pre class="highlight json"&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nt"&gt;"id"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"email"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"hoge@gmail.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"authentication_token"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"WNRPupEy9f5CWiQE71kFQQEHut5DZxBc"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"created_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:10:56.054Z"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nt"&gt;"updated_at"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s2"&gt;"2014-09-14T10:16:57.923Z"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4&gt;アクセストークンの削除&lt;/h4&gt;
@@ -1990,255 +2415,6 @@ config/secrets.yml
 &lt;pre class="highlight conf"&gt;&lt;code&gt;[&lt;span class="n"&gt;alias&lt;/span&gt;]
   &lt;span class="n"&gt;delete&lt;/span&gt;-&lt;span class="n"&gt;merged&lt;/span&gt;-&lt;span class="n"&gt;branches&lt;/span&gt; = !&lt;span class="n"&gt;git&lt;/span&gt; &lt;span class="n"&gt;branch&lt;/span&gt; --&lt;span class="n"&gt;merged&lt;/span&gt; | &lt;span class="n"&gt;grep&lt;/span&gt; -&lt;span class="n"&gt;v&lt;/span&gt; \\* | &lt;span class="n"&gt;xargs&lt;/span&gt; -&lt;span class="n"&gt;I&lt;/span&gt; % &lt;span class="n"&gt;git&lt;/span&gt; &lt;span class="n"&gt;branch&lt;/span&gt; -&lt;span class="n"&gt;d&lt;/span&gt; %
 &lt;/code&gt;&lt;/pre&gt;
-</content>
-  </entry>
-  <entry>
-    <title>dockerでrailsを動かすときの構成はどうするべきか</title>
-    <link rel="alternate" href="/article/2014/07/08/rails-in-docker/"/>
-    <id>/article/2014/07/08/rails-in-docker/</id>
-    <published>2014-07-08T14:27:00+09:00</published>
-    <updated>2014-07-08T14:27:00+09:00</updated>
-    <author>
-      <name>Article Author</name>
-    </author>
-    <content type="html">&lt;h3&gt;はじめに&lt;/h3&gt;
-
-&lt;p&gt;dockerでrailsを動かす場合にどうするのが良いかなーと試行錯誤し、構成も落ち着いてきたのでまとめます。&lt;/p&gt;
-
-&lt;h3&gt;お試しバージョン&lt;/h3&gt;
-
-&lt;p&gt;一番最初はとりあえずってことで、railsリポジトリ + railsを動作させるコンテナの組み合わせで試してみました。&lt;/p&gt;
-
-&lt;h4&gt;Dockerfileの内容&lt;/h4&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;FROM base
-
-&lt;span class="c"&gt;# rubyインストールに必要なパッケージを用意&lt;/span&gt;
-RUN apt-get update
-RUN apt-get install -y --force-yes build-essential curl git zlib1g-dev libssl-dev libreadline-dev libyaml-dev libxml2-dev libxslt-dev
-
-&lt;span class="c"&gt;# rbenv, ruby-buildをインストール&lt;/span&gt;
-RUN git clone https://github.com/sstephenson/rbenv.git /root/.rbenv
-RUN git clone https://github.com/sstephenson/ruby-build.git /root/.rbenv/plugins/ruby-build
-RUN ./root/.rbenv/plugins/ruby-build/install.sh
-ENV PATH /root/.rbenv/bin:&lt;span class="nv"&gt;$PATH&lt;/span&gt;
-RUN &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'eval "$(rbenv init -)"'&lt;/span&gt; &amp;gt;&amp;gt; /etc/profile.d/rbenv.sh &lt;span class="c"&gt;# or /etc/profile&lt;/span&gt;
-RUN &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'eval "$(rbenv init -)"'&lt;/span&gt; &amp;gt;&amp;gt; .bashrc
-
-&lt;span class="c"&gt;# rubyインストール（バージョン指定は ruby-versions.txt に）&lt;/span&gt;
-ENV CONFIGURE_OPTS --disable-install-doc
-ADD ./ruby-versions.txt /root/ruby-versions.txt
-RUN xargs -L 1 rbenv install &amp;lt; /root/ruby-versions.txt
-
-&lt;span class="c"&gt;# bundlerを各rubyに用意&lt;/span&gt;
-RUN &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'gem: --no-rdoc --no-ri'&lt;/span&gt; &amp;gt;&amp;gt; /.gemrc
-RUN bash -l -c &lt;span class="s1"&gt;'for v in $(cat /root/ruby-versions.txt); do rbenv global $v; gem install bundler; done'&lt;/span&gt;
-
-&lt;span class="c"&gt;# sqlite3をインストール&lt;/span&gt;
-RUN apt-get install -y sqlite3 libsqlite3-dev
-
-&lt;span class="c"&gt;# Node.jsインストール&lt;/span&gt;
-RUN apt-get install -y software-properties-common
-RUN apt-get update
-RUN add-apt-repository -y ppa:chris-lea/node.js
-RUN &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"deb http://archive.ubuntu.com/ubuntu precise universe"&lt;/span&gt; &amp;gt;&amp;gt; /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get install -y nodejs
-
-&lt;span class="c"&gt;# ssh準備&lt;/span&gt;
-RUN mkdir /root/.ssh/
-
-&lt;span class="c"&gt;# private keyをコピー&lt;/span&gt;
-ADD id_rsa /root/.ssh/id_rsa
-
-&lt;span class="c"&gt;# known_hosts設定&lt;/span&gt;
-RUN touch /root/.ssh/known_hosts
-&lt;span class="c"&gt;# Add bitbuckets key&lt;/span&gt;
-RUN ssh-keyscan bitbucket.org &amp;gt;&amp;gt; /root/.ssh/known_hosts
-
-&lt;span class="c"&gt;# railsアプリケーションをclone&lt;/span&gt;
-RUN mkdir -p /var/www
-RUN git clone git@github.com:k-shogo/rails4-ajax-sample.git /var/www/rails
-WORKDIR /var/www/rails
-
-&lt;span class="c"&gt;# railsのセットアップ&lt;/span&gt;
-RUN bash -l -c &lt;span class="s1"&gt;'bundle install'&lt;/span&gt;
-RUN bash -l -c &lt;span class="s1"&gt;'bundle exec rake db:create; bundle exec rake db:migrate'&lt;/span&gt;
-RUN bash -l -c &lt;span class="s1"&gt;'bundle exec rake master:import'&lt;/span&gt;
-ADD ./secrets.yml /var/www/rails/config/secrets.yml
-
-EXPOSE 3000
-CMD bash -l -c &lt;span class="s1"&gt;'bundle exec rails s'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;イケてないポイント&lt;/h4&gt;
-
-&lt;p&gt;動作はしますが、&lt;code&gt;docker build&lt;/code&gt;するたびにrubyからビルドし直すのは当然イケてないので早々に止めました&lt;/p&gt;
-
-&lt;h3&gt;試行錯誤バージョン&lt;/h3&gt;
-
-&lt;p&gt;毎回rubyをビルドし直すのが時間がかかるので、rubyが入ったコンテナのリポジトリを分離し、ruby, node等を用意したコンテナ + railsリポジトリ + railsが動作するコンテナ の3リポジトリ構成にしてみました。&lt;br&gt;
-つまり先ほどのDockerfileを半分に分割する感じです。&lt;br&gt;
-さらにrailsのセットアップ部分で&lt;code&gt;bash -l -c&lt;/code&gt;とかつけるのもイケてないと感じたので、セットアップのスクリプトを分離しても見ました。&lt;/p&gt;
-
-&lt;h4&gt;railsを動作させるコンテナのDockerfile&lt;/h4&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;FROM kshogo/docker-rails-base
-
-&lt;span class="c"&gt;# Make ssh dir&lt;/span&gt;
-RUN mkdir /root/.ssh/
-
-&lt;span class="c"&gt;# Copy over private key, and set permissions&lt;/span&gt;
-ADD id_rsa /root/.ssh/id_rsa
-
-&lt;span class="c"&gt;# Create known_hosts &amp;amp; Add bitbuckets key&lt;/span&gt;
-RUN &lt;span class="se"&gt;\&lt;/span&gt;
-  touch /root/.ssh/known_hosts &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  ssh-keyscan bitbucket.org &amp;gt;&amp;gt; /root/.ssh/known_hosts
-
-&lt;span class="c"&gt;# install rails application&lt;/span&gt;
-ADD ./setup.sh /root/setup.sh
-RUN chmod +x /root/setup.sh
-RUN /root/setup.sh
-
-&lt;span class="c"&gt;# Add configuration files in repository to filesystem&lt;/span&gt;
-ADD ./rails/config/secrets.yml         /var/www/rails/config/secrets.yml
-ADD ./start-server.sh                  /usr/bin/start-server
-RUN chmod +x /usr/bin/start-server
-
-WORKDIR /var/www/rails
-EXPOSE 3000
-&lt;span class="c"&gt;# ENTRYPOINT ["/usr/bin/start-server"]&lt;/span&gt;
-CMD &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"/usr/bin/start-server"&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;セットアップのスクリプト&lt;/h4&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;span class="c"&gt;#!/bin/bash&lt;/span&gt;
-&lt;span class="nb"&gt;source&lt;/span&gt; /etc/profile.d/rbenv.sh
-mkdir -p /var/www
-git clone git@github.com:k-shogo/rails4-ajax-sample.git /var/www/rails
-&lt;span class="nb"&gt;cd&lt;/span&gt; /var/www/rails
-bundle install --without &lt;span class="nb"&gt;test &lt;/span&gt;development --path vendor/bundle
-bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake db:create &lt;span class="nv"&gt;RAILS_ENV&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;production
-bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake db:migrate &lt;span class="nv"&gt;RAILS_ENV&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;production
-bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake master:import &lt;span class="nv"&gt;RAILS_ENV&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;production
-bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake assets:precompile &lt;span class="nv"&gt;RAILS_ENV&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;production
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;source /etc/profile.d/rbenv.sh&lt;/code&gt;しておけばいいじゃんってことです。&lt;/p&gt;
-
-&lt;h4&gt;この構成でも不満&lt;/h4&gt;
-
-&lt;p&gt;たしかに毎回rubyビルドする部分は解消されたのですが、気になるポイントも出てきました。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;毎回&lt;code&gt;git clone&lt;/code&gt;する、つまりrailsリポジトリ変更したらpushしてからコンテナビルドし直さなきゃいけない&lt;/li&gt;
-&lt;li&gt;ブランチ切り替えて試したいときにわざわざDockerfile編集？&lt;/li&gt;
-&lt;li&gt;セットアップのロジックをrailsリポジトリじゃなくて動作させる側のコンテナに持たせるのが不自然&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3&gt;現在の構成&lt;/h3&gt;
-
-&lt;p&gt;そもそもDockerでrbenvいらないじゃん + railsリポジトリの中にDockerfileがあった方がいいねってことで、ruby, node等を用意したコンテナ + railsリポジトリ（Dockerfile同梱） の2リポジトリ構成にしてみました。&lt;/p&gt;
-
-&lt;h4&gt;ベースとなるコンテナのDockerfile&lt;/h4&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;FROM dockerfile/ubuntu
-
-RUN apt-get update &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  &lt;span class="nv"&gt;DEBIAN_FRONTEND&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;noninteractive apt-get upgrade -y &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  &lt;span class="nv"&gt;DEBIAN_FRONTEND&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;noninteractive apt-get -y install &lt;span class="se"&gt;\&lt;/span&gt;
-    build-essential &lt;span class="se"&gt;\&lt;/span&gt;
-    curl &lt;span class="se"&gt;\&lt;/span&gt;
-    git-core &lt;span class="se"&gt;\&lt;/span&gt;
-    libcurl4-openssl-dev &lt;span class="se"&gt;\&lt;/span&gt;
-    libreadline-dev &lt;span class="se"&gt;\&lt;/span&gt;
-    libssl-dev &lt;span class="se"&gt;\&lt;/span&gt;
-    libxml2-dev &lt;span class="se"&gt;\&lt;/span&gt;
-    libxslt1-dev &lt;span class="se"&gt;\&lt;/span&gt;
-    libyaml-dev &lt;span class="se"&gt;\&lt;/span&gt;
-    zlib1g-dev &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    curl -O http://ftp.ruby-lang.org/pub/ruby/2.1/ruby-2.1.2.tar.gz &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    tar -zxvf ruby-2.1.2.tar.gz &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    &lt;span class="nb"&gt;cd &lt;/span&gt;ruby-2.1.2 &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    ./configure --disable-install-doc &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    make &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    make install &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    &lt;span class="nb"&gt;cd&lt;/span&gt; .. &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    rm -r ruby-2.1.2 ruby-2.1.2.tar.gz &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-    &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'gem: --no-document'&lt;/span&gt; &amp;gt; /usr/local/etc/gemrc
-
-&lt;span class="c"&gt;# Install Bundler for each version of ruby&lt;/span&gt;
-RUN &lt;span class="se"&gt;\&lt;/span&gt;
-  &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;'gem: --no-rdoc --no-ri'&lt;/span&gt; &amp;gt;&amp;gt; /.gemrc &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  gem install bundler
-
-&lt;span class="c"&gt;# install sqlite3&lt;/span&gt;
-RUN apt-get install -y sqlite3 libsqlite3-dev
-
-&lt;span class="c"&gt;# Install Node.js and npm&lt;/span&gt;
-RUN &lt;span class="se"&gt;\&lt;/span&gt;
-  apt-get install -y software-properties-common &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  apt-get update &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  add-apt-repository -y ppa:chris-lea/node.js &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;"deb http://archive.ubuntu.com/ubuntu precise universe"&lt;/span&gt; &amp;gt;&amp;gt; /etc/apt/sources.list &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  apt-get update &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="se"&gt;\&lt;/span&gt;
-  apt-get install -y nodejs
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;もう&lt;code&gt;source /etc/profile.d/rbenv.sh&lt;/code&gt;やら&lt;code&gt;bash -l -c&lt;/code&gt;とかいりません&lt;/p&gt;
-
-&lt;h4&gt;railsリポジトリに同梱するDockerfile&lt;/h4&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;FROM kshogo/docker-rails-base
-
-RUN mkdir /myapp
-WORKDIR /myapp
-
-ADD Gemfile Gemfile
-ADD Gemfile.lock Gemfile.lock
-RUN bundle config without &lt;span class="nb"&gt;test &lt;/span&gt;development doc
-RUN bundle install
-ADD . /myapp
-
-ENV RAILS_ENV production
-RUN bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake db:create
-RUN bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake db:migrate
-RUN bundle &lt;span class="nb"&gt;exec &lt;/span&gt;rake assets:precompile
-
-&lt;span class="c"&gt;# Add configuration files in repository to filesystem&lt;/span&gt;
-ADD dotenv          /myapp/.env
-ADD start-server.sh /usr/bin/start-server
-RUN chmod +x /usr/bin/start-server
-
-EXPOSE 3000
-ENTRYPOINT &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"/usr/bin/start-server"&lt;/span&gt;&lt;span class="o"&gt;]&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;ポイントはrailsアプリ全体をADDする前に、&lt;code&gt;Gemfile&lt;/code&gt;と&lt;code&gt;Gemcile.lock&lt;/code&gt;だけをADDして&lt;code&gt;bundle install&lt;/code&gt;している箇所です。&lt;br&gt;
-これによって、Gemfileに更新があった場合のみ&lt;code&gt;bundle install&lt;/code&gt;が実行されるようになります。&lt;/p&gt;
-
-&lt;h4&gt;.dockerignore&lt;/h4&gt;
-
-&lt;p&gt;実はこの構成にした直後、「ローカルで&lt;code&gt;docker build&lt;/code&gt;したときに&lt;code&gt;vendor/bundle&lt;/code&gt;以下にインストールされたgemのファイル群までADDされて無駄」、「Dockerfileの中で&lt;code&gt;.bundle/config&lt;/code&gt;を消さないと設定を引き継いでしまう」などの不満点もあり、gitignoreファイルみたいに除外指定したいなーと思っていたら、&lt;a href="http://blog.docker.com/2014/07/announcing-docker-1-1/"&gt;docker 1.1.0&lt;/a&gt;でdockerignoreファイルに対応されたのでその不満も解消しました。&lt;/p&gt;
-&lt;pre class="highlight plaintext"&gt;&lt;code&gt;### Rails ###
-public/assets/*
-
-## Environment normalisation:
-.bundle
-vendor/bundle
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;ポイント&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ADDがキャッシュされるのでGemfileが変更されてなければ&lt;code&gt;bundle install&lt;/code&gt;がスキップされる&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;git checkout&lt;/code&gt;すればブランチ違いでのbuildが簡単&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3&gt;まとめ&lt;/h3&gt;
-
-&lt;p&gt;railsリポジトリにDockerfileを同梱した方が簡単だったというのが感想です。&lt;br&gt;
-dockerの開発も活発で、ほしいなーと思った機能が早速docker 1.1.0に含まれていたのには感心しました。&lt;/p&gt;
-
-&lt;p&gt;今回はお試しということでrailsコンテナの中にsqliteでDBも内蔵してしまっていますが、本来はDBコンテナは分離した方がいいですね。&lt;/p&gt;
 </content>
   </entry>
 </feed>

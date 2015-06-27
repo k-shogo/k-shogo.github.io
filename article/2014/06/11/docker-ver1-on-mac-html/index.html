@@ -98,8 +98,8 @@ brew install vagrant
 
 <p>dockerクライアント用に環境変数DOCKER_HOSTを設定します。<br>
 ポート番号がTCP/2375番に変更されているので、対応します。</p>
-<pre class="highlight diff"><code><span class="gd">-export DOCKER_HOST=tcp://
-</span><span class="gi">+export DOCKER_HOST=tcp://127.0.0.1:2375
+<pre class="highlight diff"><code>-export DOCKER_HOST=tcp://
+<span class="gi">+export DOCKER_HOST=tcp://127.0.0.1:2375
 </span></code></pre>
 
 <h4>boot2dockerコマンドでのアップグレード</h4>
