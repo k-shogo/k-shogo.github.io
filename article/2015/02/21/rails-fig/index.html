@@ -61,7 +61,421 @@
 <a href="/article/tags/fig/">fig</a>
 </span>
 </header>
+<section><header><h3>はじめに</h3></header>
 
+<p>本記事は複雑な構成をとるrailsアプリケーションをdockerで動作させる場合についてまとめています。</p>
+
+<p>これまでにrailsを動作させるコンテナのDockerfileをどう記述するのが良いかという観点と、railsアプリケーションのプレビュー環境をdockerで構築出来るかという検証の二つの記事を公開していました。</p>
+
+<ul>
+<li><a href="http://qiita.com/k-shogo/items/592e243f9763d0c3b10a">railsをdockerで動かしたい場合の構成はどうするべきか - Qiita</a></li>
+<li><a href="http://qiita.com/k-shogo/items/cc47e448fa0c07ac3189">Docker(pool)を用いたプレビュー環境を検証する(railsアプリ開発チームの活用例) - Qiita</a></li>
+</ul>
+
+<p>先に公開した二つの記事では、railsアプリケーションを単独のコンテナで動作させる場合について言及しています。<br>
+しかしアプリケーションの規模が大きくなるとrails単体だけでは無く、キャッシュにmemcachedやredis, 検索にsolrにelasticsearch, フロントにはapache, nginxと複数の要素で一つのシステムを構築することになってきます。<br>
+このような環境を出来るだけ簡単そして簡潔に構築することが本記事の目的です。</p>
+
+</section><section><header><h3>コンセプト</h3></header>
+
+<p>複数のサービスからなるシステムを構築する大きな方向性としては、サービス全部入りのコンテナを用意するものと、各機能毎にコンテナを用意するものが考えられます。<br>
+&ldquo;全部入り&quot;のコンテナを用意するとなると、Dockerfileにセットアップをごりごりと記述していくことになるでしょう。<br>
+Dockerfileの記述は複雑にならざるを得ず、少しの変更でコンテナ全体のビルドをやり直す必要も出てきます。<br>
+そこで本記事では、各サービス毎にコンテナを分離する方法をとります。<br>
+今回はコンポジションおよびオーケストレーションツールである<a href="https://github.com/docker/compose">docker/compose</a>を用います。</p>
+
+<p>目指す構成としてはフロントにnginx, railsアプリはunicornを動作させ、データベースにはmysqlを、キャッシュと全文検索としてredis, elasticsearchを取り扱います。</p>
+
+</section><section><header><h3>検証環境</h3></header>
+
+<p>検証はmac上にboot2dockerでdocker環境を構築して行っています。<br>
+dockerは1.5.0, docker-compose 1.0.1 を使用しています。</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>boot2docker version
+Boot2Docker-cli version: v1.5.0
+Git commit: ccd9032
+
+<span class="gp">$ </span>docker version
+Client version: 1.5.0
+Client API version: 1.17
+Go version <span class="o">(</span>client<span class="o">)</span>: go1.4.1
+Git commit <span class="o">(</span>client<span class="o">)</span>: a8a31ef
+OS/Arch <span class="o">(</span>client<span class="o">)</span>: darwin/amd64
+Server version: 1.5.0
+Server API version: 1.17
+Go version <span class="o">(</span>server<span class="o">)</span>: go1.4.1
+Git commit <span class="o">(</span>server<span class="o">)</span>: a8a31ef
+
+<span class="gp">$ </span>docker-compose --version
+docker-compose 1.1.0
+</code></pre>
+
+<p>本記事で掲載しているソースコードの全体を<a href="https://github.com/k-shogo/mini_doc/tree/fig">k-shogo/mini_doc at fig</a>で公開しています。</p>
+
+</section><section><header><h3>railsコンテナ</h3></header>
+
+<p>主役はrailsのコンテナです。従ってリポジトリもrailsがメインで、その中に他のコンテナの設定を含めることになります。<br>
+railsアプリのDockerfileはプロジェクトルートに設置します。</p>
+<pre class="highlight plaintext"><code>FROM ruby:2.2.0
+
+RUN apt-get update &amp;&amp; apt-get install -y nodejs mysql-client --no-install-recommends &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+COPY Gemfile /usr/src/app/
+COPY Gemfile.lock /usr/src/app/
+RUN bundle install -j4 --without development test
+
+COPY . /usr/src/app
+
+EXPOSE 3000
+CMD ["bundle", "exec", "unicorn", "-c", "config/unicorn.rb"]
+</code></pre>
+
+<p>rubyのバージョンを切り替える場合には<code>FROM</code>の公式rubyコンテナを切り替えることで容易に対応可能です。<br>
+今回はデータベースにmysqlを選択したことと、assetsのコンパイル目的で mysql-clientとnodeをインストールしています。<br>
+<code>Gemfile</code>及び<code>Gemfile.lock</code>をアプリケーションのソースの前に追加しているのは、キャッシュを用いてbundle installが必要ない場合にスキップして高速化を図るためです。<br>
+<code>RUN bundle install</code>でGemfileに記述されたライブラリをインストールしますが、<code>development</code>や<code>test</code>グループを除外するかは好みで変更してください。<br>
+今回はrailsアプリケーションのDockerfile内部では<code>db:create</code>や<code>db:migrate</code>を行っていません。<br>
+これはdbに関するrakeタスクはデータベースに接続されていなければ実行できないためであり、railsアプリケーションのコンテナを単独でもビルドできるようにするためです。</p>
+
+<p>Gemfileにはmysql, redis, elasticsearchに接続するためのライブラリ、そしてアプリケーションサーバーであるunicornを追加します。</p>
+<pre class="highlight plaintext"><code># database
+gem 'mysql2'
+
+# redis
+gem 'redis'
+
+# elasticsearch
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
+
+# Use Unicorn as the app server
+gem 'unicorn'
+</code></pre>
+
+</section><section><header><h3>オーケストレーション</h3></header>
+
+<p>構成全体の設定を定義するfig.ymlもルートディレクトリに置いておきます。<br>
+構成全体の設定を定義するdocker-compose.ymlもルートディレクトリに置いておきます。<br>
+docker-compose.ymlではmysql, elasticsearech, redis, nginx, railsそしてdatastoreの5つのコンテナが定義されています。<br>
+記述方法の詳細は<a href="https://github.com/docker/compose/blob/1.1.0/docs/yml.md">compose/yml.md at 1.1.0 · docker/compose</a>を参照してください。</p>
+<pre class="highlight plaintext"><code>mysql:
+  image: mysql:5.6.23
+  environment:
+    MYSQL_ROOT_PASSWORD: 'pass'
+  ports:
+    - '3306:3306'
+  volumes_from:
+    - datastore
+
+elasticsearch:
+  build: containers/elasticsearch
+  ports:
+    - '9200:9200'
+    - '9300:9300'
+  volumes_from:
+    - datastore
+
+redis:
+  image: redis:2.8.19
+  ports:
+    - '6379:6379'
+  volumes_from:
+    - datastore
+
+nginx:
+  build: containers/nginx
+  ports:
+    - '8080:80'
+  volumes_from:
+    - datastore
+  links:
+    - rails
+
+datastore:
+  build: containers/datastore
+
+rails:
+  build: .
+  ports:
+    - '3000:3000'
+  environment:
+    RAILS_ENV: preview
+    MYSQL_ROOT_PASSWORD: 'pass'
+    DATABASE_URL: mysql2://root:pass@mysql:3306
+    REDIS_URL: redis://redis:6379
+    ELASTICSEARCH_URL: http://elasticsearch:9200
+    SECRET_KEY_BASE: hogehoge
+  volumes_from:
+    - datastore
+  links:
+    - mysql
+    - elasticsearch
+    - redis
+</code></pre>
+
+<h4>サービス毎のコンテナ定義</h4>
+
+<p>まずはimageとbuildについて。<br>
+mysqlとredisはimageによって<a href="https://registry.hub.docker.com/repos/stackbrew/">docker hubの公式イメージ</a>を取得しています。<br>
+elasticsearchは日本語用プラグインを導入したイメージを使いたかったので、buildディレクティブで自前のDockerfileを指定しています。<br>
+今回は独自のDockerfileはリポジトリのルート以下にcontainersディレクトリを作り、さらにサービス毎にディレクトリを分割しています。</p>
+<pre class="highlight plaintext"><code>- containers/                  
+ |- datastore/                 
+  |  Dockerfile                
+ |- elasticsearch/             
+  |  Dockerfile                
+ |- nginx/                     
+  |  Dockerfile                
+  |  nginx.conf
+</code></pre>
+<pre class="highlight plaintext"><code>FROM elasticsearch:1.4.3
+
+RUN plugin install mobz/elasticsearch-head
+RUN plugin install elasticsearch/elasticsearch-analysis-kuromoji/2.4.2
+</code></pre>
+
+<p>elasticsearchのDockerfileについて見てみましょう。<br>
+独自の定義とはいってもベースは公式のelasticsearchを利用しています。<br>
+追加で必要になるプラグインのインストールのみ記述することで意図が明確になります。</p>
+<pre class="highlight plaintext"><code>FROM nginx:1.7.9
+COPY nginx.conf /etc/nginx/nginx.conf
+</code></pre>
+
+<p>nginxも公式イメージをベースにします。<br>
+js, cssなどの静的アセットを配信しつつ、unicornに対してリバースプロキシとしても動作させるので、このイメージには設定ファイルを追加します。</p>
+
+<p>mysqlやredisも設定を変更したい場合は公式イメージに設定を上書きする運用が良いでしょう。</p>
+
+<h4>コンテナ間のリンク</h4>
+
+<p>docker-compose.ymlのlinksディレクティブではコンテナ間のリンクを定義します。<br>
+アクセスの方向性は nginx -&gt; rails -&gt; (mysql, redis, elasticsearch)のため、nginxのlinksにはrailsを、railsのlinksにはmysql, redis, elasticsearchを指定しています。</p>
+
+<p>さて、railsのdatabase.ymlを指定するときにはどうするでしょうか。<br>
+dockerのコンテナ間のリンクの場合、<code>MYSQL_PORT_3306_TCP_ADDR</code>のようなdockerが自動的に設定してくれる環境変数を用いる例が出てきます。<br>
+しかしこれは得策とはいえません。<br>
+redisへの接続を例に考えてみると、<code>REDIS_PORT_6379_TCP_ADDR</code>のような環境変数になりますが、この使いにくい環境変数を活用しようとすると、<code>config/initializers/redis.rb</code>等で切り分けが必要になります。</p>
+<pre class="highlight plaintext"><code>if Rails.env.docker?
+  # docker環境の場合
+  Redis.current = Redis.new host: ['REDIS_PORT_6379_TCP_ADDR'], port: ENV['REDIS_PORT_6379_TCP_PORT']
+else
+  # それ以外の場合...
+end
+</code></pre>
+
+<p>このような記述をしないための設定がrailsのenvironmentディレクティブです。</p>
+<pre class="highlight yaml"><code><span class="s">DATABASE_URL</span><span class="pi">:</span> <span class="s">mysql2://root:pass@mysql:3306</span>
+<span class="s">REDIS_URL</span><span class="pi">:</span> <span class="s">redis://redis:6379</span>
+<span class="s">ELASTICSEARCH_URL</span><span class="pi">:</span> <span class="s">http://elasticsearch:9200</span>
+</code></pre>
+
+<p>docker-composeでlinkディレクティブを指定すると、hostsに他コンテナの設定が追加されます。</p>
+<pre class="highlight plaintext"><code>$ docker-compose run rails cat /etc/hosts
+172.17.2.69 6866a8e73892
+127.0.0.1   localhost
+::1 localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+172.17.2.66 minidoc_elasticsearch_1
+172.17.2.67 minidoc_redis_1
+172.17.2.67 redis
+172.17.2.67 redis_1
+172.17.2.66 elasticsearch
+172.17.2.66 elasticsearch_1
+172.17.2.65 mysql_1
+172.17.2.65 minidoc_mysql_1
+172.17.2.65 mysql
+</code></pre>
+
+<p>直接railsからhostsの値を用いても良いですが、environmentディレクティブで整理してrailsに環境変数として渡すことで、プロダクションなどの他環境に移しやすくなります。<br>
+例えばredis, elasticsearchはgemの設計として、それぞれ <code>REDIS_URL</code>, <code>ELASTICSEARCH_URL</code>が設定されていた場合に接続先として用いてくれるので、それらに合わせることでdocker環境でもプロダクション環境でも対応できます。<br>
+<code>database.yaml</code>でも環境変数<code>DATABASE_URL</code>で接続情報を渡すと決めていれば環境の切り替えが容易になります。</p>
+<pre class="highlight plaintext"><code>default: &amp;default
+  adapter: mysql2
+  encoding: utf8
+  pool: 5
+
+development:
+  &lt;&lt;: *default
+  database: minidoc_development
+  username: root
+  password:
+  host: localhost
+
+test:
+  &lt;&lt;: *default
+  database: minidoc_test
+  username: root
+  password:
+  host: localhost
+
+preview:
+  &lt;&lt;: *default
+  database: minidoc_preview
+  url: &lt;%= ENV['DATABASE_URL'] %&gt;
+
+production:
+  &lt;&lt;: *default
+  database: minidoc_production
+  url: &lt;%= ENV['DATABASE_URL'] %&gt;
+</code></pre>
+
+<h4>データボリュームコンテナ</h4>
+
+<p>データボリュームコンテナには永続化、共有したいパスをVOLUMEコマンドで定義しているだけです。</p>
+<pre class="highlight plaintext"><code>FROM busybox:latest
+
+VOLUME /var/lib/mysql
+VOLUME /usr/share/elasticsearch/data
+VOLUME /data
+VOLUME /usr/src/app/public
+VOLUME /usr/src/app/log
+
+CMD /bin/sh
+</code></pre>
+
+<p>mysqlやelasticsearch用には永続化するだけですが、ここでのポイントはrailsが生成するassetsの扱いです。<br>
+今回フロントのnginxから静的ファイルを配信したいので、アセットをnginxコンテナに渡さなければなりません。<br>
+もちろんローカルでassets:precompileしたものをnginxコンテナにADDする方法もとれます。<br>
+その場合、ローカルにnode.js等が必要になってくるため、今回の例ではnodeが用意されているrailsコンテナでコンパイルを行い、そのファイルを共有したボリュームによってnginxから読み出す方法を紹介します。<br>
+そのためのパスが<code>/usr/src/app/public</code>です。<br>
+nginxの設定ファイルを見てみましょう。</p>
+<pre class="highlight plaintext"><code>user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+  worker_connections 1024; # increase if you have lots of clients
+  accept_mutex off; # "on" if nginx worker_processes &gt; 1
+}
+
+http {
+  include mime.types;
+  default_type application/octet-stream;
+  log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+  access_log  /var/log/nginx/access.log  main;
+
+  sendfile on;
+
+  tcp_nopush on; # off may be better for *some* Comet/long-poll stuff
+  tcp_nodelay off; # on may be better for some Comet/long-poll stuff
+
+  gzip on;
+  gzip_http_version 1.0;
+  gzip_proxied any;
+  gzip_min_length 500;
+  gzip_disable "MSIE [1-6]\.";
+  gzip_types text/plain text/html text/xml text/css
+             text/comma-separated-values
+             text/javascript application/x-javascript
+             application/atom+xml;
+
+  upstream app_server {
+    # for UNIX domain socket setups:
+    # server unix:/path/to/.unicorn.sock fail_timeout=0;
+
+    # for TCP setups, point these to your backend servers
+    # server 192.168.0.7:8080 fail_timeout=0;
+    server rails:3000 fail_timeout=0;
+  }
+
+  server {
+    listen       80;
+    server_name  localhost;
+    client_max_body_size 4G;
+    keepalive_timeout 5;
+
+    # path for static files
+    root /usr/src/app/public;
+
+    try_files $uri/index.html $uri.html $uri @app;
+
+    location @app {
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://app_server;
+    }
+
+    # Rails error pages
+    error_page 500 502 503 504 /500.html;
+    location = /500.html {
+      root /usr/src/app/public;
+    }
+  }
+}
+</code></pre>
+
+<p>ポイントは<code>root /usr/src/app/public;</code>の部分です。<br>
+<code>/usr/src/app</code>はrailsアプリケーションが配置されている場所です。<br>
+そのためrailsコンテナで<code>rake assets:precompile</code>すると<code>/usr/src/app/public</code>にコンパイルされたアセットが配置されます。<br>
+このパスをデータボリュームコンテナで共有することでnginxコンテナから読み出すということです。</p>
+
+<h4>その他設定 dockerignore</h4>
+
+<p>dockerignoreファイルも用意しておきましょう。<br>
+ログや一時ファイルなどを除外しておかないと、アプリケーションの変更だと見なされてしまいます。</p>
+<pre class="highlight plaintext"><code>## Rails
+public/assets/*
+
+## Environment normalisation:
+.bundle
+vendor/bundle
+.git
+
+## log
+log
+tmp
+
+## OSX
+.DS_Store
+
+## docker
+.dockerignore
+containers
+</code></pre>
+
+</section><section><header><h3>ビルド &amp; 実行</h3></header>
+
+<p>一気にビルドする事も出来ますし、サービスを指定することも可能です。</p>
+<pre class="highlight plaintext"><code>$ docker-compose build
+$ docker-compose build rails
+</code></pre>
+
+<p>rakeタスクなどを実行する場合には<code>docker-compose run rails</code>に続けて指定できます。<br>
+docker-compose.yml<code>のなかで</code>RAILS_ENV`を指定している場合はそのRails.envで動作します。</p>
+<pre class="highlight plaintext"><code>$ docker-compose run rails rake db:create
+$ docker-compose run rails rake db:migrate
+$ docker-compose run rails rake db:seed_fu
+$ docker-compose run rails rake assets:precompile
+</code></pre>
+
+<p><code>docker-compose up</code>で複数のコンテナを一気に立ち上げましょう。</p>
+<pre class="highlight plaintext"><code>$ docker-compose up
+</code></pre>
+
+<p>あとは<code>boot2docker ip</code>でアドレスを確認し、今回の場合はnginxの80と8080番を繋いでいるので、<code>http://192.168.59.103:8080</code> にアクセスします。（IPアドレスは人によって異なります）</p>
+
+</section><section><header><h3>まとめ</h3></header>
+
+<p>本記事では複雑な構成のrailsアプリケーションをdockerで動作させる場合についてまとめました。<br>
+今回はrailsのコードをコンテナに入れ、プロダクション相当で稼働させる例でした。<br>
+本番環境もdockerで運用することが出来たなら、ビルドしたコンテナをそのまま本番に持って行くことが出来るようにです。</p>
+
+<p>開発環境で使いたい、つまりローカルでコードを編集し、結果をコンテナで実行させているrailsで確認したい場合などは、プロジェクトルートをData Volumeでマウントする運用も出来るでしょう。<br>
+この方法なら<code>docker build</code>やコンテナに対して<code>rsync</code>等すること無くコードの反映が可能になります。</p>
+
+<p>dockerを用いた環境の構築では、railsのリポジトリに必要なサービスの設定ファイルを含められること、開発環境を複数開発者で揃えられること、そして容易に環境の破棄が可能になること（例えばブランチの切り替え時にデータボリュームコンテナを差し替えるなど）のメリットが考えられます、</p>
+</section>
 </article>
 </div>
 </div>
